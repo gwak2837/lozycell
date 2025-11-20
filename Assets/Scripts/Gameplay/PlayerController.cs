@@ -6,10 +6,12 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 5f;
     private Rigidbody2D rb;
     private Vector2 moveInput;
+    private PlayerStats stats;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        stats = GetComponent<PlayerStats>();
     }
 
     private void Start()
@@ -39,7 +41,8 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.linearVelocity = moveInput * moveSpeed;
+        float currentSpeed = stats != null ? stats.GetCurrentMoveSpeed() : moveSpeed;
+        rb.linearVelocity = moveInput * currentSpeed;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
