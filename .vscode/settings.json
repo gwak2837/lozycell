@@ -67,5 +67,9 @@
     "*.sln": "*.csproj",
     "*.slnx": "*.csproj"
   },
-  "dotnet.defaultSolution": "lozycell.slnx"
+  "dotnet.defaultSolution": "lozycell.slnx",
+  "editor.formatOnSave": true,
+  "[csharp]": {
+    "editor.defaultFormatter": "anysphere.csharp"
+  }
 }
