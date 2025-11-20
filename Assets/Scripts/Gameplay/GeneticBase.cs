@@ -13,9 +13,16 @@ public class GeneticBase : MonoBehaviour
 {
     public BaseType baseType;
     private SpriteRenderer spriteRenderer;
+    private ArcadeManager manager;
 
     // Optional: Text label to show the letter
     public TextMeshPro textLabel;
+
+    // Optimization: Disable if too far
+    private Transform playerTransform;
+    private float checkInterval = 1f;
+    private float checkTimer;
+    private float despawnDistanceSq = 400f; // 20 units squared
 
     private void Awake()
     {
@@ -24,9 +31,37 @@ public class GeneticBase : MonoBehaviour
         if (textLabel == null) textLabel = GetComponentInChildren<TextMeshPro>();
     }
 
-    public void Initialize(BaseType type)
+    private void Update()
+    {
+        if (manager == null) return;
+
+        checkTimer += Time.deltaTime;
+        if (checkTimer >= checkInterval)
+        {
+            checkTimer = 0;
+            CheckOutOfBounds();
+        }
+    }
+
+    private void CheckOutOfBounds()
+    {
+        if (playerTransform == null)
+        {
+            if (manager != null) playerTransform = manager.GetPlayerTransform();
+            if (playerTransform == null) return;
+        }
+
+        float distSq = (transform.position - playerTransform.position).sqrMagnitude;
+        if (distSq > despawnDistanceSq)
+        {
+            manager.ReturnToPool(this);
+        }
+    }
+
+    public void Initialize(BaseType type, ArcadeManager managerRef)
     {
         baseType = type;
+        manager = managerRef;
         UpdateVisuals();
     }
 
@@ -68,12 +103,14 @@ public class GeneticBase : MonoBehaviour
 
     public void Collect()
     {
-        ArcadeManager manager = FindObjectOfType<ArcadeManager>();
         if (manager != null)
         {
             manager.CollectBase(baseType);
+            manager.ReturnToPool(this);
         }
-
-        Destroy(gameObject);
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }

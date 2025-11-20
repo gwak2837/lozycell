@@ -26,6 +26,20 @@ public class ArcadeManager : MonoBehaviour
     // Track current sequence of bases (max 3)
     private List<BaseType> currentCodon = new List<BaseType>();
 
+    // Object Pooling
+    private Queue<GeneticBase> pool = new Queue<GeneticBase>();
+
+    public Transform GetPlayerTransform()
+    {
+        return playerTransform;
+    }
+
+    public void ReturnToPool(GeneticBase item)
+    {
+        item.gameObject.SetActive(false);
+        pool.Enqueue(item);
+    }
+
     private void Start()
     {
         var player = FindFirstObjectByType<PlayerController>();
@@ -72,14 +86,25 @@ public class ArcadeManager : MonoBehaviour
         Vector2 randomPos = Random.insideUnitCircle * spawnRadius;
         Vector3 spawnPos = center + new Vector3(randomPos.x, randomPos.y, 0);
         
-        GameObject obj = Instantiate(aminoAcidPrefab, spawnPos, Quaternion.identity);
-        GeneticBase geneticBase = obj.GetComponent<GeneticBase>();
+        GeneticBase geneticBase = null;
+        if (pool.Count > 0)
+        {
+            geneticBase = pool.Dequeue();
+            geneticBase.transform.position = spawnPos;
+            geneticBase.transform.rotation = Quaternion.identity;
+            geneticBase.gameObject.SetActive(true);
+        }
+        else
+        {
+            GameObject obj = Instantiate(aminoAcidPrefab, spawnPos, Quaternion.identity);
+            geneticBase = obj.GetComponent<GeneticBase>();
+        }
         
         if (geneticBase != null)
         {
             // Assign random Base Type
             BaseType randomType = (BaseType)Random.Range(0, 4);
-            geneticBase.Initialize(randomType);
+            geneticBase.Initialize(randomType, this);
         }
     }
 
