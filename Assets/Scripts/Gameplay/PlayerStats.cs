@@ -13,6 +13,7 @@ public class PlayerStats : MonoBehaviour
 
     [Header("Status")]
     public bool isShielded = false;
+    public bool isInvulnerable = false;
 
     public event Action OnDeath;
     public event Action<float> OnHealthChanged;
@@ -41,6 +42,18 @@ public class PlayerStats : MonoBehaviour
         speedMultiplier = 1f;
     }
 
+    public void EnableInvulnerability(float duration)
+    {
+        isInvulnerable = true;
+        CancelInvoke(nameof(DisableInvulnerability));
+        Invoke(nameof(DisableInvulnerability), duration);
+    }
+
+    private void DisableInvulnerability()
+    {
+        isInvulnerable = false;
+    }
+
     public void EnableShield(float duration)
     {
         isShielded = true;
@@ -55,6 +68,8 @@ public class PlayerStats : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (isInvulnerable) return;
+
         if (isShielded)
         {
             // Shield absorbs damage (maybe one hit or all damage for duration? 

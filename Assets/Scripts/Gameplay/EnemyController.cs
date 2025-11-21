@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class EnemyController : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class EnemyController : MonoBehaviour
     private float currentHealth;
     private float originalSpeed;
     private bool isSlowed = false;
+    private bool isKnockedBack = false;
 
     private Transform target;
 
@@ -26,6 +28,7 @@ public class EnemyController : MonoBehaviour
     private void Update()
     {
         if (target == null) return;
+        if (isKnockedBack) return;
 
         // Simple chase logic
         Vector3 direction = (target.position - transform.position).normalized;
@@ -74,6 +77,25 @@ public class EnemyController : MonoBehaviour
 
         CancelInvoke(nameof(ResetSpeed));
         Invoke(nameof(ResetSpeed), duration);
+    }
+
+    public void ApplyKnockback(Vector3 direction, float force, float duration = 0.2f)
+    {
+        if (isKnockedBack) return;
+        StartCoroutine(KnockbackCoroutine(direction, force, duration));
+    }
+
+    private IEnumerator KnockbackCoroutine(Vector3 direction, float force, float duration)
+    {
+        isKnockedBack = true;
+        float elapsed = 0;
+        while (elapsed < duration)
+        {
+            transform.position += direction * force * Time.deltaTime;
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        isKnockedBack = false;
     }
 
     private void ResetSpeed()

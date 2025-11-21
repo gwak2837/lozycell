@@ -6,18 +6,20 @@ public class ProjectileController : MonoBehaviour
     public float speed = 10f;
     public float damage = 5f;
     public float lifetime = 2f;
+    public float knockbackForce = 0f;
     public bool isHoming = false;
     
     private Transform target;
     private Vector3 direction;
     private bool isInitialized = false;
 
-    public void Initialize(Vector3 dir, float dmg, float spd, float life, Transform homingTarget = null)
+    public void Initialize(Vector3 dir, float dmg, float spd, float life, float knockback = 0f, Transform homingTarget = null)
     {
         direction = dir.normalized;
         damage = dmg;
         speed = spd;
         lifetime = life;
+        knockbackForce = knockback;
         target = homingTarget;
         isHoming = (target != null);
         isInitialized = true;
@@ -58,6 +60,10 @@ public class ProjectileController : MonoBehaviour
         if (enemy != null)
         {
             enemy.TakeDamage(damage);
+            if (knockbackForce > 0)
+            {
+                enemy.ApplyKnockback(direction, knockbackForce);
+            }
             Destroy(gameObject); 
         }
         // Could also add wall collision check here

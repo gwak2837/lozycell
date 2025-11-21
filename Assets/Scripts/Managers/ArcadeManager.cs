@@ -31,6 +31,7 @@ public class ArcadeManager : MonoBehaviour
     private int currentSessionAminoAcids = 0;
     private float spawnTimer;
     private bool isGameActive = true;
+    private bool isProcessingSequence = false; // Lock input during combo sequence
 
     private Transform playerTransform;
     private PlayerStats playerStats;
@@ -192,7 +193,7 @@ public class ArcadeManager : MonoBehaviour
 
     public void CollectBase(BaseType type)
     {
-        if (!isGameActive) return;
+        if (!isGameActive || isProcessingSequence) return;
 
         currentCodon.Add(type);
         UpdateCodonRing();
@@ -200,31 +201,50 @@ public class ArcadeManager : MonoBehaviour
 
         if (currentCodon.Count >= 3)
         {
-            // Form Amino Acid
-            string aminoAcidName = CodonTable.GetAminoAcid(currentCodon[0], currentCodon[1], currentCodon[2]);
-            Debug.Log($"formed {aminoAcidName} from {currentCodon[0]}{currentCodon[1]}{currentCodon[2]}");
+            StartCoroutine(ProcessCompleteCodon());
+        }
+        else
+        {
+            UpdateUI();
+        }
+    }
 
-            // Visual Feedback (Dopamine!)
-            ShowComboVisuals(aminoAcidName);
+    private IEnumerator ProcessCompleteCodon()
+    {
+        isProcessingSequence = true;
 
-            // Trigger Skill
-            if (skillManager != null)
-            {
-                skillManager.ActivateSkill(aminoAcidName);
-            }
+        // REMOVED: Time.timeScale hit stop (caused freeze issues)
 
-            currentSessionAminoAcids++;
-            currentCodon.Clear();
-            UpdateCodonRing();
-            OnCodonUpdated?.Invoke(new List<BaseType>(currentCodon));
+        // Wait a bit so user sees the full sequence
+        yield return new WaitForSeconds(0.5f);
 
-            if (currentSessionAminoAcids >= targetAminoAcids)
-            {
-                EndGame(true);
-            }
+        // Form Amino Acid
+        string aminoAcidName = CodonTable.GetAminoAcid(currentCodon[0], currentCodon[1], currentCodon[2]);
+        Debug.Log($"formed {aminoAcidName} from {currentCodon[0]}{currentCodon[1]}{currentCodon[2]}");
+
+        // Visual Feedback (Dopamine!)
+        ShowComboVisuals(aminoAcidName);
+
+        // Trigger Skill
+        if (skillManager != null)
+        {
+            skillManager.ActivateSkill(aminoAcidName);
+        }
+
+        currentSessionAminoAcids++;
+
+        // Clear and Reset
+        currentCodon.Clear();
+        UpdateCodonRing();
+        OnCodonUpdated?.Invoke(new List<BaseType>(currentCodon));
+
+        if (currentSessionAminoAcids >= targetAminoAcids)
+        {
+            EndGame(true);
         }
 
         UpdateUI();
+        isProcessingSequence = false;
     }
 
     private void ShowComboVisuals(string shortName)
