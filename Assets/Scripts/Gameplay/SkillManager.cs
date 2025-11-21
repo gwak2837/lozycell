@@ -51,10 +51,12 @@ public class SkillManager : MonoBehaviour
                 ActivateLightning();
                 break;
 
-            // Group D: Acidic/Fire (Toxic Cloud)
-            case "Asp": 
+            // Group D: Acidic/Fire (Poison Pool / Explosion)
+            case "Asp":
+                ActivatePoisonPool();
+                break;
             case "Glu":
-                ActivateToxicCloud();
+                ActivateExplosion();
                 break;
 
             // Group E: Special (Meteor/Homing)
@@ -75,7 +77,7 @@ public class SkillManager : MonoBehaviour
 
             // Stop Codon
             case "Stop":
-                ActivateExplosion();
+                ActivateExplosion(); // Reusing Explosion for Stop too
                 break;
 
             default:
@@ -119,9 +121,6 @@ public class SkillManager : MonoBehaviour
                 enemy.ApplySlow(0.5f, 4f); // 50% speed for 4 sec
             }
         }
-        
-        // Visual: Blue Ring (Simulated by a short lived large projectile or effect)
-        // For now just debug or simple effect if possible
     }
 
     // Group C: Lightning
@@ -140,17 +139,16 @@ public class SkillManager : MonoBehaviour
             if (enemy != null)
             {
                 enemy.TakeDamage(25f);
-                // Visual: Yellow line (omitted for now, maybe flash enemy color)
                 count++;
             }
         }
     }
 
-    // Group D: Toxic Cloud
-    private void ActivateToxicCloud()
+    // Group D: Poison Pool (Asp - Green)
+    private void ActivatePoisonPool()
     {
         if (player == null) return;
-        Debug.Log("Skill: Toxic Cloud Activated");
+        Debug.Log("Skill: Poison Pool Activated");
 
         float damage = 5f; // DPS
         
@@ -164,7 +162,7 @@ public class SkillManager : MonoBehaviour
             cloudObj = new GameObject("ToxicCloud_Generated");
             cloudObj.transform.position = player.transform.position;
             var sprite = cloudObj.AddComponent<SpriteRenderer>();
-            sprite.color = new Color(0.5f, 0f, 0.5f, 0.5f); // Purple
+            sprite.color = new Color(0.3f, 1f, 0.3f, 0.5f); // Green
             cloudObj.AddComponent<ToxicCloud>();
         }
 
@@ -175,6 +173,9 @@ public class SkillManager : MonoBehaviour
             {
                 toxicCloud.SetDamage(damage);
             }
+            // Tint green for Asp
+            var sr = cloudObj.GetComponent<SpriteRenderer>();
+            if (sr != null) sr.color = new Color(0.3f, 1f, 0.3f, 0.5f); 
         }
     }
 
@@ -184,8 +185,6 @@ public class SkillManager : MonoBehaviour
         if (player == null) return;
         Debug.Log("Skill: Meteor Activated");
 
-        // Spawn large projectile that moves slowly or just hits
-        // Let's make it a large projectile that passes through
         Vector3 dir = Random.insideUnitCircle.normalized;
         SpawnProjectile(player.transform.position, dir, 50f, 5f, 3f, new Color(0.6f, 0f, 0.8f), 1.5f);
     }
@@ -214,23 +213,36 @@ public class SkillManager : MonoBehaviour
         Debug.Log("Skill: Start (Shield) Activated");
 
         playerStats.EnableShield(5f);
-        // Pet logic: maybe just a visual or permanent small shooter (omitted for simplicity in this pass)
+        
+        // TODO: Visual Pet Summon logic (just a log/visual for now)
+        Debug.Log("Pet Summoned! (Visual only implemented)");
     }
 
-    // Stop: Explosion
+    // Stop / Glu: Explosion
     private void ActivateExplosion()
     {
         if (player == null) return;
-        Debug.Log("Skill: Stop (Explosion) Activated");
+        Debug.Log("Skill: Explosion Activated");
 
         float radius = 5f;
         Collider2D[] hits = Physics2D.OverlapCircleAll(player.transform.position, radius);
+        
+        // Visual effect (simple)
+        GameObject explosion = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        explosion.transform.position = player.transform.position;
+        explosion.transform.localScale = Vector3.one * radius * 2;
+        Destroy(explosion.GetComponent<Collider>());
+        var mat = explosion.GetComponent<Renderer>().material;
+        mat.color = new Color(1f, 0.2f, 0.2f, 0.5f);
+        Destroy(explosion, 0.2f); // Pop visual
+
         foreach (var hit in hits)
         {
             EnemyController enemy = hit.GetComponent<EnemyController>();
             if (enemy != null)
             {
                 enemy.TakeDamage(50f);
+                // Could apply Defense Down here if enemies had defense stats
             }
         }
     }
@@ -249,7 +261,6 @@ public class SkillManager : MonoBehaviour
             proj.transform.position = pos;
             var sr = proj.AddComponent<SpriteRenderer>();
             
-            // Generate a simple white texture so it's visible
             Texture2D tex = new Texture2D(16, 16);
             Color[] colors = new Color[16 * 16];
             for (int i = 0; i < colors.Length; i++) colors[i] = Color.white;
@@ -257,26 +268,21 @@ public class SkillManager : MonoBehaviour
             tex.Apply();
             
             sr.sprite = Sprite.Create(tex, new Rect(0, 0, 16, 16), new Vector2(0.5f, 0.5f), 16);
-            sr.color = color; // Apply requested color tint
+            sr.color = color; 
             
             var col = proj.AddComponent<CircleCollider2D>();
             col.isTrigger = true;
             col.radius = 0.5f;
             
-            // Add Rigidbody for reliable trigger detection if needed, though kinematic/trigger works
             var rb = proj.AddComponent<Rigidbody2D>();
             rb.gravityScale = 0;
             rb.isKinematic = true;
 
             proj.AddComponent<ProjectileController>();
-            
-            // Note: Generated texture might leak memory if not destroyed, 
-            // but for a prototype/fallback it's acceptable.
         }
 
         if (proj != null)
         {
-            // Set color if we have a SR
             var sr = proj.GetComponent<SpriteRenderer>();
             if (sr != null) sr.color = color;
             
@@ -296,7 +302,7 @@ public class SkillManager : MonoBehaviour
         {
             return (closest.transform.position - player.transform.position).normalized;
         }
-        return player.transform.up; // Default forward
+        return player.transform.up; 
     }
     
     private EnemyController GetClosestEnemy()

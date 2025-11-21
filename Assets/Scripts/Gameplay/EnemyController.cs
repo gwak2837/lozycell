@@ -88,7 +88,12 @@ public class EnemyController : MonoBehaviour
 
     private void Die()
     {
-        // Optional: Spawn effect or drop item
+        // Drop Nucleotide
+        if (ArcadeManager.Instance != null)
+        {
+            ArcadeManager.Instance.SpawnDrop(transform.position);
+        }
+
         Destroy(gameObject);
     }
 }

@@ -20,6 +20,9 @@ public class ArcadeManager : MonoBehaviour
     public GameObject winPanel;
     public GameObject losePanel;
 
+    public delegate void CodonUpdateHandler(List<BaseType> currentCodon);
+    public event CodonUpdateHandler OnCodonUpdated;
+
     [Header("Managers")]
     public SkillManager skillManager; // New
     public EnemySpawner enemySpawner; // New
@@ -38,6 +41,19 @@ public class ArcadeManager : MonoBehaviour
     // Object Pooling
     private Queue<GeneticBase> pool = new Queue<GeneticBase>();
 
+    public static ArcadeManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else if (Instance != this) Destroy(gameObject);
+    }
+
+    public List<BaseType> GetCurrentCodon()
+    {
+        return new List<BaseType>(currentCodon);
+    }
+
     public Transform GetPlayerTransform()
     {
         return playerTransform;
@@ -51,6 +67,21 @@ public class ArcadeManager : MonoBehaviour
 
     private void Start()
     {
+        // Check for Ribosome UI, create if missing
+        if (FindFirstObjectByType<RibosomeUI>() == null)
+        {
+            Canvas canvas = FindFirstObjectByType<Canvas>();
+            if (canvas == null)
+            {
+                GameObject cObj = new GameObject("Canvas");
+                canvas = cObj.AddComponent<Canvas>();
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                cObj.AddComponent<CanvasScaler>();
+                cObj.AddComponent<GraphicRaycaster>();
+            }
+            RibosomeUI.CreateDefaultUI(canvas.transform);
+        }
+
         var player = FindFirstObjectByType<PlayerController>();
         if (player != null)
         {
@@ -165,6 +196,7 @@ public class ArcadeManager : MonoBehaviour
 
         currentCodon.Add(type);
         UpdateCodonRing();
+        OnCodonUpdated?.Invoke(new List<BaseType>(currentCodon));
 
         if (currentCodon.Count >= 3)
         {
@@ -184,6 +216,7 @@ public class ArcadeManager : MonoBehaviour
             currentSessionAminoAcids++;
             currentCodon.Clear();
             UpdateCodonRing();
+            OnCodonUpdated?.Invoke(new List<BaseType>(currentCodon));
 
             if (currentSessionAminoAcids >= targetAminoAcids)
             {
@@ -278,6 +311,31 @@ public class ArcadeManager : MonoBehaviour
         if (codonRing != null)
         {
             codonRing.UpdateVisuals(currentCodon);
+        }
+    }
+
+    public void SpawnDrop(Vector3 position)
+    {
+        if (aminoAcidPrefab == null) return;
+
+        GeneticBase geneticBase = null;
+        if (pool.Count > 0)
+        {
+            geneticBase = pool.Dequeue();
+            geneticBase.transform.position = position;
+            geneticBase.transform.rotation = Quaternion.identity;
+            geneticBase.gameObject.SetActive(true);
+        }
+        else
+        {
+            GameObject obj = Instantiate(aminoAcidPrefab, position, Quaternion.identity);
+            geneticBase = obj.GetComponent<GeneticBase>();
+        }
+
+        if (geneticBase != null)
+        {
+            BaseType randomType = (BaseType)Random.Range(0, 4);
+            geneticBase.Initialize(randomType, this);
         }
     }
 
