@@ -3,16 +3,19 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     [Header("Stats")]
-    public float moveSpeed = 3f;
+    public float moveSpeed = 1.5f;
     public float damage = 10f;
     public float maxHealth = 20f;
     private float currentHealth;
+    private float originalSpeed;
+    private bool isSlowed = false;
 
     private Transform target;
 
     private void Awake()
     {
         currentHealth = maxHealth;
+        originalSpeed = moveSpeed;
     }
 
     public void Initialize(Transform playerTransform)
@@ -56,6 +59,31 @@ public class EnemyController : MonoBehaviour
         {
             Die();
         }
+    }
+
+    public void ApplySlow(float factor, float duration)
+    {
+        if (isSlowed) return; 
+
+        isSlowed = true;
+        moveSpeed = originalSpeed * factor;
+        
+        // Visual feedback
+        var sr = GetComponent<SpriteRenderer>();
+        if (sr != null) sr.color = new Color(0.5f, 0.5f, 1f); // Light Blue
+
+        CancelInvoke(nameof(ResetSpeed));
+        Invoke(nameof(ResetSpeed), duration);
+    }
+
+    private void ResetSpeed()
+    {
+        isSlowed = false;
+        moveSpeed = originalSpeed;
+        
+        // Reset visual
+        var sr = GetComponent<SpriteRenderer>();
+        if (sr != null) sr.color = Color.white;
     }
 
     private void Die()

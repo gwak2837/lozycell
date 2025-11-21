@@ -50,7 +50,7 @@ public class PlayerController : MonoBehaviour
         // Check for GeneticBase (renamed from AminoAcid)
         // Ideally we check the component, or tag if tag was updated. 
         // The tag might still be "AminoAcid" on the prefab, so we should keep checking that or check component directly.
-        
+
         if (other.CompareTag("AminoAcid") || other.GetComponent<GeneticBase>() != null)
         {
             GeneticBase baseObj = other.GetComponent<GeneticBase>();

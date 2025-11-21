@@ -187,6 +187,24 @@ public class ArcadeModeSetup : EditorWindow
             arcadeManager = amObj.AddComponent<ArcadeManager>();
         }
 
+        // Ensure EventSystem uses correct Input Module
+        UnityEngine.EventSystems.EventSystem es = FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>();
+        if (es == null)
+        {
+            GameObject esObj = new GameObject("EventSystem");
+            es = esObj.AddComponent<UnityEngine.EventSystems.EventSystem>();
+        }
+        
+        // Check/Add InputSystemUIInputModule
+        if (es.GetComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>() == null)
+        {
+            // Remove old module if exists
+            var oldModule = es.GetComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+            if (oldModule != null) DestroyImmediate(oldModule);
+            
+            es.gameObject.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
+        }
+
         SkillManager skillManager = FindFirstObjectByType<SkillManager>();
         if (skillManager == null)
         {

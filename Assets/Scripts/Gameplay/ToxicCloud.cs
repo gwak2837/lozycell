@@ -7,6 +7,11 @@ public class ToxicCloud : MonoBehaviour
     public float duration = 5f;
     public float radius = 3f;
 
+    public void SetDamage(float damage)
+    {
+        damagePerSecond = damage;
+    }
+
     private void Start()
     {
         Destroy(gameObject, duration);
@@ -23,6 +28,9 @@ public class ToxicCloud : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
+        // Ignore player interaction for now, or allow it to pass through freely.
+        // The player shouldn't destroy it or be hurt by it.
+        
         EnemyController enemy = other.GetComponent<EnemyController>();
         if (enemy != null)
         {

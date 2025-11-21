@@ -67,96 +67,12 @@ SLG의 핵심 재미는 "내 영토가 넓어지고 강해지는 것"입니다.
 - **싱글톤 패턴 (Singleton):** `PlayerData` 클래스 하나가 두 씬 사이의 자원(골드, 아미노산, 다이아)을 관리.
 - **저장:** `PlayerPrefs` 혹은 `JSON`으로 로컬 저장. (해킹 방지를 위해 나중엔 서버 저장 필요)
 
-### 게임 요소
+## 게임 요소
 
-#### The Field (혈관/장기)
+이제 개발자님의 머릿속에 **[전투(뱀서)]**와 **[내정(SLG)]**이 그려지셨을 겁니다. 가장 먼저 해야 할 일은 **"순환 고리(Loop)"**를 만드는 것입니다.
 
-필드에는 U, C, A, G 등 4종류의 염기가 떨어져 있고 이 4가지 중 3개를 조합해서 아래와 같은 64가지의 아미노산을 만들 수 있다.
-
-| Amino Acid / 아미노산        | 3-Letter | 1-Letter |
-| ---------------------------- | -------- | -------- |
-| Alanine / 알라닌             | Ala      | A        |
-| Arginine / 아르기닌          | Arg      | R        |
-| Asparagine / 아스파라긴      | Asn      | N        |
-| Aspartic acid / 아스파르트산 | Asp      | D        |
-| Cysteine / 시스테인          | Cys      | C        |
-| Glutamic acid / 글루탐산     | Glu      | E        |
-| Glutamine / 글루타민         | Gln      | Q        |
-| Glycine / 글리신             | Gly      | G        |
-| Histidine / 히스티딘         | His      | H        |
-| Isoleucine / 이소류신        | Ile      | I        |
-| Leucine / 류신               | Leu      | L        |
-| Lysine / 라이신              | Lys      | K        |
-| Methionine / 메티오닌        | Met      | M        |
-| Phenylalanine / 페닐알라닌   | Phe      | F        |
-| Proline / 프롤린             | Pro      | P        |
-| Serine / 세린                | Ser      | S        |
-| Threonine / 트레오닌         | Thr      | T        |
-| Tryptophan / 트립토판        | Trp      | W        |
-| Tyrosine / 티로신            | Tyr      | Y        |
-| Valine / 발린                | Val      | V        |
-
-UUU Phe
-UUC Phe
-UUA Leu
-UUG Leu
-UCU Ser
-UCC Ser
-UCA Ser
-UCG Ser
-UAU Tyr
-UAC Tyr
-UAA Stop
-UAG Stop
-UGU Cys
-UGC Cys
-UGA Stop
-UGG Trp
-CUU Leu
-CUC Leu
-CUA Leu
-CUG Leu
-CCU Pro
-CCC Pro
-CCA Pro
-CCG Pro
-CAU His
-CAC His
-CAA Gln
-CAG Gln
-CGU Arg
-CGC Arg
-CGA Arg
-CGG Arg
-AUU Ile
-AUC Ile
-AUA Ile
-AUG Met
-ACU Thr
-ACC Thr
-ACA Thr
-ACG Thr
-AAU Asn
-AAC Asn
-AAA Lys
-AAG Lys
-AGU Ser
-AGC Ser
-AGA Arg
-AGG Arg
-GUU Val
-GUC Val
-GUA Val
-GUG Val
-GCU Ala
-GCC Ala
-GCA Ala
-GCG Ala
-GAU Asp
-GAC Asp
-GAA Glu
-GAG Glu
-GGU Gly
-GGC Gly
-GGA Gly
-GGG Gly
+1. 아케이드 모드에서 아미노산 100개를 먹고 게임 종료
+2. 기지 모드로 돌아옴
+3. 아미노산 100개로 미토콘드리아 레벨업
+4. 레벨업 효과로 T-세포 공격력 상승
+5. 다시 아케이드 모드 진입 (더 강해진 상태)

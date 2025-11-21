@@ -40,6 +40,74 @@ public class ProjectSetupTool : EditorWindow
         {
             AddScenesToBuildSettings();
         }
+
+        if (GUILayout.Button("5. Create Skill Assets (Prefabs)"))
+        {
+            CreateSkillAssets();
+        }
+    }
+
+    private static void CreateSkillAssets()
+    {
+        // Ensure folders exist
+        if (!Directory.Exists("Assets/Prefabs")) Directory.CreateDirectory("Assets/Prefabs");
+        if (!Directory.Exists("Assets/Prefabs/Skills")) Directory.CreateDirectory("Assets/Prefabs/Skills");
+
+        // 1. Create Projectile Prefab
+        GameObject projObj = new GameObject("ProjectileBase");
+
+        // Visuals
+        SpriteRenderer sr = projObj.AddComponent<SpriteRenderer>();
+        sr.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd"); // Built-in circle
+        sr.color = Color.white;
+
+        // Physics
+        CircleCollider2D col = projObj.AddComponent<CircleCollider2D>();
+        col.isTrigger = true;
+        col.radius = 0.5f;
+
+        Rigidbody2D rb = projObj.AddComponent<Rigidbody2D>();
+        rb.gravityScale = 0;
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+
+        // Logic
+        projObj.AddComponent<ProjectileController>();
+
+        // Save Prefab
+        string projPath = "Assets/Prefabs/Skills/ProjectileBase.prefab";
+        PrefabUtility.SaveAsPrefabAsset(projObj, projPath);
+        DestroyImmediate(projObj);
+        Debug.Log($"Created Projectile Prefab at {projPath}");
+
+        // 2. Create Toxic Cloud Prefab
+        GameObject cloudObj = new GameObject("ToxicCloudBase");
+
+        SpriteRenderer cloudSr = cloudObj.AddComponent<SpriteRenderer>();
+        cloudSr.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd"); // Square/Box
+        cloudSr.color = new Color(0.5f, 0f, 0.5f, 0.4f); // Transparent Purple
+        cloudObj.transform.localScale = new Vector3(3, 3, 1);
+
+        CircleCollider2D cloudCol = cloudObj.AddComponent<CircleCollider2D>();
+        cloudCol.isTrigger = true;
+        cloudCol.radius = 0.5f; // Scales with object
+
+        cloudObj.AddComponent<ToxicCloud>();
+
+        string cloudPath = "Assets/Prefabs/Skills/ToxicCloudBase.prefab";
+        PrefabUtility.SaveAsPrefabAsset(cloudObj, cloudPath);
+        DestroyImmediate(cloudObj);
+        Debug.Log($"Created Toxic Cloud Prefab at {cloudPath}");
+
+        // 3. Assign to SkillManager in Scene (if open)
+        SkillManager sm = Object.FindFirstObjectByType<SkillManager>();
+        if (sm != null)
+        {
+            sm.projectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(projPath);
+            sm.toxicCloudPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(cloudPath);
+            EditorUtility.SetDirty(sm);
+            Debug.Log("Auto-assigned prefabs to active SkillManager.");
+        }
     }
 
     private static void AddTag(string tag)
@@ -98,7 +166,7 @@ public class ProjectSetupTool : EditorWindow
 
         GameObject eventSystem = new GameObject("EventSystem");
         eventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
-        eventSystem.AddComponent<InputSystemUIInputModule>();
+        eventSystem.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
 
         // UI Elements
         bmScript.aminoAcidText = CreateTMPText(canvasGO, "AminoText", "Amino Acids: 0", new Vector2(0, 400));
@@ -185,7 +253,7 @@ public class ProjectSetupTool : EditorWindow
 
         GameObject eventSystem = new GameObject("EventSystem");
         eventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
-        eventSystem.AddComponent<InputSystemUIInputModule>();
+        eventSystem.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
 
         amScript.progressText = CreateTMPText(canvasGO, "ProgressText", "0 / 100", new Vector2(0, 450));
 

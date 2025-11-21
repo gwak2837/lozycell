@@ -1,22 +1,24 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI; 
+using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 using System.Collections.Generic;
 
 public class ArcadeManager : MonoBehaviour
 {
     [Header("Settings")]
     public int targetAminoAcids = 100;
-    public GameObject aminoAcidPrefab; // Actually spawns GeneticBase now
+    public GameObject aminoAcidPrefab;
     public Transform spawnArea;
     public float spawnRadius = 10f;
     public float spawnInterval = 0.5f;
 
     [Header("UI")]
     public TextMeshProUGUI progressText;
+    public TextMeshProUGUI comboPopupText; // New: Flashy text
     public GameObject winPanel;
-    public GameObject losePanel; // New: Game Over UI
+    public GameObject losePanel;
 
     [Header("Managers")]
     public SkillManager skillManager; // New
@@ -29,7 +31,7 @@ public class ArcadeManager : MonoBehaviour
 
     private Transform playerTransform;
     private PlayerStats playerStats;
-    
+
     // Track current sequence of bases (max 3)
     private List<BaseType> currentCodon = new List<BaseType>();
 
@@ -57,13 +59,14 @@ public class ArcadeManager : MonoBehaviour
             if (playerStats != null)
             {
                 playerStats.OnDeath += HandlePlayerDeath;
+                playerStats.OnHealthChanged += HandleHealthChanged;
             }
-            
+
             // Try to find components if not assigned
             if (skillManager == null) skillManager = FindFirstObjectByType<SkillManager>();
             if (enemySpawner == null) enemySpawner = FindFirstObjectByType<EnemySpawner>();
             if (codonRing == null) codonRing = player.GetComponentInChildren<CodonRingController>();
-            
+
             // If CodonRing is not on player, maybe on manager or separate? 
             // Plan said "attached to player", so GetComponentInChildren is correct if I add it there.
             // If not found, we might need to spawn it? For now assume user/prefab setup or I'll ensure it exists.
@@ -75,14 +78,14 @@ public class ArcadeManager : MonoBehaviour
                 ringObj.transform.localPosition = Vector3.zero;
                 codonRing = ringObj.AddComponent<CodonRingController>();
             }
-            
+
             // Ensure SkillManager exists
             if (skillManager == null)
             {
                 GameObject smObj = new GameObject("SkillManager");
                 skillManager = smObj.AddComponent<SkillManager>();
             }
-            
+
             // Ensure EnemySpawner exists
             if (enemySpawner == null)
             {
@@ -102,7 +105,7 @@ public class ArcadeManager : MonoBehaviour
         if (playerTransform == null)
         {
             var player = FindFirstObjectByType<PlayerController>();
-            if (player != null) 
+            if (player != null)
             {
                 playerTransform = player.transform;
                 // Re-init if player was just found (e.g. respawned - though not supported yet)
@@ -133,7 +136,7 @@ public class ArcadeManager : MonoBehaviour
 
         Vector2 randomPos = Random.insideUnitCircle * spawnRadius;
         Vector3 spawnPos = center + new Vector3(randomPos.x, randomPos.y, 0);
-        
+
         GeneticBase geneticBase = null;
         if (pool.Count > 0)
         {
@@ -147,7 +150,7 @@ public class ArcadeManager : MonoBehaviour
             GameObject obj = Instantiate(aminoAcidPrefab, spawnPos, Quaternion.identity);
             geneticBase = obj.GetComponent<GeneticBase>();
         }
-        
+
         if (geneticBase != null)
         {
             // Assign random Base Type
@@ -168,17 +171,20 @@ public class ArcadeManager : MonoBehaviour
             // Form Amino Acid
             string aminoAcidName = CodonTable.GetAminoAcid(currentCodon[0], currentCodon[1], currentCodon[2]);
             Debug.Log($"formed {aminoAcidName} from {currentCodon[0]}{currentCodon[1]}{currentCodon[2]}");
-            
+
+            // Visual Feedback (Dopamine!)
+            ShowComboVisuals(aminoAcidName);
+
             // Trigger Skill
             if (skillManager != null)
             {
                 skillManager.ActivateSkill(aminoAcidName);
             }
-            
+
             currentSessionAminoAcids++;
             currentCodon.Clear();
             UpdateCodonRing();
-            
+
             if (currentSessionAminoAcids >= targetAminoAcids)
             {
                 EndGame(true);
@@ -186,6 +192,85 @@ public class ArcadeManager : MonoBehaviour
         }
 
         UpdateUI();
+    }
+
+    private void ShowComboVisuals(string shortName)
+    {
+        // If UI element missing, try to create one on the fly (fallback)
+        if (comboPopupText == null)
+        {
+            if (progressText != null && progressText.transform.parent != null)
+            {
+                GameObject go = new GameObject("ComboPopupText");
+                go.transform.SetParent(progressText.transform.parent, false);
+                comboPopupText = go.AddComponent<TextMeshProUGUI>();
+                comboPopupText.alignment = TextAlignmentOptions.Center;
+                comboPopupText.fontSize = 50;
+                comboPopupText.fontStyle = FontStyles.Bold;
+                // Position in center
+                RectTransform rt = go.GetComponent<RectTransform>();
+                rt.anchoredPosition = Vector2.zero;
+                rt.sizeDelta = new Vector2(800, 200);
+            }
+        }
+
+        if (comboPopupText != null)
+        {
+            AminoAcidData data = CodonTable.GetData(shortName);
+
+            // Set Text: "METHIONINE\nSTART - SHIELD!"
+            comboPopupText.text = $"{data.FullName}\n<size=80%>{data.SkillDescription}</size>";
+            comboPopupText.color = data.Color;
+
+            // Animation
+            StartCoroutine(AnimatePopup(comboPopupText));
+        }
+    }
+
+    private IEnumerator AnimatePopup(TextMeshProUGUI textComp)
+    {
+        textComp.gameObject.SetActive(true);
+        textComp.transform.localScale = Vector3.zero;
+
+        float duration = 0.3f;
+        float time = 0;
+
+        // Pop In (Elastic)
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = time / duration;
+            // Simple Overshoot curve
+            float scale = Mathf.Sin(t * Mathf.PI * 0.5f) * 1.2f;
+            textComp.transform.localScale = Vector3.one * scale;
+            yield return null;
+        }
+
+        textComp.transform.localScale = Vector3.one;
+
+        // Wait
+        yield return new WaitForSeconds(0.8f);
+
+        // Fade Out & Move Up
+        time = 0;
+        duration = 0.5f;
+        Vector3 startPos = textComp.transform.localPosition;
+        Color startColor = textComp.color;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = time / duration;
+
+            textComp.color = new Color(startColor.r, startColor.g, startColor.b, 1f - t);
+            textComp.transform.localPosition = startPos + Vector3.up * (100f * t);
+            yield return null;
+        }
+
+        textComp.gameObject.SetActive(false);
+        textComp.transform.localPosition = Vector3.zero; // Reset pos for next time if using same object
+        // Note: If we spam combos, this single object approach might glitch (overwrite).
+        // Ideally we instantiate a new popup per combo, but for this game speed (1 combo / few sec) it's fine.
     }
 
     private void UpdateCodonRing()
@@ -208,8 +293,8 @@ public class ArcadeManager : MonoBehaviour
         if (progressText != null)
         {
             string codonRequest = "";
-            foreach(var b in currentCodon) codonRequest += b.ToString() + " ";
-            
+            foreach (var b in currentCodon) codonRequest += b.ToString() + " ";
+
             // Maybe show Health too if possible?
             string healthInfo = "";
             if (playerStats != null)
@@ -221,6 +306,11 @@ public class ArcadeManager : MonoBehaviour
         }
     }
 
+    private void HandleHealthChanged(float ratio)
+    {
+        UpdateUI();
+    }
+
     private void HandlePlayerDeath()
     {
         EndGame(false);
@@ -229,7 +319,7 @@ public class ArcadeManager : MonoBehaviour
     private void EndGame(bool win)
     {
         isGameActive = false;
-        
+
         if (enemySpawner != null) enemySpawner.StopSpawning();
 
         if (win)
@@ -246,7 +336,7 @@ public class ArcadeManager : MonoBehaviour
             Debug.Log("Game Over!");
             if (losePanel != null) losePanel.SetActive(true);
         }
-        
+
         Invoke(nameof(ReturnToBase), 3f);
     }
 
@@ -254,12 +344,13 @@ public class ArcadeManager : MonoBehaviour
     {
         SceneManager.LoadScene("BaseScene");
     }
-    
+
     private void OnDestroy()
     {
         if (playerStats != null)
         {
             playerStats.OnDeath -= HandlePlayerDeath;
+            playerStats.OnHealthChanged -= HandleHealthChanged;
         }
     }
 }
