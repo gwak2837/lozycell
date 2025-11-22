@@ -70,67 +70,45 @@ public class ArcadeManager : MonoBehaviour
 
     private void Start()
     {
-        // 리보솜 UI가 있는지 확인하고, 없으면 만들기
-        if (FindFirstObjectByType<RibosomeUI>() == null)
-        {
-            Canvas canvas = FindFirstObjectByType<Canvas>();
-            if (canvas == null)
-            {
-                GameObject cObj = new GameObject("Canvas");
-                canvas = cObj.AddComponent<Canvas>();
-                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                cObj.AddComponent<CanvasScaler>();
-                cObj.AddComponent<GraphicRaycaster>();
-            }
-            RibosomeUI.CreateDefaultUI(canvas.transform);
-        }
+        EnsureRibosomeUI();
+        InitializePlayer();
 
-        var player = FindFirstObjectByType<PlayerController>();
-        if (player != null)
-        {
-            playerTransform = player.transform;
-            playerStats = player.GetComponent<PlayerStats>();
-            if (playerStats != null)
-            {
-                playerStats.OnDeath += HandlePlayerDeath;
-                playerStats.OnHealthChanged += HandleHealthChanged;
-            }
-
-            // Try to find components if not assigned
-            if (skillController == null)
-                skillController = FindFirstObjectByType<PlayerSkillController>();
-            if (enemySpawner == null)
-                enemySpawner = FindFirstObjectByType<EnemySpawner>();
-            if (codonRing == null)
-                codonRing = player.GetComponentInChildren<CodonRingController>();
-
-            if (codonRing == null)
-            {
-                GameObject ringObj = new GameObject("CodonRing");
-                ringObj.transform.SetParent(playerTransform);
-                ringObj.transform.localPosition = Vector3.zero;
-                codonRing = ringObj.AddComponent<CodonRingController>();
-            }
-
-            // Ensure PlayerSkillController exists
-            if (skillController == null)
-            {
-                // Usually on player
-                skillController = player.GetComponent<PlayerSkillController>();
-                if (skillController == null)
-                    skillController = player.gameObject.AddComponent<PlayerSkillController>();
-            }
-
-            // Ensure EnemySpawner exists
-            if (enemySpawner == null)
-            {
-                GameObject esObj = new GameObject("EnemySpawner");
-                enemySpawner = esObj.AddComponent<EnemySpawner>();
-            }
-        }
+        if (!enemySpawner)
+            enemySpawner = FindFirstObjectByType<EnemySpawner>();
 
         UpdateUI();
         UpdateCodonRing();
+    }
+
+    private void EnsureRibosomeUI()
+    {
+        if (FindFirstObjectByType<RibosomeUI>())
+            return;
+
+        var canvas = FindFirstObjectByType<Canvas>();
+        if (!canvas)
+        {
+            var obj = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            canvas = obj.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        }
+        RibosomeUI.CreateDefaultUI(canvas.transform);
+    }
+
+    private void InitializePlayer()
+    {
+        var player = FindFirstObjectByType<PlayerController>();
+        playerTransform = player.transform;
+
+        playerStats = player.GetComponent<PlayerStats>();
+        playerStats.OnDeath += HandlePlayerDeath;
+        playerStats.OnHealthChanged += HandleHealthChanged;
+
+        if (!skillController)
+            skillController = player.GetComponent<PlayerSkillController>();
+
+        if (!codonRing)
+            codonRing = player.GetComponentInChildren<CodonRingController>();
     }
 
     private void Update()
@@ -234,10 +212,6 @@ public class ArcadeManager : MonoBehaviour
         else
         {
             Debug.LogError("SkillController is NULL! Cannot activate skill.");
-            // Retry finding it
-            skillController = FindFirstObjectByType<PlayerSkillController>();
-            if (skillController != null)
-                skillController.ActivateSkill(aminoAcidName);
         }
 
         currentSessionAminoAcids++;
