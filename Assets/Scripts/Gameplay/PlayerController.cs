@@ -30,10 +30,14 @@ public class PlayerController : MonoBehaviour
             float moveX = 0f;
             float moveY = 0f;
 
-            if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) moveY = 1f;
-            if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) moveY = -1f;
-            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) moveX = -1f;
-            if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) moveX = 1f;
+            if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed)
+                moveY = 1f;
+            if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed)
+                moveY = -1f;
+            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
+                moveX = -1f;
+            if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
+                moveX = 1f;
 
             moveInput = new Vector2(moveX, moveY).normalized;
         }
@@ -48,7 +52,7 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         // Check for GeneticBase (renamed from AminoAcid)
-        // Ideally we check the component, or tag if tag was updated. 
+        // Ideally we check the component, or tag if tag was updated.
         // The tag might still be "AminoAcid" on the prefab, so we should keep checking that or check component directly.
 
         if (other.CompareTag("AminoAcid") || other.GetComponent<GeneticBase>() != null)

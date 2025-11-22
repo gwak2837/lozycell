@@ -7,7 +7,7 @@ public static class SkillUtility
         var enemies = Object.FindObjectsOfType<EnemyController>();
         EnemyController closest = null;
         float minDist = float.MaxValue;
-        
+
         foreach (var enemy in enemies)
         {
             float dist = Vector3.Distance(fromPos, enemy.transform.position);
@@ -30,4 +30,3 @@ public static class SkillUtility
         return defaultDir;
     }
 }
-

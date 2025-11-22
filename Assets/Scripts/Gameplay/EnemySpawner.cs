@@ -5,7 +5,7 @@ public class EnemySpawner : MonoBehaviour
     public GameObject enemyPrefab;
     public float spawnInterval = 2f;
     public float spawnRadius = 12f; // Slightly outside camera usually
-    
+
     private Transform playerTransform;
     private float timer;
     private bool isSpawning = true;
@@ -22,7 +22,8 @@ public class EnemySpawner : MonoBehaviour
 
     private void Update()
     {
-        if (!isSpawning || playerTransform == null) return;
+        if (!isSpawning || playerTransform == null)
+            return;
 
         timer += Time.deltaTime;
         if (timer >= spawnInterval)
@@ -34,7 +35,8 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        if (enemyPrefab == null) return;
+        if (enemyPrefab == null)
+            return;
 
         Vector2 randomDir = Random.insideUnitCircle.normalized;
         Vector3 spawnPos = playerTransform.position + (Vector3)(randomDir * spawnRadius);
@@ -52,4 +54,3 @@ public class EnemySpawner : MonoBehaviour
         isSpawning = false;
     }
 }
-

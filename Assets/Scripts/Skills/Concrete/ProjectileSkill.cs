@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 [CreateAssetMenu(menuName = "Skills/Projectile Skill")]
 public class ProjectileSkill : SkillStrategy
@@ -12,7 +12,7 @@ public class ProjectileSkill : SkillStrategy
     public Color color = Color.white;
     public float knockback = 0f;
     public bool isHoming = false;
-    
+
     [Header("Pattern Settings")]
     public int projectileCount = 1;
     public float spreadAngle = 0f;
@@ -35,21 +35,41 @@ public class ProjectileSkill : SkillStrategy
         Vector3 startPos = controller.transform.position;
         Vector3 targetDir = SkillUtility.GetClosestEnemyDir(startPos, controller.transform.up);
         Transform targetTransform = isHoming ? SkillUtility.GetClosestEnemy(startPos)?.transform : null;
-        
+
         if (projectileCount == 1)
         {
-            ProjectileSystem.Instance.Spawn(startPos, targetDir, damage, speed, lifetime, color, scale, knockback, targetTransform);
+            ProjectileSystem.Instance.Spawn(
+                startPos,
+                targetDir,
+                damage,
+                speed,
+                lifetime,
+                color,
+                scale,
+                knockback,
+                targetTransform
+            );
         }
         else
         {
             float startAngle = -spreadAngle / 2f;
             float angleStep = spreadAngle / (projectileCount - 1);
-            
+
             for (int i = 0; i < projectileCount; i++)
             {
                 float currentAngle = startAngle + (angleStep * i);
                 Vector3 dir = Quaternion.Euler(0, 0, currentAngle) * targetDir;
-                ProjectileSystem.Instance.Spawn(startPos, dir, damage, speed, lifetime, color, scale, knockback, targetTransform);
+                ProjectileSystem.Instance.Spawn(
+                    startPos,
+                    dir,
+                    damage,
+                    speed,
+                    lifetime,
+                    color,
+                    scale,
+                    knockback,
+                    targetTransform
+                );
             }
         }
     }
@@ -60,16 +80,26 @@ public class ProjectileSkill : SkillStrategy
         {
             Vector3 startPos = controller.transform.position;
             Vector3 targetDir = SkillUtility.GetClosestEnemyDir(startPos, controller.transform.up);
-            
+
             if (spreadAngle > 0)
             {
                 float randomAngle = Random.Range(-spreadAngle, spreadAngle);
                 targetDir = Quaternion.Euler(0, 0, randomAngle) * targetDir;
             }
-            
+
             Transform targetTransform = isHoming ? SkillUtility.GetClosestEnemy(startPos)?.transform : null;
-            ProjectileSystem.Instance.Spawn(startPos, targetDir, damage, speed, lifetime, color, scale, knockback, targetTransform);
-            
+            ProjectileSystem.Instance.Spawn(
+                startPos,
+                targetDir,
+                damage,
+                speed,
+                lifetime,
+                color,
+                scale,
+                knockback,
+                targetTransform
+            );
+
             yield return new WaitForSeconds(delayBetweenShots);
         }
     }

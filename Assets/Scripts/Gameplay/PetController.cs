@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class PetController : MonoBehaviour
 {
@@ -7,7 +7,7 @@ public class PetController : MonoBehaviour
     private float duration;
     private float shootInterval = 1f;
     private float damage = 10f;
-    
+
     // Manager removed, using Singleton
     public void Initialize(PlayerController owner, float dur)
     {
@@ -39,7 +39,7 @@ public class PetController : MonoBehaviour
 
             yield return null;
         }
-        
+
         Destroy(gameObject);
     }
 }

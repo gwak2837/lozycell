@@ -2,9 +2,12 @@ using UnityEngine;
 
 public class InfiniteBackground : MonoBehaviour
 {
-    [SerializeField] private Transform targetToFollow;
-    [SerializeField] private Vector2 parallaxMultiplier = new Vector2(0.1f, 0.1f);
-    
+    [SerializeField]
+    private Transform targetToFollow;
+
+    [SerializeField]
+    private Vector2 parallaxMultiplier = new Vector2(0.1f, 0.1f);
+
     private MeshRenderer meshRenderer;
     private Material material;
     private Vector2 startOffset;
@@ -33,13 +36,14 @@ public class InfiniteBackground : MonoBehaviour
 
     private void Update()
     {
-        if (targetToFollow == null || material == null) return;
+        if (targetToFollow == null || material == null)
+            return;
 
         // Move the texture offset based on the target's position
         // The divisor determines how fast the texture scrolls relative to movement units
         // A value of 0.1 means 1 unit of movement = 0.1 units of texture offset
         Vector2 offset = new Vector2(
-            targetToFollow.position.x * parallaxMultiplier.x, 
+            targetToFollow.position.x * parallaxMultiplier.x,
             targetToFollow.position.y * parallaxMultiplier.y
         );
 
@@ -50,4 +54,3 @@ public class InfiniteBackground : MonoBehaviour
         transform.position = new Vector3(targetToFollow.position.x, targetToFollow.position.y, transform.position.z);
     }
 }
-

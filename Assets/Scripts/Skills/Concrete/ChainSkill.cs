@@ -1,11 +1,15 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 [CreateAssetMenu(menuName = "Skills/Chain Skill")]
 public class ChainSkill : SkillStrategy
 {
-    public enum ChainType { Lightning, LaserLink }
+    public enum ChainType
+    {
+        Lightning,
+        LaserLink,
+    }
 
     [Header("Chain Settings")]
     public ChainType chainType;
@@ -20,11 +24,15 @@ public class ChainSkill : SkillStrategy
     public override void Activate(PlayerSkillController controller)
     {
         Vector3 startPos = controller.transform.position;
-        
+
         // Get enemies logic - could move to Utility if reused often
         List<EnemyController> enemies = new List<EnemyController>(FindObjectsOfType<EnemyController>());
-        enemies.Sort((a, b) => Vector3.Distance(startPos, a.transform.position)
-            .CompareTo(Vector3.Distance(startPos, b.transform.position)));
+        enemies.Sort(
+            (a, b) =>
+                Vector3
+                    .Distance(startPos, a.transform.position)
+                    .CompareTo(Vector3.Distance(startPos, b.transform.position))
+        );
 
         if (chainType == ChainType.Lightning)
         {
@@ -32,9 +40,12 @@ public class ChainSkill : SkillStrategy
             for (int i = 0; i < count; i++)
             {
                 enemies[i].TakeDamage(damage);
-                
+
                 if (i > 0)
-                    SkillEffects.Instance.CreateLightningLine(enemies[i-1].transform.position, enemies[i].transform.position);
+                    SkillEffects.Instance.CreateLightningLine(
+                        enemies[i - 1].transform.position,
+                        enemies[i].transform.position
+                    );
                 else
                     SkillEffects.Instance.CreateLightningLine(startPos, enemies[i].transform.position);
             }
@@ -56,27 +67,27 @@ public class ChainSkill : SkillStrategy
     {
         float elapsed = 0;
         float lastTick = 0;
-        
+
         GameObject laserLine = SkillEffects.Instance.CreateLaserLine(e1.transform.position, e2.transform.position);
         LineRenderer lr = laserLine.GetComponent<LineRenderer>();
-        
+
         while (elapsed < linkDuration && e1 != null && e2 != null)
         {
             elapsed += Time.deltaTime;
-            
+
             lr.SetPosition(0, e1.transform.position);
             lr.SetPosition(1, e2.transform.position);
-            
+
             if (elapsed - lastTick > tickRate)
             {
                 lastTick = elapsed;
                 e1.TakeDamage(damage);
                 e2.TakeDamage(damage);
             }
-            
+
             yield return null;
         }
-        
+
         Destroy(laserLine);
     }
 
@@ -84,26 +95,29 @@ public class ChainSkill : SkillStrategy
     {
         float elapsed = 0;
         float lastTick = 0;
-        
-        GameObject laserLine = SkillEffects.Instance.CreateLaserLine(controller.transform.position, enemy.transform.position);
+
+        GameObject laserLine = SkillEffects.Instance.CreateLaserLine(
+            controller.transform.position,
+            enemy.transform.position
+        );
         LineRenderer lr = laserLine.GetComponent<LineRenderer>();
-        
+
         while (elapsed < linkDuration && enemy != null && controller != null)
         {
             elapsed += Time.deltaTime;
-            
+
             lr.SetPosition(0, controller.transform.position);
             lr.SetPosition(1, enemy.transform.position);
-            
+
             if (elapsed - lastTick > tickRate)
             {
                 lastTick = elapsed;
                 enemy.TakeDamage(damage);
             }
-            
+
             yield return null;
         }
-        
+
         Destroy(laserLine);
     }
 }

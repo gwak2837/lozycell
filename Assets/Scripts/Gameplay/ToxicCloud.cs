@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class ToxicCloud : MonoBehaviour
 {
@@ -12,7 +12,7 @@ public class ToxicCloud : MonoBehaviour
         damagePerSecond = damage;
         duration = durationTime;
         radius = areaRadius;
-        
+
         // Apply size immediately
         transform.localScale = Vector3.one * radius;
         Destroy(gameObject, duration);
@@ -43,7 +43,7 @@ public class ToxicCloud : MonoBehaviour
     {
         // Ignore player interaction for now, or allow it to pass through freely.
         // The player shouldn't destroy it or be hurt by it.
-        
+
         EnemyController enemy = other.GetComponent<EnemyController>();
         if (enemy != null)
         {
@@ -51,4 +51,3 @@ public class ToxicCloud : MonoBehaviour
         }
     }
 }
-

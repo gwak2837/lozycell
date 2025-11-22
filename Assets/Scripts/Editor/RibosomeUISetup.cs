@@ -1,7 +1,7 @@
-using UnityEngine;
-using UnityEditor;
-using UnityEngine.UI;
 using TMPro;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class RibosomeUISetup : EditorWindow
 {
@@ -35,7 +35,7 @@ public class RibosomeUISetup : EditorWindow
         panelRect.pivot = new Vector2(0.5f, 0f);
         panelRect.anchoredPosition = new Vector2(0, 50); // 바닥에서 약간 위
         panelRect.sizeDelta = new Vector2(350, 120);
-        
+
         // 배경 (반투명 검정)
         Image panelImg = panelObj.AddComponent<Image>();
         panelImg.color = new Color(0, 0, 0, 0.7f);
@@ -58,14 +58,14 @@ public class RibosomeUISetup : EditorWindow
         {
             GameObject slotObj = new GameObject($"Slot_{i}");
             slotObj.transform.SetParent(panelObj.transform, false);
-            
+
             Image img = slotObj.AddComponent<Image>();
             img.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd"); // 기본 원형 스프라이트
             img.color = new Color(0.2f, 0.2f, 0.2f, 0.5f); // 초기 색상
 
             RectTransform rt = slotObj.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(90, 90);
-            
+
             uiScript.slotImages[i] = img;
 
             // 텍스트 (A, U, G, C)
@@ -74,14 +74,14 @@ public class RibosomeUISetup : EditorWindow
             RectTransform textRt = textObj.AddComponent<RectTransform>();
             textRt.anchoredPosition = Vector2.zero;
             textRt.sizeDelta = new Vector2(90, 90);
-            
+
             TextMeshProUGUI tmp = textObj.AddComponent<TextMeshProUGUI>();
             tmp.text = "";
             tmp.fontSize = 45;
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.fontStyle = FontStyles.Bold;
             tmp.color = Color.white;
-            
+
             uiScript.slotTexts[i] = tmp;
         }
 
@@ -89,4 +89,3 @@ public class RibosomeUISetup : EditorWindow
         Selection.activeGameObject = panelObj;
     }
 }
-

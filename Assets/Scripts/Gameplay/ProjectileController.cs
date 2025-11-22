@@ -8,12 +8,19 @@ public class ProjectileController : MonoBehaviour
     public float lifetime = 2f;
     public float knockbackForce = 0f;
     public bool isHoming = false;
-    
+
     private Transform target;
     private Vector3 direction;
     private bool isInitialized = false;
 
-    public void Initialize(Vector3 dir, float dmg, float spd, float life, float knockback = 0f, Transform homingTarget = null)
+    public void Initialize(
+        Vector3 dir,
+        float dmg,
+        float spd,
+        float life,
+        float knockback = 0f,
+        Transform homingTarget = null
+    )
     {
         direction = dir.normalized;
         damage = dmg;
@@ -23,16 +30,17 @@ public class ProjectileController : MonoBehaviour
         target = homingTarget;
         isHoming = (target != null);
         isInitialized = true;
-        
+
         Destroy(gameObject, lifetime);
-        
+
         // Align rotation to direction
         RotateToDirection();
     }
 
     private void Update()
     {
-        if (!isInitialized) return;
+        if (!isInitialized)
+            return;
 
         if (isHoming && target != null)
         {
@@ -41,7 +49,7 @@ public class ProjectileController : MonoBehaviour
             direction = Vector3.Lerp(direction, targetDir, Time.deltaTime * 5f).normalized;
             RotateToDirection();
         }
-        
+
         transform.position += direction * speed * Time.deltaTime;
     }
 
@@ -64,9 +72,8 @@ public class ProjectileController : MonoBehaviour
             {
                 enemy.ApplyKnockback(direction, knockbackForce);
             }
-            Destroy(gameObject); 
+            Destroy(gameObject);
         }
         // Could also add wall collision check here
     }
 }
-

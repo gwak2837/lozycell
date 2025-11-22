@@ -1,5 +1,5 @@
-using UnityEngine;
 using System;
+using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
@@ -68,18 +68,19 @@ public class PlayerStats : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        if (isInvulnerable) return;
+        if (isInvulnerable)
+            return;
 
         if (isShielded)
         {
-            // Shield absorbs damage (maybe one hit or all damage for duration? 
-            // PRD says "ignores next damage" for Glycine usually, but "Speed + Shield (Gly - GGG)" 
+            // Shield absorbs damage (maybe one hit or all damage for duration?
+            // PRD says "ignores next damage" for Glycine usually, but "Speed + Shield (Gly - GGG)"
             // says "ignores next damage" in plan. Let's stick to that or duration.)
-            // The plan says "ignores next damage". The code above does duration. 
-            // Let's make it duration based for "Shield" usually implies duration or hit count. 
-            // Plan: "Speed + Shield ... ignores next damage". 
+            // The plan says "ignores next damage". The code above does duration.
+            // Let's make it duration based for "Shield" usually implies duration or hit count.
+            // Plan: "Speed + Shield ... ignores next damage".
             // I will implement "consume shield on hit" logic.
-            
+
             isShielded = false; // Consume shield
             return;
         }
@@ -106,4 +107,3 @@ public class PlayerStats : MonoBehaviour
         gameObject.SetActive(false);
     }
 }
-

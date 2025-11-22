@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Mitochondria Upgraded! Level: {MitochondriaLevel}, Attack: {TCellAttackPower}");
             return true;
         }
-        
+
         Debug.Log("Not enough Amino Acids!");
         return false;
     }
@@ -63,4 +63,3 @@ public class GameManager : MonoBehaviour
         MitochondriaLevel = PlayerPrefs.GetInt("MitochondriaLevel", 1);
     }
 }
-

@@ -1,7 +1,7 @@
-using UnityEngine;
-using UnityEditor;
-using TMPro;
 using System.IO;
+using TMPro;
+using UnityEditor;
+using UnityEngine;
 
 public class ArcadeModeSetup : EditorWindow
 {
@@ -31,12 +31,13 @@ public class ArcadeModeSetup : EditorWindow
     {
         string path = "Assets/Prefabs/VirusEnemy.prefab";
         GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-        if (existing != null) return existing;
+        if (existing != null)
+            return existing;
 
         GameObject go = new GameObject("VirusEnemy");
         var sr = go.AddComponent<SpriteRenderer>();
         sr.color = Color.red;
-        
+
         // Assign a basic sprite (Knob or UISprite) so it's visible
         // Use built-in "Knob" if available or create a texture
         Texture2D texture = new Texture2D(32, 32);
@@ -48,35 +49,36 @@ public class ArcadeModeSetup : EditorWindow
             }
         }
         texture.Apply();
-        
+
         // We can't save procedural texture into prefab easily without saving asset.
         // Better approach: try to load a standard sprite.
         Sprite knob = Resources.Load<Sprite>("Knob"); // Common Unity sprite
         if (knob == null)
         {
-             // Fallback: Try to find ANY sprite or just leave it for user
-             // Let's use the same sprite as AminoAcid if possible?
-             // Or just create a primitive Quad?
-             // SpriteRenderer needs a Sprite.
-             // Let's use the "BackgroundSolid" texture or similar if in project?
+            // Fallback: Try to find ANY sprite or just leave it for user
+            // Let's use the same sprite as AminoAcid if possible?
+            // Or just create a primitive Quad?
+            // SpriteRenderer needs a Sprite.
+            // Let's use the "BackgroundSolid" texture or similar if in project?
         }
-        
+
         // Actually, let's just use a primitive Quad for now if no sprite, or create a placeholder sprite asset
         // But to keep it simple in code:
-        // We will assume the user has some sprite or we assign 'null' but set color. 
+        // We will assume the user has some sprite or we assign 'null' but set color.
         // Issue: Null sprite = invisible even with color.
-        
+
         // Fix: Load the "SolidBgTexture.png" from the file list if appropriate? No that's BG.
         // Let's check AminoAcid prefab sprite.
-        
+
         string aminoPath = "Assets/AminoAcid.prefab";
         GameObject amino = AssetDatabase.LoadAssetAtPath<GameObject>(aminoPath);
         if (amino != null)
         {
             var aminoSr = amino.GetComponent<SpriteRenderer>();
-            if (aminoSr != null) sr.sprite = aminoSr.sprite;
+            if (aminoSr != null)
+                sr.sprite = aminoSr.sprite;
         }
-        
+
         var rb = go.AddComponent<Rigidbody2D>();
         rb.gravityScale = 0;
         rb.freezeRotation = true;
@@ -96,19 +98,21 @@ public class ArcadeModeSetup : EditorWindow
     {
         string path = "Assets/Prefabs/ToxicCloud.prefab";
         GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-        if (existing != null) return existing;
+        if (existing != null)
+            return existing;
 
         GameObject go = new GameObject("ToxicCloud");
         var sr = go.AddComponent<SpriteRenderer>();
         sr.color = new Color(0.5f, 0f, 0.5f, 0.4f); // Transparent Purple
-        
+
         // Assign sprite similarly
         string aminoPath = "Assets/AminoAcid.prefab";
         GameObject amino = AssetDatabase.LoadAssetAtPath<GameObject>(aminoPath);
         if (amino != null)
         {
             var aminoSr = amino.GetComponent<SpriteRenderer>();
-            if (aminoSr != null) sr.sprite = aminoSr.sprite;
+            if (aminoSr != null)
+                sr.sprite = aminoSr.sprite;
         }
 
         var col = go.AddComponent<CircleCollider2D>();
@@ -126,19 +130,21 @@ public class ArcadeModeSetup : EditorWindow
     {
         string path = "Assets/Prefabs/CodonSlot.prefab";
         GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-        if (existing != null) return existing;
+        if (existing != null)
+            return existing;
 
         GameObject go = new GameObject("CodonSlot");
         var sr = go.AddComponent<SpriteRenderer>();
         sr.color = Color.white;
-        
+
         // Assign sprite
         string aminoPath = "Assets/AminoAcid.prefab";
         GameObject amino = AssetDatabase.LoadAssetAtPath<GameObject>(aminoPath);
         if (amino != null)
         {
             var aminoSr = amino.GetComponent<SpriteRenderer>();
-            if (aminoSr != null) sr.sprite = aminoSr.sprite;
+            if (aminoSr != null)
+                sr.sprite = aminoSr.sprite;
         }
         go.transform.localScale = Vector3.one * 0.5f;
 
@@ -167,8 +173,9 @@ public class ArcadeModeSetup : EditorWindow
         }
 
         // 1. Setup Player
-        if (player.GetComponent<PlayerStats>() == null) player.gameObject.AddComponent<PlayerStats>();
-        
+        if (player.GetComponent<PlayerStats>() == null)
+            player.gameObject.AddComponent<PlayerStats>();
+
         CodonRingController ring = player.GetComponentInChildren<CodonRingController>();
         if (ring == null)
         {
@@ -194,14 +201,15 @@ public class ArcadeModeSetup : EditorWindow
             GameObject esObj = new GameObject("EventSystem");
             es = esObj.AddComponent<UnityEngine.EventSystems.EventSystem>();
         }
-        
+
         // Check/Add InputSystemUIInputModule
         if (es.GetComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>() == null)
         {
             // Remove old module if exists
             var oldModule = es.GetComponent<UnityEngine.EventSystems.StandaloneInputModule>();
-            if (oldModule != null) DestroyImmediate(oldModule);
-            
+            if (oldModule != null)
+                DestroyImmediate(oldModule);
+
             es.gameObject.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
         }
 
@@ -210,7 +218,8 @@ public class ArcadeModeSetup : EditorWindow
         {
             // Should be on player
             skillController = player.GetComponent<PlayerSkillController>();
-            if (skillController == null) skillController = player.gameObject.AddComponent<PlayerSkillController>();
+            if (skillController == null)
+                skillController = player.gameObject.AddComponent<PlayerSkillController>();
         }
         // skillManager.toxicCloudPrefab = cloudPrefab; // Moved to asset/strategy
 
@@ -231,8 +240,7 @@ public class ArcadeModeSetup : EditorWindow
         EditorUtility.SetDirty(arcadeManager.gameObject);
         EditorUtility.SetDirty(skillController.gameObject);
         EditorUtility.SetDirty(enemySpawner.gameObject);
-        
+
         Debug.Log("Scene configured.");
     }
 }
-

@@ -1,8 +1,8 @@
-using UnityEngine;
-using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class RibosomeUI : MonoBehaviour
 {
@@ -24,7 +24,7 @@ public class RibosomeUI : MonoBehaviour
     [Header("Dopamine Settings")]
     public float punchScaleNormal = 1.2f;
     public float punchScaleCombo = 1.5f; // 3번째 완성 시 더 커짐
-    public float shakeIntensity = 10f;   // 흔들림 강도
+    public float shakeIntensity = 10f; // 흔들림 강도
 
     private void Start()
     {
@@ -78,9 +78,12 @@ public class RibosomeUI : MonoBehaviour
 
         // Try to load a default font asset for the factory-created instance
         TMP_FontAsset defaultFont = Resources.Load<TMP_FontAsset>("Fonts/AppleSDGothicNeo SDF");
-        if (defaultFont == null) defaultFont = Resources.Load<TMP_FontAsset>("Fonts/NanumGothic SDF");
-        if (defaultFont == null) defaultFont = Resources.Load<TMP_FontAsset>("Fonts/Pretendard-Medium SDF");
-        if (defaultFont != null) ui.customFontAsset = defaultFont;
+        if (defaultFont == null)
+            defaultFont = Resources.Load<TMP_FontAsset>("Fonts/NanumGothic SDF");
+        if (defaultFont == null)
+            defaultFont = Resources.Load<TMP_FontAsset>("Fonts/Pretendard-Medium SDF");
+        if (defaultFont != null)
+            ui.customFontAsset = defaultFont;
 
         ui.slotImages = new Image[3];
         ui.slotBorders = new Image[3];
@@ -171,7 +174,8 @@ public class RibosomeUI : MonoBehaviour
             }
         }
 
-        if (currentCodon == null) currentCodon = new List<BaseType>();
+        if (currentCodon == null)
+            currentCodon = new List<BaseType>();
 
         for (int i = 0; i < slotImages.Length; i++)
         {
@@ -192,8 +196,10 @@ public class RibosomeUI : MonoBehaviour
                     slotTexts[i].text = type.ToString();
                     // Fix contrast: If Yellow(G), use Black text. Else White.
                     // Assuming G is the bright yellow one.
-                    if (type == BaseType.G) slotTexts[i].color = Color.black;
-                    else slotTexts[i].color = Color.white;
+                    if (type == BaseType.G)
+                        slotTexts[i].color = Color.black;
+                    else
+                        slotTexts[i].color = Color.white;
                 }
 
                 if (i == currentCodon.Count - 1)
@@ -262,7 +268,8 @@ public class RibosomeUI : MonoBehaviour
             // Borders OFF (Transparent)
             foreach (var border in slotBorders)
             {
-                if (border != null) border.color = new Color(1f, 1f, 1f, 0f);
+                if (border != null)
+                    border.color = new Color(1f, 1f, 1f, 0f);
             }
             yield return new WaitForSeconds(interval);
         }
@@ -272,11 +279,16 @@ public class RibosomeUI : MonoBehaviour
     {
         switch (type)
         {
-            case BaseType.A: return colorA;
-            case BaseType.U: return colorU;
-            case BaseType.G: return colorG;
-            case BaseType.C: return colorC;
-            default: return Color.white;
+            case BaseType.A:
+                return colorA;
+            case BaseType.U:
+                return colorU;
+            case BaseType.G:
+                return colorG;
+            case BaseType.C:
+                return colorC;
+            default:
+                return Color.white;
         }
     }
 }

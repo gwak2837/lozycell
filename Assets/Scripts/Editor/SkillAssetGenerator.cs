@@ -1,7 +1,7 @@
-using UnityEngine;
-using UnityEditor;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
+using UnityEngine;
 
 #if UNITY_EDITOR
 public class SkillAssetGenerator : Editor
@@ -45,14 +45,14 @@ public class SkillAssetGenerator : Editor
 
         // 5. Group E: Buffs
         CreateBuffSkill(path, "His", "Overcharge", BuffSkill.BuffType.Speed, 2f, 5f);
-        
+
         // 6. Special: Met & Stop
         CreateMetSkill(path);
         CreateStopSkill(path);
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        
+
         Debug.Log("Skills Generated in Assets/Resources/Skills.");
 
         // Auto-assign to PlayerSkillController in scene
@@ -70,7 +70,7 @@ public class SkillAssetGenerator : Editor
         }
 
         Undo.RecordObject(controller, "Auto Assign Skills");
-        
+
         controller.skillEntries = new List<PlayerSkillController.SkillEntry>();
         string[] assetGuids = AssetDatabase.FindAssets("t:SkillStrategy", new[] { path });
 
@@ -78,20 +78,20 @@ public class SkillAssetGenerator : Editor
         {
             string assetPath = AssetDatabase.GUIDToAssetPath(guid);
             SkillStrategy skill = AssetDatabase.LoadAssetAtPath<SkillStrategy>(assetPath);
-            
+
             if (skill != null)
             {
-                string fileName = Path.GetFileNameWithoutExtension(assetPath); 
+                string fileName = Path.GetFileNameWithoutExtension(assetPath);
                 string code = fileName.Replace("Skill_", "");
-                
-                if (!assetPath.Contains(".asset")) continue; 
-                if (!fileName.StartsWith("Skill_")) continue;
 
-                controller.skillEntries.Add(new PlayerSkillController.SkillEntry 
-                { 
-                    aminoAcidCode = code, 
-                    skillData = skill 
-                });
+                if (!assetPath.Contains(".asset"))
+                    continue;
+                if (!fileName.StartsWith("Skill_"))
+                    continue;
+
+                controller.skillEntries.Add(
+                    new PlayerSkillController.SkillEntry { aminoAcidCode = code, skillData = skill }
+                );
             }
         }
 
@@ -99,7 +99,18 @@ public class SkillAssetGenerator : Editor
         EditorUtility.SetDirty(controller);
     }
 
-    static void CreateProjectileSkill(string path, string code, string name, float dmg, float spd, float delay, int count, float spread, float knockback = 0f, bool homing = false)
+    static void CreateProjectileSkill(
+        string path,
+        string code,
+        string name,
+        float dmg,
+        float spd,
+        float delay,
+        int count,
+        float spread,
+        float knockback = 0f,
+        bool homing = false
+    )
     {
         ProjectileSkill skill = ScriptableObject.CreateInstance<ProjectileSkill>();
         skill.skillName = name;
@@ -111,11 +122,19 @@ public class SkillAssetGenerator : Editor
         skill.knockback = knockback;
         skill.isHoming = homing;
         skill.color = Color.white;
-        
+
         SaveAsset(skill, path, code);
     }
 
-    static void CreateAreaSkill(string path, string code, string name, AreaSkill.AreaType type, float val, float dur, Color color)
+    static void CreateAreaSkill(
+        string path,
+        string code,
+        string name,
+        AreaSkill.AreaType type,
+        float val,
+        float dur,
+        Color color
+    )
     {
         AreaSkill skill = ScriptableObject.CreateInstance<AreaSkill>();
         skill.skillName = name;
@@ -138,7 +157,14 @@ public class SkillAssetGenerator : Editor
         SaveAsset(skill, path, code);
     }
 
-    static void CreateDirectSkill(string path, string code, string name, DirectTargetSkill.EffectType type, float dmg, float dur)
+    static void CreateDirectSkill(
+        string path,
+        string code,
+        string name,
+        DirectTargetSkill.EffectType type,
+        float dmg,
+        float dur
+    )
     {
         DirectTargetSkill skill = ScriptableObject.CreateInstance<DirectTargetSkill>();
         skill.skillName = name;
@@ -167,7 +193,7 @@ public class SkillAssetGenerator : Editor
         shield.skillName = "Met Shield";
         shield.buffType = BuffSkill.BuffType.Shield;
         shield.duration = 5f;
-        
+
         SummonSkill pet = ScriptableObject.CreateInstance<SummonSkill>();
         pet.skillName = "Met Pet";
         pet.duration = 10f;
@@ -178,7 +204,7 @@ public class SkillAssetGenerator : Editor
 
         string assetPath = $"{path}/Skill_Met.asset";
         AssetDatabase.CreateAsset(met, assetPath);
-        
+
         // Add sub-assets properly
         shield.name = "Met_Shield";
         pet.name = "Met_Pet";
@@ -238,4 +264,3 @@ public class SkillAssetGenerator : Editor
     }
 }
 #endif
-

@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
@@ -27,13 +27,15 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
-        if (target == null) return;
-        if (isKnockedBack) return;
+        if (target == null)
+            return;
+        if (isKnockedBack)
+            return;
 
         // Simple chase logic
         Vector3 direction = (target.position - transform.position).normalized;
         transform.position += direction * moveSpeed * Time.deltaTime;
-        
+
         // Face target (optional)
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
@@ -46,12 +48,12 @@ public class EnemyController : MonoBehaviour
         if (playerStats != null)
         {
             playerStats.TakeDamage(damage);
-            // Destroy enemy on impact? Or bounce? 
-            // "Bio Defense" usually implies continuous contact or suicide bombing. 
+            // Destroy enemy on impact? Or bounce?
+            // "Bio Defense" usually implies continuous contact or suicide bombing.
             // Let's destroy for now to keep it clean, or push back.
             // Plan says "deals contact damage".
             // Let's destroy it to prevent immediate re-triggering and emulate "infecting".
-            Destroy(gameObject); 
+            Destroy(gameObject);
         }
     }
 
@@ -66,14 +68,16 @@ public class EnemyController : MonoBehaviour
 
     public void ApplySlow(float factor, float duration)
     {
-        if (isSlowed) return; 
+        if (isSlowed)
+            return;
 
         isSlowed = true;
         moveSpeed = originalSpeed * factor;
-        
+
         // Visual feedback
         var sr = GetComponent<SpriteRenderer>();
-        if (sr != null) sr.color = new Color(0.5f, 0.5f, 1f); // Light Blue
+        if (sr != null)
+            sr.color = new Color(0.5f, 0.5f, 1f); // Light Blue
 
         CancelInvoke(nameof(ResetSpeed));
         Invoke(nameof(ResetSpeed), duration);
@@ -81,7 +85,8 @@ public class EnemyController : MonoBehaviour
 
     public void ApplyKnockback(Vector3 direction, float force, float duration = 0.2f)
     {
-        if (isKnockedBack) return;
+        if (isKnockedBack)
+            return;
         StartCoroutine(KnockbackCoroutine(direction, force, duration));
     }
 
@@ -102,10 +107,11 @@ public class EnemyController : MonoBehaviour
     {
         isSlowed = false;
         moveSpeed = originalSpeed;
-        
+
         // Reset visual
         var sr = GetComponent<SpriteRenderer>();
-        if (sr != null) sr.color = Color.white;
+        if (sr != null)
+            sr.color = Color.white;
     }
 
     private void Die()
@@ -119,4 +125,3 @@ public class EnemyController : MonoBehaviour
         Destroy(gameObject);
     }
 }
-

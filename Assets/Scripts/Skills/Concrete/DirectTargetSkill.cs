@@ -3,7 +3,13 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Skills/Direct Target Skill")]
 public class DirectTargetSkill : SkillStrategy
 {
-    public enum EffectType { HeavyDamage, Freeze, Stun, Critical }
+    public enum EffectType
+    {
+        HeavyDamage,
+        Freeze,
+        Stun,
+        Critical,
+    }
 
     [Header("Effect Settings")]
     public EffectType effectType;
@@ -14,14 +20,16 @@ public class DirectTargetSkill : SkillStrategy
     public override void Activate(PlayerSkillController controller)
     {
         EnemyController target = SkillUtility.GetClosestEnemy(controller.transform.position);
-        if (target == null) return;
+        if (target == null)
+            return;
 
         switch (effectType)
         {
             case EffectType.HeavyDamage:
             case EffectType.Critical:
                 target.TakeDamage(damage);
-                if (effectType == EffectType.Critical && damage > 50) Debug.Log("CRITICAL HIT!");
+                if (effectType == EffectType.Critical && damage > 50)
+                    Debug.Log("CRITICAL HIT!");
                 SkillEffects.Instance.CreateLightningStrike(target.transform.position);
                 break;
 
@@ -47,6 +55,7 @@ public class DirectTargetSkill : SkillStrategy
     private System.Collections.IEnumerator RestoreColorAfter(SpriteRenderer sr, Color original, float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (sr != null) sr.color = original;
+        if (sr != null)
+            sr.color = original;
     }
 }

@@ -1,5 +1,5 @@
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 public class InfiniteMapSetupTool : EditorWindow
 {
@@ -26,8 +26,9 @@ public class InfiniteMapSetupTool : EditorWindow
         }
 
         CameraFollow follow = cam.GetComponent<CameraFollow>();
-        if (follow == null) follow = cam.gameObject.AddComponent<CameraFollow>();
-        
+        if (follow == null)
+            follow = cam.gameObject.AddComponent<CameraFollow>();
+
         follow.target = player.transform;
         Debug.Log("CameraFollow setup complete.");
 
@@ -40,7 +41,8 @@ public class InfiniteMapSetupTool : EditorWindow
         }
 
         // Remove collider as it's just visual
-        if (bg.GetComponent<Collider>()) DestroyImmediate(bg.GetComponent<Collider>());
+        if (bg.GetComponent<Collider>())
+            DestroyImmediate(bg.GetComponent<Collider>());
 
         // Setup Scale (cover screen)
         float height = 2f * cam.orthographicSize;
@@ -51,8 +53,9 @@ public class InfiniteMapSetupTool : EditorWindow
 
         // Setup InfiniteBackground Script
         InfiniteBackground infBg = bg.GetComponent<InfiniteBackground>();
-        if (infBg == null) infBg = bg.gameObject.AddComponent<InfiniteBackground>();
-        
+        if (infBg == null)
+            infBg = bg.gameObject.AddComponent<InfiniteBackground>();
+
         SerializedObject so = new SerializedObject(infBg);
         so.FindProperty("targetToFollow").objectReferenceValue = cam.transform;
         so.FindProperty("parallaxMultiplier").vector2Value = new Vector2(0.5f, 0.5f); // Adjust as needed
@@ -60,22 +63,23 @@ public class InfiniteMapSetupTool : EditorWindow
 
         // 3. Create/Assign Material
         Renderer rend = bg.GetComponent<Renderer>();
-        
+
         // Create a solid color material
         string materialPath = "Assets/Settings/BackgroundSolid.mat";
         Material mat = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
-        
+
         if (mat == null)
         {
-             // Create texture
+            // Create texture
             Texture2D tex = CreateGridTexture(); // Now returns solid color
             string texPath = "Assets/Settings/SolidBgTexture.png";
             byte[] bytes = tex.EncodeToPNG();
             System.IO.File.WriteAllBytes(texPath, bytes);
             AssetDatabase.Refresh();
-            
+
             TextureImporter importer = AssetImporter.GetAtPath(texPath) as TextureImporter;
-            if (importer != null) {
+            if (importer != null)
+            {
                 importer.wrapMode = TextureWrapMode.Repeat;
                 importer.filterMode = FilterMode.Point;
                 importer.SaveAndReimport();
@@ -84,14 +88,15 @@ public class InfiniteMapSetupTool : EditorWindow
             Texture2D savedTex = AssetDatabase.LoadAssetAtPath<Texture2D>(texPath);
 
             mat = new Material(Shader.Find("Universal Render Pipeline/2D/Sprite-Lit-Default"));
-            if (mat == null) mat = new Material(Shader.Find("Sprites/Default"));
-            
+            if (mat == null)
+                mat = new Material(Shader.Find("Sprites/Default"));
+
             mat.mainTexture = savedTex;
             AssetDatabase.CreateAsset(mat, materialPath);
         }
-        
+
         rend.material = mat;
-        
+
         // Scale texture to match world units (approx)
         // If Quad is 20x10, and we want 1 tile per unit, scale should be 20, 10.
         rend.material.mainTextureScale = new Vector2(bg.transform.localScale.x, bg.transform.localScale.y);
@@ -124,4 +129,3 @@ public class InfiniteMapSetupTool : EditorWindow
         return texture;
     }
 }
-

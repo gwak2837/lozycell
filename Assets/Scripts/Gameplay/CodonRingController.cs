@@ -1,6 +1,6 @@
-using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine;
 
 public class CodonRingController : MonoBehaviour
 {
@@ -45,10 +45,10 @@ public class CodonRingController : MonoBehaviour
                 // For now, just a white square (default sprite is usually null, so need a sprite)
                 // But we'll stick to setting Color.
             }
-            
+
             slots.Add(slot);
         }
-        
+
         UpdateSlotPositions();
         UpdateVisuals(new List<BaseType>()); // Clear visuals
     }
@@ -70,10 +70,10 @@ public class CodonRingController : MonoBehaviour
         // Since this script is on the Player, we shouldn't rotate the Player.
         // Actually, this script should probably be on a child object "CodonRing" of the Player.
         // But if it is on the Player, we should rotate the slots around.
-        
+
         // Let's assume this script is on a "RingPivot" child object, OR we handle rotation manually here.
         // If on Player, we just rotate the positions.
-        
+
         float angleStep = Time.deltaTime * rotationSpeed;
         foreach (var slot in slots)
         {
@@ -89,24 +89,28 @@ public class CodonRingController : MonoBehaviour
         {
             SpriteRenderer sr = slots[i].GetComponent<SpriteRenderer>();
             TextMeshPro text = slots[i].GetComponentInChildren<TextMeshPro>();
-            
+
             if (i < currentCodon.Count)
             {
                 // Filled slot
                 BaseType type = currentCodon[i];
                 Color c = GetColorForBase(type);
-                
-                if (sr != null) sr.color = c;
-                if (text != null) text.text = type.ToString();
-                
+
+                if (sr != null)
+                    sr.color = c;
+                if (text != null)
+                    text.text = type.ToString();
+
                 slots[i].SetActive(true);
             }
             else
             {
                 // Empty slot
-                if (sr != null) sr.color = new Color(1f, 1f, 1f, 0.3f); // Gray/Transparent
-                if (text != null) text.text = "";
-                
+                if (sr != null)
+                    sr.color = new Color(1f, 1f, 1f, 0.3f); // Gray/Transparent
+                if (text != null)
+                    text.text = "";
+
                 // Keep active to show empty slots? Yes.
                 slots[i].SetActive(true);
             }
@@ -117,12 +121,16 @@ public class CodonRingController : MonoBehaviour
     {
         switch (type)
         {
-            case BaseType.U: return new Color(1f, 0.2f, 0.2f); // Red
-            case BaseType.C: return new Color(0f, 0.5f, 1f); // Blue
-            case BaseType.A: return new Color(0.2f, 0.8f, 0.2f); // Green
-            case BaseType.G: return new Color(1f, 0.92f, 0.016f); // Yellow
-            default: return Color.white;
+            case BaseType.U:
+                return new Color(1f, 0.2f, 0.2f); // Red
+            case BaseType.C:
+                return new Color(0f, 0.5f, 1f); // Blue
+            case BaseType.A:
+                return new Color(0.2f, 0.8f, 0.2f); // Green
+            case BaseType.G:
+                return new Color(1f, 0.92f, 0.016f); // Yellow
+            default:
+                return Color.white;
         }
     }
 }
-

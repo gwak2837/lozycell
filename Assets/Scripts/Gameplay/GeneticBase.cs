@@ -1,12 +1,12 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 public enum BaseType
 {
     U,
     C,
     A,
-    G
+    G,
 }
 
 public class GeneticBase : MonoBehaviour
@@ -28,12 +28,14 @@ public class GeneticBase : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         // Try to find a text component in children if not assigned
-        if (textLabel == null) textLabel = GetComponentInChildren<TextMeshPro>();
+        if (textLabel == null)
+            textLabel = GetComponentInChildren<TextMeshPro>();
     }
 
     private void Update()
     {
-        if (manager == null) return;
+        if (manager == null)
+            return;
 
         checkTimer += Time.deltaTime;
         if (checkTimer >= checkInterval)
@@ -47,8 +49,10 @@ public class GeneticBase : MonoBehaviour
     {
         if (playerTransform == null)
         {
-            if (manager != null) playerTransform = manager.GetPlayerTransform();
-            if (playerTransform == null) return;
+            if (manager != null)
+                playerTransform = manager.GetPlayerTransform();
+            if (playerTransform == null)
+                return;
         }
 
         float distSq = (transform.position - playerTransform.position).sqrMagnitude;

@@ -1,10 +1,11 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerSkillController : MonoBehaviour
 {
     [System.Serializable]
-    public struct SkillEntry {
+    public struct SkillEntry
+    {
         public string aminoAcidCode;
         public SkillStrategy skillData;
     }
@@ -15,7 +16,7 @@ public class PlayerSkillController : MonoBehaviour
 
     // State Management
     public GameObject ActivePet { get; private set; }
-    
+
     public PlayerController Player { get; private set; }
     public PlayerStats Stats { get; private set; }
 
@@ -26,9 +27,9 @@ public class PlayerSkillController : MonoBehaviour
 
         // Build Dictionary
         skillMap = new Dictionary<string, SkillStrategy>();
-        foreach(var entry in skillEntries)
+        foreach (var entry in skillEntries)
         {
-            if(!skillMap.ContainsKey(entry.aminoAcidCode) && entry.skillData != null)
+            if (!skillMap.ContainsKey(entry.aminoAcidCode) && entry.skillData != null)
             {
                 skillMap.Add(entry.aminoAcidCode, entry.skillData);
             }
@@ -51,8 +52,8 @@ public class PlayerSkillController : MonoBehaviour
 
     public void SetActivePet(GameObject newPet)
     {
-        if (ActivePet != null) Destroy(ActivePet);
+        if (ActivePet != null)
+            Destroy(ActivePet);
         ActivePet = newPet;
     }
 }
-

@@ -1,10 +1,10 @@
-using UnityEngine;
+using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
-using UnityEngine.Rendering.Universal;
 
 public class BaseSceneSetup
 {
@@ -55,18 +55,28 @@ public class BaseSceneSetup
         manager.attackText = atkTextObj.GetComponent<TextMeshProUGUI>();
 
         // 4. Upgrade Button
-        GameObject upgradeBtnObj = CreateButton(canvasObj.transform, "UpgradeButton", "Upgrade (100 AA)", new Vector2(0, -50));
+        GameObject upgradeBtnObj = CreateButton(
+            canvasObj.transform,
+            "UpgradeButton",
+            "Upgrade (100 AA)",
+            new Vector2(0, -50)
+        );
         manager.upgradeButton = upgradeBtnObj.GetComponent<Button>();
 
         // 5. Start Button
-        GameObject startBtnObj = CreateButton(canvasObj.transform, "StartButton", "Start Arcade Mode", new Vector2(0, -150));
+        GameObject startBtnObj = CreateButton(
+            canvasObj.transform,
+            "StartButton",
+            "Start Arcade Mode",
+            new Vector2(0, -150)
+        );
         manager.startArcadeButton = startBtnObj.GetComponent<Button>();
 
         // Save Scene
         string path = "Assets/Scenes/BaseScene.unity";
         EditorSceneManager.SaveScene(scene, path);
         Debug.Log($"BaseScene saved to {path}");
-        
+
         // Add to Build Settings if not present
         AddSceneToBuildSettings(path);
     }
@@ -75,7 +85,7 @@ public class BaseSceneSetup
     {
         GameObject go = new GameObject(name);
         go.transform.SetParent(parent, false);
-        
+
         TextMeshProUGUI txt = go.AddComponent<TextMeshProUGUI>();
         txt.text = content;
         txt.fontSize = 36;
@@ -85,7 +95,7 @@ public class BaseSceneSetup
         RectTransform rt = go.GetComponent<RectTransform>();
         rt.sizeDelta = new Vector2(600, 50);
         rt.anchoredPosition = anchoredPos;
-        
+
         return go;
     }
 
@@ -94,10 +104,10 @@ public class BaseSceneSetup
         // Background
         GameObject go = new GameObject(name);
         go.transform.SetParent(parent, false);
-        
+
         Image img = go.AddComponent<Image>();
         img.color = Color.white;
-        
+
         Button btn = go.AddComponent<Button>();
         btn.targetGraphic = img;
 
@@ -108,13 +118,13 @@ public class BaseSceneSetup
         // Text
         GameObject textObj = new GameObject("Text");
         textObj.transform.SetParent(go.transform, false);
-        
+
         TextMeshProUGUI txt = textObj.AddComponent<TextMeshProUGUI>();
         txt.text = label;
         txt.fontSize = 24;
         txt.alignment = TextAlignmentOptions.Center;
         txt.color = Color.black;
-        
+
         RectTransform textRt = textObj.GetComponent<RectTransform>();
         textRt.anchorMin = Vector2.zero;
         textRt.anchorMax = Vector2.one;
@@ -123,14 +133,15 @@ public class BaseSceneSetup
 
         return go;
     }
-    
+
     private static void AddSceneToBuildSettings(string path)
     {
         foreach (var scene in EditorBuildSettings.scenes)
         {
-            if (scene.path == path) return;
+            if (scene.path == path)
+                return;
         }
-        
+
         var newScenes = new EditorBuildSettingsScene[EditorBuildSettings.scenes.Length + 1];
         System.Array.Copy(EditorBuildSettings.scenes, newScenes, EditorBuildSettings.scenes.Length);
         newScenes[newScenes.Length - 1] = new EditorBuildSettingsScene(path, true);
@@ -138,4 +149,3 @@ public class BaseSceneSetup
         Debug.Log($"Added {path} to Build Settings.");
     }
 }
-

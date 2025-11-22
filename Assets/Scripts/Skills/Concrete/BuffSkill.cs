@@ -3,7 +3,13 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Skills/Buff Skill")]
 public class BuffSkill : SkillStrategy
 {
-    public enum BuffType { Heal, Shield, Speed, Invulnerability }
+    public enum BuffType
+    {
+        Heal,
+        Shield,
+        Speed,
+        Invulnerability,
+    }
 
     [Header("Buff Settings")]
     public BuffType buffType;
@@ -14,13 +20,15 @@ public class BuffSkill : SkillStrategy
     public override void Activate(PlayerSkillController controller)
     {
         var stats = controller.Stats;
-        if (stats == null) return;
+        if (stats == null)
+            return;
 
         switch (buffType)
         {
             case BuffType.Heal:
                 float healAmount = value;
-                if (isPercentage) healAmount = stats.maxHealth * (value / 100f);
+                if (isPercentage)
+                    healAmount = stats.maxHealth * (value / 100f);
                 stats.Heal(healAmount);
                 break;
 

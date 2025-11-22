@@ -1,13 +1,13 @@
-using UnityEngine;
+using System.Collections.Generic;
+using System.IO;
+using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.InputSystem.UI;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
-using UnityEngine.InputSystem.UI;
-using System.IO;
-using System.Collections.Generic;
-using UnityEngine.Rendering.Universal;
 
 public class ProjectSetupTool : EditorWindow
 {
@@ -81,8 +81,10 @@ public class ProjectSetupTool : EditorWindow
     private static void CreateSkillAssets()
     {
         // Ensure folders exist
-        if (!Directory.Exists("Assets/Prefabs")) Directory.CreateDirectory("Assets/Prefabs");
-        if (!Directory.Exists("Assets/Prefabs/Skills")) Directory.CreateDirectory("Assets/Prefabs/Skills");
+        if (!Directory.Exists("Assets/Prefabs"))
+            Directory.CreateDirectory("Assets/Prefabs");
+        if (!Directory.Exists("Assets/Prefabs/Skills"))
+            Directory.CreateDirectory("Assets/Prefabs/Skills");
 
         // 1. Create Projectile Prefab
         GameObject projObj = new GameObject("ProjectileBase");
@@ -154,14 +156,20 @@ public class ProjectSetupTool : EditorWindow
 
     private static void AddTag(string tag)
     {
-        SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+        SerializedObject tagManager = new SerializedObject(
+            AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]
+        );
         SerializedProperty tagsProp = tagManager.FindProperty("tags");
 
         bool found = false;
         for (int i = 0; i < tagsProp.arraySize; i++)
         {
             SerializedProperty t = tagsProp.GetArrayElementAtIndex(i);
-            if (t.stringValue.Equals(tag)) { found = true; break; }
+            if (t.stringValue.Equals(tag))
+            {
+                found = true;
+                break;
+            }
         }
 
         if (!found)
