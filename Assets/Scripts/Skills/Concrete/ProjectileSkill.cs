@@ -16,7 +16,7 @@ public class ProjectileSkill : SkillStrategy
     public bool isBoomerang = false;
     public float knockback = 0f;
 
-    public override void Activate(PlayerSkillController controller)
+    public override void Activate(PlayerSkillController controller, Color skillColor = default)
     {
         if (projectilePrefab == null)
             return;
@@ -63,6 +63,11 @@ public class ProjectileSkill : SkillStrategy
             if (pc != null)
             {
                 pc.Initialize(finalDir, damage, speed, lifetime, knockback, target, isBoomerang, controller.transform);
+
+                if (skillColor.a > 0)
+                {
+                    pc.SetColor(skillColor);
+                }
             }
         }
     }

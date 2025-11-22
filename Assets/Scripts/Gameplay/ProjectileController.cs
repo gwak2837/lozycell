@@ -19,6 +19,23 @@ public class ProjectileController : MonoBehaviour
     private float distanceTraveled = 0f;
     private bool returning = false;
 
+    public void SetColor(Color color)
+    {
+        var sr = GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.color = color;
+        }
+        
+        // If there's a TrailRenderer, tint it too
+        var tr = GetComponent<TrailRenderer>();
+        if (tr != null)
+        {
+            tr.startColor = color;
+            tr.endColor = new Color(color.r, color.g, color.b, 0f);
+        }
+    }
+
     public void Initialize(
         Vector3 dir,
         float dmg,

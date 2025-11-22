@@ -10,7 +10,7 @@ public class ChainSkill : SkillStrategy
     public GameObject linkPrefab; // Visual Line
     public float linkDuration = 0.5f;
 
-    public override void Activate(PlayerSkillController controller)
+    public override void Activate(PlayerSkillController controller, Color skillColor = default)
     {
         Vector3 currentPos = controller.transform.position;
         List<EnemyController> hitEnemies = new List<EnemyController>();
@@ -36,7 +36,7 @@ public class ChainSkill : SkillStrategy
             // Visual Link
             if (linkPrefab != null)
             {
-                SpawnLink(currentPos, currentTarget.transform.position);
+                SpawnLink(currentPos, currentTarget.transform.position, skillColor);
             }
 
             // Next Step
@@ -66,7 +66,7 @@ public class ChainSkill : SkillStrategy
         return nearest;
     }
 
-    private void SpawnLink(Vector3 start, Vector3 end)
+    private void SpawnLink(Vector3 start, Vector3 end, Color color)
     {
         GameObject link = Instantiate(linkPrefab, start, Quaternion.identity);
         LineRenderer lr = link.GetComponent<LineRenderer>();
@@ -75,6 +75,14 @@ public class ChainSkill : SkillStrategy
             lr.positionCount = 2;
             lr.SetPosition(0, start);
             lr.SetPosition(1, end);
+
+            if (color.a > 0)
+            {
+                lr.startColor = color;
+                lr.endColor = new Color(color.r, color.g, color.b, 0f); // Fade out? Or same color
+                // Let's make it fade out or same color.
+                // Usually lightning effects fade.
+            }
         }
         // If no LineRenderer, maybe it stretches?
         // Assuming LineRenderer for now.

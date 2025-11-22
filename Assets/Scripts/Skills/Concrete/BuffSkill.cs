@@ -16,7 +16,7 @@ public class BuffSkill : SkillStrategy
     public float amount; // For speed/attack multiplier, or heal amount
     public float duration;
 
-    public override void Activate(PlayerSkillController controller)
+    public override void Activate(PlayerSkillController controller, Color skillColor = default)
     {
         if (controller.Stats == null)
             return;

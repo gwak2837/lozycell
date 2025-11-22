@@ -6,7 +6,7 @@ public class SummonSkill : SkillStrategy
     public GameObject petPrefab;
     public float duration = 10f;
 
-    public override void Activate(PlayerSkillController controller)
+    public override void Activate(PlayerSkillController controller, Color skillColor = default)
     {
         if (petPrefab == null)
             return;
@@ -17,6 +17,10 @@ public class SummonSkill : SkillStrategy
         if (pc != null)
         {
             pc.Initialize(controller.transform, duration);
+            if (skillColor.a > 0)
+            {
+                pc.SetColor(skillColor);
+            }
         }
         else
         {

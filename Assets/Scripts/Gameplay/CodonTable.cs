@@ -124,7 +124,7 @@ public static class CodonTable
         return codonMap[key];
     }
 
-    private static AminoAcidData GetAminoAcidData(string shortName)
+    public static AminoAcidData GetAminoAcidData(string shortName)
     {
         return aminoAcidData[shortName];
     }

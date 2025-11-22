@@ -10,12 +10,23 @@ public class PetController : MonoBehaviour
 
     private Transform player;
     private float duration;
+    private Color petColor = Color.white;
 
     public void Initialize(Transform owner, float dur)
     {
         player = owner;
         duration = dur;
         StartCoroutine(BehaviorRoutine());
+    }
+
+    public void SetColor(Color color)
+    {
+        petColor = color;
+        var sr = GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.color = color;
+        }
     }
 
     private IEnumerator BehaviorRoutine()
@@ -62,7 +73,8 @@ public class PetController : MonoBehaviour
         else
         {
             // Random or Player direction
-            dir = (player.position - transform.position).normalized;
+            if (player != null)
+                dir = (player.position - transform.position).normalized;
             // Actually if no enemy, shoot direction of player movement? Or random.
             // Let's shoot Right by default.
         }
@@ -72,6 +84,7 @@ public class PetController : MonoBehaviour
         if (pc != null)
         {
             pc.Initialize(dir, damage, 12f, 2f, 0f, target, false, transform);
+            pc.SetColor(petColor); // Pass pet color to projectile
         }
     }
 }

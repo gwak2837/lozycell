@@ -42,7 +42,11 @@ public class PlayerSkillController : MonoBehaviour
         if (skillMap.TryGetValue(aminoAcid, out SkillStrategy skill))
         {
             Debug.Log($"Activating Skill: {skill.skillName}");
-            skill.Activate(this);
+            
+            // Get Color
+            Color c = CodonTable.GetAminoAcidData(aminoAcid).Color;
+            
+            skill.Activate(this, c);
         }
         else
         {

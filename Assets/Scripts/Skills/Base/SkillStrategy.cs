@@ -10,5 +10,5 @@ public abstract class SkillStrategy : ScriptableObject
     public float cooldown;
     public Sprite icon;
 
-    public abstract void Activate(PlayerSkillController controller);
+    public abstract void Activate(PlayerSkillController controller, Color skillColor = default);
 }

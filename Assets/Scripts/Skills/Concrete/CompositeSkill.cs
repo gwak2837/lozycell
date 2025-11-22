@@ -6,7 +6,7 @@ public class CompositeSkill : SkillStrategy
 {
     public List<SkillStrategy> subSkills;
 
-    public override void Activate(PlayerSkillController controller)
+    public override void Activate(PlayerSkillController controller, Color skillColor = default)
     {
         if (subSkills == null)
             return;
@@ -15,7 +15,7 @@ public class CompositeSkill : SkillStrategy
         {
             if (skill != null)
             {
-                skill.Activate(controller);
+                skill.Activate(controller, skillColor);
             }
         }
     }

@@ -17,7 +17,7 @@ public class GlobalEffectSkill : SkillStrategy
     public float value; // Damage amount, Slow factor, or DPS
     public float duration; // For status
 
-    public override void Activate(PlayerSkillController controller)
+    public override void Activate(PlayerSkillController controller, Color skillColor = default)
     {
         List<EnemyController> enemies = SkillUtility.GetAllEnemies();
 
