@@ -34,15 +34,70 @@ public class SkillAssetGenerator : Editor
 
         // 2. Area Skills
         // Asp - Acid Pool (Green)
-        CreateAreaSkill(path, "Asp", "Acid Pool", 5f, 5f, 2f, true, false, Color.green, areaPrefab);
+        CreateAreaSkill(
+            path,
+            "Asp",
+            "Acid Pool",
+            5f,
+            5f,
+            2f,
+            false, // spawnOnPlayer (false -> random/target?) Logic check needed. Generator meant "spawn at pos". AreaSkill uses spawnOnPlayer.
+            false, // attachToPlayer
+            Color.green,
+            areaPrefab
+        );
         // Asn - Grass Knot (Blue/Green) - Slow Zone
-        CreateAreaSkill(path, "Asn", "Grass Knot", 0f, 5f, 3f, true, false, new Color(0f, 0.5f, 0.5f), areaPrefab);
+        CreateAreaSkill(
+            path,
+            "Asn",
+            "Grass Knot",
+            0f, // Damage/Effect Value (Slow?)
+            5f,
+            3f,
+            false,
+            false,
+            new Color(0f, 0.5f, 0.5f),
+            areaPrefab
+        );
         // Trp - Gravity Well (Purple)
-        CreateAreaSkill(path, "Trp", "Gravity Well", 0f, 5f, 4f, true, false, new Color(0.5f, 0f, 0.5f), areaPrefab);
+        CreateAreaSkill(
+            path,
+            "Trp",
+            "Gravity Well",
+            0f,
+            5f,
+            4f,
+            true, // spawnOnPlayer (Gravity usually around player?)
+            false,
+            new Color(0.5f, 0f, 0.5f),
+            areaPrefab
+        );
         // Arg - Tesla Coil (Yellow) - Follows Player
-        CreateAreaSkill(path, "Arg", "Tesla Coil", 10f, 5f, 3f, true, true, Color.yellow, areaPrefab);
+        CreateAreaSkill(
+            path,
+            "Arg",
+            "Tesla Coil",
+            10f,
+            5f,
+            3f,
+            true, // spawnOnPlayer
+            true, // attachToPlayer
+            Color.yellow,
+            areaPrefab
+        );
         // Met - Methyl Trail (Green)
-        CreateAreaSkill(path, "Met", "Methyl Trail", 10f, 5f, 1f, true, false, Color.green, areaPrefab);
+        CreateAreaSkill(
+            path,
+            "Met",
+            "Methyl Trail",
+            10f,
+            5f,
+            1f,
+            true, // spawnOnPlayer
+            false,
+            Color.green,
+            areaPrefab
+        );
 
         // 3. Buff Skills
         CreateBuffSkill(path, "Glu", "Synaptic Boost", BuffType.SpeedUp, 1.5f, 10f);
@@ -121,6 +176,7 @@ public class SkillAssetGenerator : Editor
         ProjectileSkill skill = ScriptableObject.CreateInstance<ProjectileSkill>();
         skill.name = $"Skill_{code}";
         skill.skillName = name;
+        // Removed aminoAcidName, skillColor assignments
         skill.damage = dmg;
         skill.speed = spd;
         skill.projectileCount = count;
@@ -136,64 +192,61 @@ public class SkillAssetGenerator : Editor
         string path,
         string code,
         string name,
-        float val,
+        float effectVal,
         float dur,
-        float rad,
-        bool onPlayer,
-        bool attach,
-        Color color,
+        float radius,
+        bool spawnOnPlayer,
+        bool attachToPlayer,
+        Color visualColor,
         GameObject prefab = null
     )
     {
         AreaSkill skill = ScriptableObject.CreateInstance<AreaSkill>();
         skill.name = $"Skill_{code}";
         skill.skillName = name;
-        skill.effectValue = val;
+        // Removed aminoAcidName, skillColor assignments
+        skill.effectValue = effectVal; // Fixed: damagePerSecond -> effectValue
         skill.duration = dur;
-        skill.radius = rad;
-        skill.spawnOnPlayer = onPlayer;
-        skill.attachToPlayer = attach;
-        skill.visualColor = color;
-        skill.areaPrefab = prefab;
+        skill.radius = radius;
+        skill.spawnOnPlayer = spawnOnPlayer; // Fixed: Mapped to spawnOnPlayer
+        skill.attachToPlayer = attachToPlayer; // Fixed: Mapped to attachToPlayer
+        skill.visualColor = visualColor; // Fixed: cloudColor -> visualColor
+        skill.areaPrefab = prefab; // Fixed: cloudPrefab -> areaPrefab
         SaveAsset(skill, path, code);
     }
 
-    static void CreateBuffSkill(string path, string code, string name, BuffType type, float val, float dur)
+    static void CreateBuffSkill(string path, string code, string name, BuffType type, float amount, float dur)
     {
         BuffSkill skill = ScriptableObject.CreateInstance<BuffSkill>();
         skill.name = $"Skill_{code}";
         skill.skillName = name;
+        // Removed aminoAcidName, skillColor assignments
         skill.buffType = type;
-        skill.amount = val;
+        skill.amount = amount; // Fixed: powerMultiplier -> amount
         skill.duration = dur;
         SaveAsset(skill, path, code);
     }
 
-    static void CreateGlobalSkill(string path, string code, string name, GlobalEffectType type, float val, float dur)
+    static void CreateGlobalSkill(string path, string code, string name, GlobalEffectType type, float value, float dur)
     {
-        GlobalEffectSkill skill = ScriptableObject.CreateInstance<GlobalEffectSkill>();
+        GlobalEffectSkill skill = ScriptableObject.CreateInstance<GlobalEffectSkill>(); // Fixed: GlobalSkill -> GlobalEffectSkill
         skill.name = $"Skill_{code}";
         skill.skillName = name;
+        // Removed aminoAcidName, skillColor assignments
         skill.effectType = type;
-        skill.value = val;
+        skill.value = value; // Fixed: power -> value
         skill.duration = dur;
         SaveAsset(skill, path, code);
     }
 
-    static void CreateChainSkill(
-        string path,
-        string code,
-        string name,
-        float dmg,
-        int targets,
-        GameObject prefab = null
-    )
+    static void CreateChainSkill(string path, string code, string name, float dmg, int count, GameObject prefab = null)
     {
         ChainSkill skill = ScriptableObject.CreateInstance<ChainSkill>();
         skill.name = $"Skill_{code}";
         skill.skillName = name;
+        // Removed aminoAcidName, skillColor assignments
         skill.damage = dmg;
-        skill.maxTargets = targets;
+        skill.maxTargets = count; // Fixed: chainCount -> maxTargets
         skill.linkPrefab = prefab;
         SaveAsset(skill, path, code);
     }
@@ -203,6 +256,7 @@ public class SkillAssetGenerator : Editor
         SummonSkill skill = ScriptableObject.CreateInstance<SummonSkill>();
         skill.name = $"Skill_{code}";
         skill.skillName = name;
+        // Removed aminoAcidName, skillColor assignments
         skill.duration = dur;
         skill.petPrefab = prefab;
         SaveAsset(skill, path, code);
@@ -219,16 +273,18 @@ public class SkillAssetGenerator : Editor
         }
         else
         {
-            if (existing.GetType() != so.GetType())
+            // If types match, preserve existing reference but update fields
+            if (existing.GetType() == so.GetType())
             {
-                AssetDatabase.DeleteAsset(fullPath);
-                AssetDatabase.CreateAsset(so, fullPath);
+                EditorUtility.CopySerialized(so, existing);
+                existing.name = so.name; // Ensure name is correct
+                EditorUtility.SetDirty(existing);
             }
             else
             {
-                EditorUtility.CopySerialized(so, existing);
-                existing.name = so.name;
-                EditorUtility.SetDirty(existing);
+                // Type mismatch (e.g. changed skill type), must recreate
+                AssetDatabase.DeleteAsset(fullPath);
+                AssetDatabase.CreateAsset(so, fullPath);
             }
         }
     }

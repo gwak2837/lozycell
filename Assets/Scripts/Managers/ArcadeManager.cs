@@ -198,7 +198,12 @@ public class ArcadeManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        AminoAcidData data = CodonTable.GetCodonData(currentCodon[0], currentCodon[1], currentCodon[2]);
+        // 1. 코돈 -> 아미노산 이름 변환 (CodonTable)
+        string aminoAcidShortName = CodonTable.GetAminoAcid(currentCodon[0], currentCodon[1], currentCodon[2]);
+
+        // 2. 아미노산 이름 -> 데이터 변환 (AminoAcidDefinitions)
+        AminoAcidData data = AminoAcidDefinitions.GetData(aminoAcidShortName);
+
         Debug.Log($"formed {data.ShortName} from {currentCodon[0]}{currentCodon[1]}{currentCodon[2]}");
 
         ShowComboVisuals(data);
