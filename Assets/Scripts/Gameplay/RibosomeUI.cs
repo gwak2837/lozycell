@@ -204,8 +204,7 @@ public class RibosomeUI : MonoBehaviour
                     if (i == 2)
                     {
                         // Calculate amino acid to get skill color
-                        string aminoAcid = CodonTable.GetAminoAcid(currentCodon[0], currentCodon[1], currentCodon[2]);
-                        AminoAcidData data = CodonTable.GetData(aminoAcid);
+                        AminoAcidData data = CodonTable.GetCodonData(currentCodon[0], currentCodon[1], currentCodon[2]);
                         jackpotRoutine = StartCoroutine(JackpotEffect(data.Color));
                     }
                     else

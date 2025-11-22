@@ -198,16 +198,16 @@ public class ArcadeManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        string aminoAcidName = CodonTable.GetAminoAcid(currentCodon[0], currentCodon[1], currentCodon[2]);
-        Debug.Log($"formed {aminoAcidName} from {currentCodon[0]}{currentCodon[1]}{currentCodon[2]}");
+        AminoAcidData data = CodonTable.GetCodonData(currentCodon[0], currentCodon[1], currentCodon[2]);
+        Debug.Log($"formed {data.ShortName} from {currentCodon[0]}{currentCodon[1]}{currentCodon[2]}");
 
-        ShowComboVisuals(aminoAcidName);
+        ShowComboVisuals(data);
 
         // Trigger Skill
         if (skillController != null)
         {
-            Debug.Log($"ArcadeManager invoking skill: {aminoAcidName}");
-            skillController.ActivateSkill(aminoAcidName);
+            Debug.Log($"ArcadeManager invoking skill: {data.ShortName}");
+            skillController.ActivateSkill(data.ShortName);
         }
         else
         {
@@ -229,7 +229,7 @@ public class ArcadeManager : MonoBehaviour
         isProcessingSequence = false;
     }
 
-    private void ShowComboVisuals(string shortName)
+    private void ShowComboVisuals(AminoAcidData data)
     {
         if (comboPopupText == null)
         {
@@ -249,7 +249,6 @@ public class ArcadeManager : MonoBehaviour
 
         if (comboPopupText != null)
         {
-            AminoAcidData data = CodonTable.GetData(shortName);
             comboPopupText.text = $"{data.FullName}\n<size=80%>{data.SkillDescription}</size>";
             comboPopupText.color = data.Color;
             StartCoroutine(AnimatePopup(comboPopupText));
