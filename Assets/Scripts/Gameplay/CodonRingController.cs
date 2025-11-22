@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class CodonRingController : MonoBehaviour
@@ -22,7 +21,6 @@ public class CodonRingController : MonoBehaviour
     {
         public readonly Transform transform;
         public readonly SpriteRenderer renderer;
-        public readonly TextMeshPro text;
         public readonly GameObject gameObject;
 
         public SlotView(GameObject obj)
@@ -30,7 +28,6 @@ public class CodonRingController : MonoBehaviour
             gameObject = obj;
             transform = obj.transform;
             renderer = obj.GetComponent<SpriteRenderer>();
-            text = obj.GetComponentInChildren<TextMeshPro>();
         }
     }
 
@@ -86,12 +83,10 @@ public class CodonRingController : MonoBehaviour
             {
                 BaseType type = collectedBases[i];
                 slot.renderer.color = GetBaseColor(type);
-                slot.text.text = type.ToString();
             }
             else
             {
                 slot.renderer.color = new Color(1f, 1f, 1f, 0.3f);
-                slot.text.text = "";
             }
         }
     }
