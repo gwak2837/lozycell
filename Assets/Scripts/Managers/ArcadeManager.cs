@@ -1,9 +1,9 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
-using System.Collections;
-using System.Collections.Generic;
 
 public class ArcadeManager : MonoBehaviour
 {
@@ -46,8 +46,10 @@ public class ArcadeManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else if (Instance != this) Destroy(gameObject);
+        if (Instance == null)
+            Instance = this;
+        else if (Instance != this)
+            Destroy(gameObject);
     }
 
     public List<BaseType> GetCurrentCodon()
@@ -68,7 +70,7 @@ public class ArcadeManager : MonoBehaviour
 
     private void Start()
     {
-        // Check for Ribosome UI, create if missing
+        // 리보솜 UI가 있는지 확인하고, 없으면 만들기
         if (FindFirstObjectByType<RibosomeUI>() == null)
         {
             Canvas canvas = FindFirstObjectByType<Canvas>();
@@ -95,9 +97,12 @@ public class ArcadeManager : MonoBehaviour
             }
 
             // Try to find components if not assigned
-            if (skillController == null) skillController = FindFirstObjectByType<PlayerSkillController>();
-            if (enemySpawner == null) enemySpawner = FindFirstObjectByType<EnemySpawner>();
-            if (codonRing == null) codonRing = player.GetComponentInChildren<CodonRingController>();
+            if (skillController == null)
+                skillController = FindFirstObjectByType<PlayerSkillController>();
+            if (enemySpawner == null)
+                enemySpawner = FindFirstObjectByType<EnemySpawner>();
+            if (codonRing == null)
+                codonRing = player.GetComponentInChildren<CodonRingController>();
 
             if (codonRing == null)
             {
@@ -130,7 +135,8 @@ public class ArcadeManager : MonoBehaviour
 
     private void Update()
     {
-        if (!isGameActive) return;
+        if (!isGameActive)
+            return;
 
         if (playerTransform == null)
         {
@@ -151,7 +157,8 @@ public class ArcadeManager : MonoBehaviour
 
     private void SpawnGeneticBase()
     {
-        if (aminoAcidPrefab == null) return;
+        if (aminoAcidPrefab == null)
+            return;
 
         Vector3 center = Vector3.zero;
         if (playerTransform != null)
@@ -190,7 +197,8 @@ public class ArcadeManager : MonoBehaviour
 
     public void CollectBase(BaseType type)
     {
-        if (!isGameActive || isProcessingSequence) return;
+        if (!isGameActive || isProcessingSequence)
+            return;
 
         currentCodon.Add(type);
         UpdateCodonRing();
@@ -228,7 +236,8 @@ public class ArcadeManager : MonoBehaviour
             Debug.LogError("SkillController is NULL! Cannot activate skill.");
             // Retry finding it
             skillController = FindFirstObjectByType<PlayerSkillController>();
-            if (skillController != null) skillController.ActivateSkill(aminoAcidName);
+            if (skillController != null)
+                skillController.ActivateSkill(aminoAcidName);
         }
 
         currentSessionAminoAcids++;
@@ -323,7 +332,8 @@ public class ArcadeManager : MonoBehaviour
 
     public void SpawnDrop(Vector3 position)
     {
-        if (aminoAcidPrefab == null) return;
+        if (aminoAcidPrefab == null)
+            return;
 
         GeneticBase geneticBase = null;
         if (pool.Count > 0)
@@ -356,16 +366,13 @@ public class ArcadeManager : MonoBehaviour
     {
         if (progressText != null)
         {
-            string codonRequest = "";
-            foreach (var b in currentCodon) codonRequest += b.ToString() + " ";
-
             string healthInfo = "";
             if (playerStats != null)
             {
                 healthInfo = $"HP: {playerStats.currentHealth}/{playerStats.maxHealth}";
             }
 
-            progressText.text = $"Amino Acids: {currentSessionAminoAcids} / {targetAminoAcids}\nSequence: {codonRequest}\n{healthInfo}";
+            progressText.text = $"Amino Acids: {currentSessionAminoAcids} / {targetAminoAcids}\n{healthInfo}";
         }
     }
 
@@ -383,7 +390,8 @@ public class ArcadeManager : MonoBehaviour
     {
         isGameActive = false;
 
-        if (enemySpawner != null) enemySpawner.StopSpawning();
+        if (enemySpawner != null)
+            enemySpawner.StopSpawning();
 
         if (win)
         {
@@ -392,12 +400,14 @@ public class ArcadeManager : MonoBehaviour
             {
                 GameManager.Instance.AddAminoAcids(currentSessionAminoAcids);
             }
-            if (winPanel != null) winPanel.SetActive(true);
+            if (winPanel != null)
+                winPanel.SetActive(true);
         }
         else
         {
             Debug.Log("Game Over!");
-            if (losePanel != null) losePanel.SetActive(true);
+            if (losePanel != null)
+                losePanel.SetActive(true);
         }
 
         Invoke(nameof(ReturnToBase), 3f);

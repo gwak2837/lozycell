@@ -45,6 +45,37 @@ public class ProjectSetupTool : EditorWindow
         {
             CreateSkillAssets();
         }
+
+        GUILayout.Space(10);
+        if (GUILayout.Button("Fix: Add URP Data to Cameras"))
+        {
+            FixCameras();
+        }
+    }
+
+    private static void FixCameras()
+    {
+        Camera[] cameras = Object.FindObjectsByType<Camera>(FindObjectsSortMode.None);
+        int count = 0;
+        foreach (var cam in cameras)
+        {
+            var data = cam.GetComponent<UniversalAdditionalCameraData>();
+            if (data == null)
+            {
+                Undo.AddComponent<UniversalAdditionalCameraData>(cam.gameObject);
+                Debug.Log($"Fixed: Added UniversalAdditionalCameraData to {cam.name}");
+                count++;
+            }
+        }
+
+        if (count == 0)
+        {
+            Debug.Log("All cameras already have UniversalAdditionalCameraData.");
+        }
+        else
+        {
+            Debug.Log($"Fixed {count} cameras.");
+        }
     }
 
     private static void CreateSkillAssets()
