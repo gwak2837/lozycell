@@ -11,7 +11,7 @@ public class EnemyController : MonoBehaviour
 
     private float currentHealth;
     private float originalSpeed;
-    
+
     // Status Flags
     private bool isSlowed = false;
     private bool isKnockedBack = false;
@@ -58,7 +58,7 @@ public class EnemyController : MonoBehaviour
     public void TakeDamage(float amount)
     {
         float effectiveDamage = amount;
-        
+
         if (isVulnerable)
         {
             effectiveDamage *= 1.5f; // 50% more damage if vulnerable (simulating 0 def or exposed)
@@ -69,7 +69,7 @@ public class EnemyController : MonoBehaviour
         }
 
         currentHealth -= effectiveDamage;
-        
+
         // Visual Flash
         StartCoroutine(FlashColor(Color.red, 0.1f));
 
@@ -81,29 +81,67 @@ public class EnemyController : MonoBehaviour
 
     public void ApplySlow(float factor, float duration)
     {
-        if (isSlowed) return;
-        StartCoroutine(StatusCoroutine(duration, 
-            start: () => { isSlowed = true; moveSpeed = originalSpeed * factor; SetColor(new Color(0.5f, 0.5f, 1f)); },
-            end: () => { isSlowed = false; moveSpeed = originalSpeed; ResetColor(); }
-        ));
+        if (isSlowed)
+            return;
+        StartCoroutine(
+            StatusCoroutine(
+                duration,
+                start: () =>
+                {
+                    isSlowed = true;
+                    moveSpeed = originalSpeed * factor;
+                    SetColor(new Color(0.5f, 0.5f, 1f));
+                },
+                end: () =>
+                {
+                    isSlowed = false;
+                    moveSpeed = originalSpeed;
+                    ResetColor();
+                }
+            )
+        );
     }
 
     public void ApplyStun(float duration)
     {
-        if (isStunned) return;
-        StartCoroutine(StatusCoroutine(duration,
-            start: () => { isStunned = true; SetColor(Color.gray); },
-            end: () => { isStunned = false; ResetColor(); }
-        ));
+        if (isStunned)
+            return;
+        StartCoroutine(
+            StatusCoroutine(
+                duration,
+                start: () =>
+                {
+                    isStunned = true;
+                    SetColor(Color.gray);
+                },
+                end: () =>
+                {
+                    isStunned = false;
+                    ResetColor();
+                }
+            )
+        );
     }
 
     public void ApplyVulnerability(float duration)
     {
-        if (isVulnerable) return;
-        StartCoroutine(StatusCoroutine(duration,
-            start: () => { isVulnerable = true; SetColor(Color.cyan); },
-            end: () => { isVulnerable = false; ResetColor(); }
-        ));
+        if (isVulnerable)
+            return;
+        StartCoroutine(
+            StatusCoroutine(
+                duration,
+                start: () =>
+                {
+                    isVulnerable = true;
+                    SetColor(Color.cyan);
+                },
+                end: () =>
+                {
+                    isVulnerable = false;
+                    ResetColor();
+                }
+            )
+        );
     }
 
     public void ApplyDoT(float dps, float duration)
@@ -124,7 +162,8 @@ public class EnemyController : MonoBehaviour
 
     public void ApplyKnockback(Vector3 direction, float force, float duration = 0.2f)
     {
-        if (isKnockedBack) return;
+        if (isKnockedBack)
+            return;
         StartCoroutine(KnockbackCoroutine(direction, force, duration));
     }
 
@@ -151,15 +190,17 @@ public class EnemyController : MonoBehaviour
     private void SetColor(Color c)
     {
         var sr = GetComponent<SpriteRenderer>();
-        if (sr != null) sr.color = c;
+        if (sr != null)
+            sr.color = c;
     }
 
     private void ResetColor()
     {
         var sr = GetComponent<SpriteRenderer>();
-        if (sr != null) sr.color = Color.white;
+        if (sr != null)
+            sr.color = Color.white;
     }
-    
+
     private IEnumerator FlashColor(Color c, float duration)
     {
         var sr = GetComponent<SpriteRenderer>();

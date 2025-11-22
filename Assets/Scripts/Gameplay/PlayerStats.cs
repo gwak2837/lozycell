@@ -32,7 +32,7 @@ public class PlayerStats : MonoBehaviour
     {
         return baseMoveSpeed * speedMultiplier;
     }
-    
+
     public float GetDamageMultiplier()
     {
         return damageMultiplier;

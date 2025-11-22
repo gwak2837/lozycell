@@ -7,7 +7,7 @@ public class PetController : MonoBehaviour
     public GameObject projectilePrefab;
     public float shootInterval = 1f;
     public float damage = 10f;
-    
+
     private Transform player;
     private float duration;
 
@@ -47,7 +47,8 @@ public class PetController : MonoBehaviour
 
     private void Shoot()
     {
-        if (projectilePrefab == null) return;
+        if (projectilePrefab == null)
+            return;
 
         EnemyController enemy = SkillUtility.FindNearestEnemy(transform.position, 15f);
         Vector3 dir = Vector3.right;
@@ -61,7 +62,7 @@ public class PetController : MonoBehaviour
         else
         {
             // Random or Player direction
-            dir = (player.position - transform.position).normalized; 
+            dir = (player.position - transform.position).normalized;
             // Actually if no enemy, shoot direction of player movement? Or random.
             // Let's shoot Right by default.
         }
