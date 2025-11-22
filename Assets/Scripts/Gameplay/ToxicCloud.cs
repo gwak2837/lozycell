@@ -33,7 +33,7 @@ public class ToxicCloud : MonoBehaviour
         if (rb == null)
         {
             rb = gameObject.AddComponent<Rigidbody2D>();
-            rb.isKinematic = true;
+            rb.bodyType = RigidbodyType2D.Kinematic;
             rb.gravityScale = 0;
             rb.constraints = RigidbodyConstraints2D.FreezeAll;
         }

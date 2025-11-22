@@ -5,19 +5,42 @@ using UnityEngine;
 public class CodonRingController : MonoBehaviour
 {
     [Header("Settings")]
-    public float radius = 1.5f;
-    public float rotationSpeed = 50f;
+    [SerializeField]
+    private float radius = 1.5f;
 
-    [Header("Prefabs")]
-    public GameObject slotPrefab; // Prefab for the slot visual (e.g., a circle sprite)
+    [SerializeField]
+    private float rotationSpeed = 50f;
 
-    private List<GameObject> slots = new List<GameObject>();
-    private Transform center;
+    [SerializeField]
+    private int slotCount = 3;
+
+    [Header("References")]
+    [SerializeField]
+    private GameObject slotPrefab;
+
+    private class SlotView
+    {
+        public readonly Transform transform;
+        public readonly SpriteRenderer renderer;
+        public readonly TextMeshPro text;
+        public readonly GameObject gameObject;
+
+        public SlotView(GameObject obj)
+        {
+            gameObject = obj;
+            transform = obj.transform;
+            renderer = obj.GetComponent<SpriteRenderer>();
+            text = obj.GetComponentInChildren<TextMeshPro>();
+        }
+    }
+
+    private readonly List<SlotView> _slots = new();
+    private Transform _center;
 
     private void Start()
     {
-        center = transform;
-        CreateSlots();
+        _center = transform;
+        InitializeSlots();
     }
 
     private void Update()
@@ -25,112 +48,61 @@ public class CodonRingController : MonoBehaviour
         RotateSlots();
     }
 
-    private void CreateSlots()
+    private void InitializeSlots()
     {
-        // Create 3 slots
-        for (int i = 0; i < 3; i++)
-        {
-            GameObject slot = null;
-            if (slotPrefab != null)
-            {
-                slot = Instantiate(slotPrefab, center);
-            }
-            else
-            {
-                // Fallback if no prefab
-                slot = new GameObject($"Slot_{i}");
-                slot.transform.SetParent(center);
-                var sr = slot.AddComponent<SpriteRenderer>();
-                // Default sprite? We'll assume prefab has one or use a basic circle if we had assets.
-                // For now, just a white square (default sprite is usually null, so need a sprite)
-                // But we'll stick to setting Color.
-            }
+        float angleStep = 360f / slotCount;
 
-            slots.Add(slot);
+        for (int i = 0; i < slotCount; i++)
+        {
+            var slotObj = Instantiate(slotPrefab, _center);
+
+            float angle = i * angleStep * Mathf.Deg2Rad;
+            slotObj.transform.localPosition = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * radius;
+
+            _slots.Add(new SlotView(slotObj));
         }
 
-        UpdateSlotPositions();
-        UpdateVisuals(new List<BaseType>()); // Clear visuals
-    }
-
-    private void UpdateSlotPositions()
-    {
-        for (int i = 0; i < slots.Count; i++)
-        {
-            float angle = i * (360f / 3f);
-            Vector3 pos = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0) * radius;
-            slots[i].transform.localPosition = pos;
-        }
+        UpdateVisuals(new List<BaseType>());
     }
 
     private void RotateSlots()
     {
-        // Rotate the whole container or individual positions?
-        // Simpler to rotate the object itself or calculate positions.
-        // Since this script is on the Player, we shouldn't rotate the Player.
-        // Actually, this script should probably be on a child object "CodonRing" of the Player.
-        // But if it is on the Player, we should rotate the slots around.
-
-        // Let's assume this script is on a "RingPivot" child object, OR we handle rotation manually here.
-        // If on Player, we just rotate the positions.
-
-        float angleStep = Time.deltaTime * rotationSpeed;
-        foreach (var slot in slots)
+        float step = rotationSpeed * Time.deltaTime;
+        foreach (var slot in _slots)
         {
-            slot.transform.RotateAround(center.position, Vector3.forward, angleStep);
-            // Keep slot upright?
-            slot.transform.rotation = Quaternion.identity;
+            slot.transform.RotateAround(_center.position, Vector3.forward, step);
+            slot.transform.rotation = Quaternion.identity; // Keep upright
         }
     }
 
-    public void UpdateVisuals(List<BaseType> currentCodon)
+    public void UpdateVisuals(List<BaseType> collectedBases)
     {
-        for (int i = 0; i < slots.Count; i++)
+        for (int i = 0; i < _slots.Count; i++)
         {
-            SpriteRenderer sr = slots[i].GetComponent<SpriteRenderer>();
-            TextMeshPro text = slots[i].GetComponentInChildren<TextMeshPro>();
+            var slot = _slots[i];
+            bool isFilled = i < collectedBases.Count;
 
-            if (i < currentCodon.Count)
+            if (isFilled)
             {
-                // Filled slot
-                BaseType type = currentCodon[i];
-                Color c = GetColorForBase(type);
-
-                if (sr != null)
-                    sr.color = c;
-                if (text != null)
-                    text.text = type.ToString();
-
-                slots[i].SetActive(true);
+                BaseType type = collectedBases[i];
+                slot.renderer.color = GetBaseColor(type);
+                slot.text.text = type.ToString();
             }
             else
             {
-                // Empty slot
-                if (sr != null)
-                    sr.color = new Color(1f, 1f, 1f, 0.3f); // Gray/Transparent
-                if (text != null)
-                    text.text = "";
-
-                // Keep active to show empty slots? Yes.
-                slots[i].SetActive(true);
+                slot.renderer.color = new Color(1f, 1f, 1f, 0.3f);
+                slot.text.text = "";
             }
         }
     }
 
-    private Color GetColorForBase(BaseType type)
-    {
-        switch (type)
+    private Color GetBaseColor(BaseType type) =>
+        type switch
         {
-            case BaseType.U:
-                return new Color(1f, 0.2f, 0.2f); // Red
-            case BaseType.C:
-                return new Color(0f, 0.5f, 1f); // Blue
-            case BaseType.A:
-                return new Color(0.2f, 0.8f, 0.2f); // Green
-            case BaseType.G:
-                return new Color(1f, 0.92f, 0.016f); // Yellow
-            default:
-                return Color.white;
-        }
-    }
+            BaseType.U => new Color(1f, 0.2f, 0.2f),
+            BaseType.C => new Color(0f, 0.5f, 1f),
+            BaseType.A => new Color(0.2f, 0.8f, 0.2f),
+            BaseType.G => new Color(1f, 0.92f, 0.016f),
+            _ => Color.white,
+        };
 }

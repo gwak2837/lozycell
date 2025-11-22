@@ -47,20 +47,16 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        float currentSpeed = stats != null ? stats.GetCurrentMoveSpeed() : moveSpeed;
+        float currentSpeed = stats ? stats.GetCurrentMoveSpeed() : moveSpeed;
         rb.linearVelocity = moveInput * currentSpeed;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Check for GeneticBase (renamed from AminoAcid)
-        // Ideally we check the component, or tag if tag was updated.
-        // The tag might still be "AminoAcid" on the prefab, so we should keep checking that or check component directly.
-
-        if (other.CompareTag("AminoAcid") || other.GetComponent<GeneticBase>() != null)
+        if (other.CompareTag("AminoAcid") || other.GetComponent<GeneticBase>())
         {
             GeneticBase baseObj = other.GetComponent<GeneticBase>();
-            if (baseObj != null)
+            if (baseObj)
             {
                 baseObj.Collect();
             }

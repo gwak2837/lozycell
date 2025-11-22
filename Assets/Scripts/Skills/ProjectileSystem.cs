@@ -67,7 +67,7 @@ public class ProjectileSystem : MonoBehaviour
 
             var rb = proj.AddComponent<Rigidbody2D>();
             rb.gravityScale = 0;
-            rb.isKinematic = true;
+            rb.bodyType = RigidbodyType2D.Kinematic;
 
             proj.AddComponent<ProjectileController>();
         }

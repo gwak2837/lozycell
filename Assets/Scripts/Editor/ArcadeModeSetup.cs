@@ -184,7 +184,14 @@ public class ArcadeModeSetup : EditorWindow
             ringObj.transform.localPosition = Vector3.zero;
             ring = ringObj.AddComponent<CodonRingController>();
         }
-        ring.slotPrefab = slotPrefab;
+
+        SerializedObject ringSO = new SerializedObject(ring);
+        SerializedProperty slotPrefabProp = ringSO.FindProperty("slotPrefab");
+        if (slotPrefabProp != null)
+        {
+            slotPrefabProp.objectReferenceValue = slotPrefab;
+            ringSO.ApplyModifiedProperties();
+        }
 
         // 2. Setup Managers
         ArcadeManager arcadeManager = FindFirstObjectByType<ArcadeManager>();

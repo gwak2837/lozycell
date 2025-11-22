@@ -4,7 +4,7 @@ public static class SkillUtility
 {
     public static EnemyController GetClosestEnemy(Vector3 fromPos)
     {
-        var enemies = Object.FindObjectsOfType<EnemyController>();
+        var enemies = Object.FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
         EnemyController closest = null;
         float minDist = float.MaxValue;
 

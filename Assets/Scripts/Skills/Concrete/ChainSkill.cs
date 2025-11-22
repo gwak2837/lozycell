@@ -26,7 +26,7 @@ public class ChainSkill : SkillStrategy
         Vector3 startPos = controller.transform.position;
 
         // Get enemies logic - could move to Utility if reused often
-        List<EnemyController> enemies = new List<EnemyController>(FindObjectsOfType<EnemyController>());
+        List<EnemyController> enemies = new List<EnemyController>(FindObjectsByType<EnemyController>(FindObjectsSortMode.None));
         enemies.Sort(
             (a, b) =>
                 Vector3
