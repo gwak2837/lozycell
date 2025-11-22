@@ -4,6 +4,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Rendering.Universal;
 
 public class BaseSceneSetup
 {
@@ -18,6 +19,7 @@ public class BaseSceneSetup
         GameObject camObj = new GameObject("Main Camera");
         camObj.tag = "MainCamera";
         Camera cam = camObj.AddComponent<Camera>();
+        camObj.AddComponent<UniversalAdditionalCameraData>();
         cam.orthographic = true;
         cam.backgroundColor = new Color(0.1f, 0.1f, 0.15f);
         cam.clearFlags = CameraClearFlags.SolidColor;

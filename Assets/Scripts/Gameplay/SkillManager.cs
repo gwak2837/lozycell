@@ -243,11 +243,13 @@ public class SkillManager : MonoBehaviour
         if (player == null) return;
         Debug.Log("Skill: Wave Activated");
         
+        Vector3 baseDir = GetClosestEnemyDir();
+        
         // Fan-shaped projectiles
         for (int i = -2; i <= 2; i++)
         {
             float angle = i * 15f;
-            Vector3 dir = Quaternion.Euler(0, 0, angle) * player.transform.up;
+            Vector3 dir = Quaternion.Euler(0, 0, angle) * baseDir;
             SpawnProjectile(player.transform.position, dir, 15f, 8f, 2f, new Color(0.2f, 0.6f, 1f), 0.6f);
         }
     }
