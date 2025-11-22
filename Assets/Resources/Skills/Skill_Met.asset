@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5602705558694563809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6a2c54748c06485d90facc6c1b66318, type: 3}
+  m_Name: Met_Pet
+  m_EditorClassIdentifier: Assembly-CSharp::SummonSkill
+  skillName: Met Pet
+  description: 
+  icon: {fileID: 0}
+  cooldown: 0
+  prefabToSummon: {fileID: 0}
+  duration: 10
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0119a4e71d6a54f3e917c75f52c01bc8, type: 3}
+  m_Name: Skill_Met
+  m_EditorClassIdentifier: Assembly-CSharp::CompositeSkill
+  skillName: Met (Start)
+  description: 
+  icon: {fileID: 0}
+  cooldown: 0
+  subSkills:
+  - {fileID: 5886962958201526485}
+  - {fileID: -5602705558694563809}
+--- !u!114 &5886962958201526485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b32cdeca01d340cead270218b168a22, type: 3}
+  m_Name: Met_Shield
+  m_EditorClassIdentifier: Assembly-CSharp::BuffSkill
+  skillName: Met Shield
+  description: 
+  icon: {fileID: 0}
+  cooldown: 0
+  buffType: 1
+  duration: 5
+  value: 0
+  isPercentage: 0

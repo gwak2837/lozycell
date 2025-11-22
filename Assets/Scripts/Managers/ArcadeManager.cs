@@ -24,14 +24,14 @@ public class ArcadeManager : MonoBehaviour
     public event CodonUpdateHandler OnCodonUpdated;
 
     [Header("Managers")]
-    public SkillManager skillManager; // New
-    public EnemySpawner enemySpawner; // New
-    public CodonRingController codonRing; // New: Optional, if pre-assigned
+    public PlayerSkillController skillController; // Changed from SkillManager
+    public EnemySpawner enemySpawner;
+    public CodonRingController codonRing;
 
     private int currentSessionAminoAcids = 0;
     private float spawnTimer;
     private bool isGameActive = true;
-    private bool isProcessingSequence = false; // Lock input during combo sequence
+    private bool isProcessingSequence = false;
 
     private Transform playerTransform;
     private PlayerStats playerStats;
@@ -95,27 +95,25 @@ public class ArcadeManager : MonoBehaviour
             }
 
             // Try to find components if not assigned
-            if (skillManager == null) skillManager = FindFirstObjectByType<SkillManager>();
+            if (skillController == null) skillController = FindFirstObjectByType<PlayerSkillController>();
             if (enemySpawner == null) enemySpawner = FindFirstObjectByType<EnemySpawner>();
             if (codonRing == null) codonRing = player.GetComponentInChildren<CodonRingController>();
 
-            // If CodonRing is not on player, maybe on manager or separate? 
-            // Plan said "attached to player", so GetComponentInChildren is correct if I add it there.
-            // If not found, we might need to spawn it? For now assume user/prefab setup or I'll ensure it exists.
             if (codonRing == null)
             {
-                // Auto-add if missing for convenience in this task
                 GameObject ringObj = new GameObject("CodonRing");
                 ringObj.transform.SetParent(playerTransform);
                 ringObj.transform.localPosition = Vector3.zero;
                 codonRing = ringObj.AddComponent<CodonRingController>();
             }
 
-            // Ensure SkillManager exists
-            if (skillManager == null)
+            // Ensure PlayerSkillController exists
+            if (skillController == null)
             {
-                GameObject smObj = new GameObject("SkillManager");
-                skillManager = smObj.AddComponent<SkillManager>();
+                // Usually on player
+                skillController = player.GetComponent<PlayerSkillController>();
+                if (skillController == null)
+                    skillController = player.gameObject.AddComponent<PlayerSkillController>();
             }
 
             // Ensure EnemySpawner exists
@@ -140,7 +138,6 @@ public class ArcadeManager : MonoBehaviour
             if (player != null)
             {
                 playerTransform = player.transform;
-                // Re-init if player was just found (e.g. respawned - though not supported yet)
             }
         }
 
@@ -213,27 +210,29 @@ public class ArcadeManager : MonoBehaviour
     {
         isProcessingSequence = true;
 
-        // REMOVED: Time.timeScale hit stop (caused freeze issues)
-
-        // Wait a bit so user sees the full sequence
         yield return new WaitForSeconds(0.5f);
 
-        // Form Amino Acid
         string aminoAcidName = CodonTable.GetAminoAcid(currentCodon[0], currentCodon[1], currentCodon[2]);
         Debug.Log($"formed {aminoAcidName} from {currentCodon[0]}{currentCodon[1]}{currentCodon[2]}");
 
-        // Visual Feedback (Dopamine!)
         ShowComboVisuals(aminoAcidName);
 
         // Trigger Skill
-        if (skillManager != null)
+        if (skillController != null)
         {
-            skillManager.ActivateSkill(aminoAcidName);
+            Debug.Log($"ArcadeManager invoking skill: {aminoAcidName}");
+            skillController.ActivateSkill(aminoAcidName);
+        }
+        else
+        {
+            Debug.LogError("SkillController is NULL! Cannot activate skill.");
+            // Retry finding it
+            skillController = FindFirstObjectByType<PlayerSkillController>();
+            if (skillController != null) skillController.ActivateSkill(aminoAcidName);
         }
 
         currentSessionAminoAcids++;
 
-        // Clear and Reset
         currentCodon.Clear();
         UpdateCodonRing();
         OnCodonUpdated?.Invoke(new List<BaseType>(currentCodon));
@@ -249,7 +248,6 @@ public class ArcadeManager : MonoBehaviour
 
     private void ShowComboVisuals(string shortName)
     {
-        // If UI element missing, try to create one on the fly (fallback)
         if (comboPopupText == null)
         {
             if (progressText != null && progressText.transform.parent != null)
@@ -260,7 +258,6 @@ public class ArcadeManager : MonoBehaviour
                 comboPopupText.alignment = TextAlignmentOptions.Center;
                 comboPopupText.fontSize = 50;
                 comboPopupText.fontStyle = FontStyles.Bold;
-                // Position in center
                 RectTransform rt = go.GetComponent<RectTransform>();
                 rt.anchoredPosition = Vector2.zero;
                 rt.sizeDelta = new Vector2(800, 200);
@@ -270,12 +267,8 @@ public class ArcadeManager : MonoBehaviour
         if (comboPopupText != null)
         {
             AminoAcidData data = CodonTable.GetData(shortName);
-
-            // Set Text: "METHIONINE\nSTART - SHIELD!"
             comboPopupText.text = $"{data.FullName}\n<size=80%>{data.SkillDescription}</size>";
             comboPopupText.color = data.Color;
-
-            // Animation
             StartCoroutine(AnimatePopup(comboPopupText));
         }
     }
@@ -288,12 +281,10 @@ public class ArcadeManager : MonoBehaviour
         float duration = 0.3f;
         float time = 0;
 
-        // Pop In (Elastic)
         while (time < duration)
         {
             time += Time.deltaTime;
             float t = time / duration;
-            // Simple Overshoot curve
             float scale = Mathf.Sin(t * Mathf.PI * 0.5f) * 1.2f;
             textComp.transform.localScale = Vector3.one * scale;
             yield return null;
@@ -301,10 +292,8 @@ public class ArcadeManager : MonoBehaviour
 
         textComp.transform.localScale = Vector3.one;
 
-        // Wait
         yield return new WaitForSeconds(0.8f);
 
-        // Fade Out & Move Up
         time = 0;
         duration = 0.5f;
         Vector3 startPos = textComp.transform.localPosition;
@@ -321,9 +310,7 @@ public class ArcadeManager : MonoBehaviour
         }
 
         textComp.gameObject.SetActive(false);
-        textComp.transform.localPosition = Vector3.zero; // Reset pos for next time if using same object
-        // Note: If we spam combos, this single object approach might glitch (overwrite).
-        // Ideally we instantiate a new popup per combo, but for this game speed (1 combo / few sec) it's fine.
+        textComp.transform.localPosition = Vector3.zero;
     }
 
     private void UpdateCodonRing()
@@ -361,7 +348,6 @@ public class ArcadeManager : MonoBehaviour
 
     public void CollectAminoAcid()
     {
-        // Legacy
         currentSessionAminoAcids++;
         UpdateUI();
     }
@@ -373,7 +359,6 @@ public class ArcadeManager : MonoBehaviour
             string codonRequest = "";
             foreach (var b in currentCodon) codonRequest += b.ToString() + " ";
 
-            // Maybe show Health too if possible?
             string healthInfo = "";
             if (playerStats != null)
             {

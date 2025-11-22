@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7729858824601201616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b32cdeca01d340cead270218b168a22, type: 3}
+  m_Name: Stop_Invul
+  m_EditorClassIdentifier: Assembly-CSharp::BuffSkill
+  skillName: Renewal Invul
+  description: 
+  icon: {fileID: 0}
+  cooldown: 0
+  buffType: 3
+  duration: 1.5
+  value: 0
+  isPercentage: 0
+--- !u!114 &-1698515125645750819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 452b2107a6c37435cb533f192908a0b2, type: 3}
+  m_Name: Stop_Damage
+  m_EditorClassIdentifier: Assembly-CSharp::AreaSkill
+  skillName: Renewal Blast
+  description: 
+  icon: {fileID: 0}
+  cooldown: 0
+  type: 0
+  radius: 5
+  value: 30
+  duration: 0
+  visualColor: {r: 0, g: 1, b: 0, a: 1}
+  prefabToSpawn: {fileID: 0}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0119a4e71d6a54f3e917c75f52c01bc8, type: 3}
+  m_Name: Skill_Stop
+  m_EditorClassIdentifier: Assembly-CSharp::CompositeSkill
+  skillName: Stop (Renewal)
+  description: 
+  icon: {fileID: 0}
+  cooldown: 0
+  subSkills:
+  - {fileID: 2526178202528927655}
+  - {fileID: -7729858824601201616}
+  - {fileID: -1698515125645750819}
+--- !u!114 &2526178202528927655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b32cdeca01d340cead270218b168a22, type: 3}
+  m_Name: Stop_Heal
+  m_EditorClassIdentifier: Assembly-CSharp::BuffSkill
+  skillName: Renewal Heal
+  description: 
+  icon: {fileID: 0}
+  cooldown: 0
+  buffType: 0
+  duration: 5
+  value: 30
+  isPercentage: 1

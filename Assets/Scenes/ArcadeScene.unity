@@ -211,6 +211,7 @@ GameObject:
   - component: {fileID: 575465809}
   - component: {fileID: 575465808}
   - component: {fileID: 575465813}
+  - component: {fileID: 575465814}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -394,6 +395,62 @@ MonoBehaviour:
   currentHealth: 0
   baseMoveSpeed: 5
   isShielded: 0
+  isInvulnerable: 0
+--- !u!114 &575465814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 575465807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ebda214e3847430f98a88ec84315eb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSkillController
+  skillEntries:
+  - aminoAcidCode: Ala
+    skillData: {fileID: 11400000, guid: e27f0d5cba71543788261cc2786023f2, type: 2}
+  - aminoAcidCode: Arg
+    skillData: {fileID: 11400000, guid: d42b9b12ffd1f461f84328c3d9806b42, type: 2}
+  - aminoAcidCode: Asn
+    skillData: {fileID: 11400000, guid: 9a4812363d12f40d2a350b13894c2020, type: 2}
+  - aminoAcidCode: Asp
+    skillData: {fileID: 11400000, guid: fd922091e02f14a25b3588164ff7752c, type: 2}
+  - aminoAcidCode: Cys
+    skillData: {fileID: 11400000, guid: 8372a47398ae8403e8b3f777420da9af, type: 2}
+  - aminoAcidCode: Gln
+    skillData: {fileID: 11400000, guid: 9d60f25238a42451e881d0cb664df778, type: 2}
+  - aminoAcidCode: Glu
+    skillData: {fileID: 11400000, guid: ea11ea71c879a4819b4996b7fcb80f6a, type: 2}
+  - aminoAcidCode: Gly
+    skillData: {fileID: 11400000, guid: dc05879ac4f074d128785618994c4fb5, type: 2}
+  - aminoAcidCode: His
+    skillData: {fileID: 11400000, guid: 445c37368c23640b8860a33aa97f34e4, type: 2}
+  - aminoAcidCode: Ile
+    skillData: {fileID: 11400000, guid: 734aba128fe0f4a5eae640d71ecee7d1, type: 2}
+  - aminoAcidCode: Leu
+    skillData: {fileID: 11400000, guid: 0931cd44402aa4043ad7ad708cc8410c, type: 2}
+  - aminoAcidCode: Lys
+    skillData: {fileID: 11400000, guid: fa51ad1d5b35b4433b4eaded39cc9d5c, type: 2}
+  - aminoAcidCode: Met
+    skillData: {fileID: 11400000, guid: 89127e0d4b33e40be963dee5d2f84b97, type: 2}
+  - aminoAcidCode: Phe
+    skillData: {fileID: 11400000, guid: c30553866689e4efb940de96e2ab2b2c, type: 2}
+  - aminoAcidCode: Pro
+    skillData: {fileID: 11400000, guid: 2fe46d268ad8d44389dbefddc692d8c2, type: 2}
+  - aminoAcidCode: Ser
+    skillData: {fileID: 11400000, guid: 83bd00a73529f4a6b80bd8a76a72bdc3, type: 2}
+  - aminoAcidCode: Stop
+    skillData: {fileID: 11400000, guid: a608fb68f2071457182c5fd2ea7762fe, type: 2}
+  - aminoAcidCode: Thr
+    skillData: {fileID: 11400000, guid: 07bd4d559dd424d89bce0f3c5342fe31, type: 2}
+  - aminoAcidCode: Trp
+    skillData: {fileID: 11400000, guid: ab01888e260104091aa91fdc7f48bfbb, type: 2}
+  - aminoAcidCode: Tyr
+    skillData: {fileID: 11400000, guid: 8aaa1979f4a01410f86aed397659b618, type: 2}
+  - aminoAcidCode: Val
+    skillData: {fileID: 11400000, guid: 717e667002bbd48a2b757919ac7df34d, type: 2}
 --- !u!21 &605546153
 Material:
   serializedVersion: 8
@@ -949,9 +1006,10 @@ MonoBehaviour:
   spawnRadius: 10
   spawnInterval: 0.5
   progressText: {fileID: 1121056791}
+  comboPopupText: {fileID: 0}
   winPanel: {fileID: 0}
   losePanel: {fileID: 0}
-  skillManager: {fileID: 1897393655}
+  skillController: {fileID: 0}
   enemySpawner: {fileID: 265814897}
   codonRing: {fileID: 1233136356}
 --- !u!4 &1807857940
@@ -961,51 +1019,6 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1807857938}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1897393654
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1897393656}
-  - component: {fileID: 1897393655}
-  m_Layer: 0
-  m_Name: SkillManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1897393655
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1897393654}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d59e14c02cced4370aa52175ff478bfe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SkillManager
-  toxicCloudPrefab: {fileID: 7461745178717424596, guid: 4eb608ca841f44bfaa0e7046f0e947d9, type: 3}
---- !u!4 &1897393656
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1897393654}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -1129,5 +1142,4 @@ SceneRoots:
   - {fileID: 1220550808}
   - {fileID: 991134738}
   - {fileID: 1978265700}
-  - {fileID: 1897393656}
   - {fileID: 265814898}

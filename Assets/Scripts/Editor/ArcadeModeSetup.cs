@@ -205,13 +205,14 @@ public class ArcadeModeSetup : EditorWindow
             es.gameObject.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
         }
 
-        SkillManager skillManager = FindFirstObjectByType<SkillManager>();
-        if (skillManager == null)
+        PlayerSkillController skillController = FindFirstObjectByType<PlayerSkillController>();
+        if (skillController == null)
         {
-            GameObject smObj = new GameObject("SkillManager");
-            skillManager = smObj.AddComponent<SkillManager>();
+            // Should be on player
+            skillController = player.GetComponent<PlayerSkillController>();
+            if (skillController == null) skillController = player.gameObject.AddComponent<PlayerSkillController>();
         }
-        skillManager.toxicCloudPrefab = cloudPrefab;
+        // skillManager.toxicCloudPrefab = cloudPrefab; // Moved to asset/strategy
 
         EnemySpawner enemySpawner = FindFirstObjectByType<EnemySpawner>();
         if (enemySpawner == null)
@@ -222,13 +223,13 @@ public class ArcadeModeSetup : EditorWindow
         enemySpawner.enemyPrefab = enemyPrefab;
 
         // 3. Link
-        arcadeManager.skillManager = skillManager;
+        arcadeManager.skillController = skillController;
         arcadeManager.enemySpawner = enemySpawner;
         arcadeManager.codonRing = ring;
 
         EditorUtility.SetDirty(player.gameObject);
         EditorUtility.SetDirty(arcadeManager.gameObject);
-        EditorUtility.SetDirty(skillManager.gameObject);
+        EditorUtility.SetDirty(skillController.gameObject);
         EditorUtility.SetDirty(enemySpawner.gameObject);
         
         Debug.Log("Scene configured.");

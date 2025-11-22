@@ -99,14 +99,25 @@ public class ProjectSetupTool : EditorWindow
         DestroyImmediate(cloudObj);
         Debug.Log($"Created Toxic Cloud Prefab at {cloudPath}");
 
-        // 3. Assign to SkillManager in Scene (if open)
-        SkillManager sm = Object.FindFirstObjectByType<SkillManager>();
-        if (sm != null)
+        // 3. Assign to PlayerSkillController in Scene (if open)
+        PlayerSkillController psc = Object.FindFirstObjectByType<PlayerSkillController>();
+        if (psc != null)
         {
-            sm.projectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(projPath);
-            sm.toxicCloudPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(cloudPath);
-            EditorUtility.SetDirty(sm);
-            Debug.Log("Auto-assigned prefabs to active SkillManager.");
+            // No longer holding prefabs directly in controller, handled by singletons or concrete skills
+            // But we might want to refresh references if needed.
+            // ProjectileSystem.Instance.projectilePrefab = ... (if we want to assign here, but ProjectileSystem is singleton in scene)
+
+            // Let's find ProjectileSystem and assign
+            ProjectileSystem ps = Object.FindFirstObjectByType<ProjectileSystem>();
+            if (ps == null)
+            {
+                GameObject psObj = new GameObject("ProjectileSystem");
+                ps = psObj.AddComponent<ProjectileSystem>();
+            }
+            ps.projectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(projPath);
+            EditorUtility.SetDirty(ps);
+
+            Debug.Log("Auto-assigned prefabs to active ProjectileSystem.");
         }
     }
 
