@@ -91,13 +91,5 @@ public class CodonRingController : MonoBehaviour
         }
     }
 
-    private Color GetBaseColor(BaseType type) =>
-        type switch
-        {
-            BaseType.U => new Color(1f, 0.2f, 0.2f),
-            BaseType.C => new Color(0f, 0.5f, 1f),
-            BaseType.A => new Color(0.2f, 0.8f, 0.2f),
-            BaseType.G => new Color(1f, 0.92f, 0.016f),
-            _ => Color.white,
-        };
+    private Color GetBaseColor(BaseType type) => BaseColorConfig.GetColor(type);
 }

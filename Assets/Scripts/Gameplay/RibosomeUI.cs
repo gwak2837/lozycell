@@ -16,10 +16,6 @@ public class RibosomeUI : MonoBehaviour
 
     [Header("Colors")]
     public Color emptyColor = new Color(0.2f, 0.2f, 0.2f, 0.5f);
-    public Color colorA = new Color(0.2f, 0.8f, 0.2f);
-    public Color colorU = new Color(1f, 0.2f, 0.2f);
-    public Color colorG = new Color(1f, 0.92f, 0.016f);
-    public Color colorC = new Color(0f, 0.5f, 1f);
 
     [Header("Dopamine Settings")]
     public float punchScaleNormal = 1.2f;
@@ -275,20 +271,5 @@ public class RibosomeUI : MonoBehaviour
         }
     }
 
-    private Color GetColorForBase(BaseType type)
-    {
-        switch (type)
-        {
-            case BaseType.A:
-                return colorA;
-            case BaseType.U:
-                return colorU;
-            case BaseType.G:
-                return colorG;
-            case BaseType.C:
-                return colorC;
-            default:
-                return Color.white;
-        }
-    }
+    private Color GetColorForBase(BaseType type) => BaseColorConfig.GetColor(type);
 }
