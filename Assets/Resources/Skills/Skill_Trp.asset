@@ -9,20 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6f468df2580a47dfb66d399e74ea8e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectileSkill
-  skillName: Meteor
+  m_Script: {fileID: 11500000, guid: 452b2107a6c37435cb533f192908a0b2, type: 3}
+  m_Name: Skill_Trp
+  m_EditorClassIdentifier: Assembly-CSharp::AreaSkill
+  skillName: Gravity Well
   description: 
-  icon: {fileID: 0}
   cooldown: 0
-  damage: 60
-  speed: 10
-  lifetime: 2
-  scale: 1
-  color: {r: 1, g: 1, b: 1, a: 1}
-  knockback: 5
-  isHoming: 0
-  projectileCount: 3
-  spreadAngle: 20
-  delayBetweenShots: 0.1
+  icon: {fileID: 0}
+  areaPrefab: {fileID: 4137274681812456048, guid: 2460a9e776b3f43f9886e2f72631bfc8, type: 3}
+  duration: 5
+  effectValue: 0
+  radius: 4
+  spawnOnPlayer: 1

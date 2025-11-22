@@ -8,10 +8,16 @@ public class ProjectileController : MonoBehaviour
     public float lifetime = 2f;
     public float knockbackForce = 0f;
     public bool isHoming = false;
+    public bool isBoomerang = false;
 
     private Transform target;
+    private Transform owner; // For boomerang return
     private Vector3 direction;
     private bool isInitialized = false;
+
+    // Boomerang state
+    private float distanceTraveled = 0f;
+    private bool returning = false;
 
     public void Initialize(
         Vector3 dir,
@@ -19,7 +25,9 @@ public class ProjectileController : MonoBehaviour
         float spd,
         float life,
         float knockback = 0f,
-        Transform homingTarget = null
+        Transform homingTarget = null,
+        bool boomerang = false,
+        Transform shooter = null
     )
     {
         direction = dir.normalized;
@@ -29,33 +37,81 @@ public class ProjectileController : MonoBehaviour
         knockbackForce = knockback;
         target = homingTarget;
         isHoming = (target != null);
+        isBoomerang = boomerang;
+        owner = shooter;
+
         isInitialized = true;
 
         Destroy(gameObject, lifetime);
-
-        // Align rotation to direction
         RotateToDirection();
     }
 
     private void Update()
     {
         if (!isInitialized)
-            return;
-
-        if (isHoming && target != null)
         {
-            Vector3 targetDir = (target.position - transform.position).normalized;
-            // Smooth turn
-            direction = Vector3.Lerp(direction, targetDir, Time.deltaTime * 5f).normalized;
-            RotateToDirection();
+            return;
         }
 
-        transform.position += direction * speed * Time.deltaTime;
+        Vector3 moveStep = Vector3.zero;
+
+        if (isBoomerang)
+        {
+            HandleBoomerang();
+        }
+        else if (isHoming && target != null)
+        {
+            Vector3 targetDir = (target.position - transform.position).normalized;
+            direction = Vector3.Lerp(direction, targetDir, Time.deltaTime * 5f).normalized;
+            moveStep = direction * speed * Time.deltaTime;
+            RotateToDirection();
+            transform.position += moveStep;
+        }
+        else
+        {
+            moveStep = direction * speed * Time.deltaTime;
+            transform.position += moveStep;
+        }
+    }
+
+    private void HandleBoomerang()
+    {
+        if (!returning)
+        {
+            Vector3 step = direction * speed * Time.deltaTime;
+            transform.position += step;
+            distanceTraveled += step.magnitude;
+
+            if (distanceTraveled >= speed * (lifetime * 0.4f)) // Return after 40% lifetime approx
+            {
+                returning = true;
+            }
+        }
+        else
+        {
+            if (owner != null)
+            {
+                Vector3 toOwner = (owner.position - transform.position).normalized;
+                transform.position += toOwner * speed * Time.deltaTime;
+
+                // Destroy if returned
+                if (Vector3.Distance(transform.position, owner.position) < 0.5f)
+                {
+                    Destroy(gameObject);
+                }
+            }
+            else
+            {
+                // Owner dead? Just go back opposite way or destroy
+                Destroy(gameObject);
+            }
+        }
+        transform.Rotate(0, 0, 360 * Time.deltaTime * 2); // Spin effect
     }
 
     private void RotateToDirection()
     {
-        if (direction != Vector3.zero)
+        if (direction != Vector3.zero && !isBoomerang)
         {
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
@@ -72,8 +128,12 @@ public class ProjectileController : MonoBehaviour
             {
                 enemy.ApplyKnockback(direction, knockbackForce);
             }
-            Destroy(gameObject);
+
+            // Multishot/Normal destroy on hit, Boomerang penetrates (doesn't destroy)
+            if (!isBoomerang)
+            {
+                Destroy(gameObject);
+            }
         }
-        // Could also add wall collision check here
     }
 }

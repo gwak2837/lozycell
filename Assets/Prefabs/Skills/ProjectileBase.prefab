@@ -171,4 +171,6 @@ MonoBehaviour:
   speed: 10
   damage: 5
   lifetime: 2
+  knockbackForce: 0
   isHoming: 0
+  isBoomerang: 0

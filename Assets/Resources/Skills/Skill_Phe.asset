@@ -9,20 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6f468df2580a47dfb66d399e74ea8e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ProjectileSkill
-  skillName: Homing Missiles
+  m_Script: {fileID: 11500000, guid: 8b32cdeca01d340cead270218b168a22, type: 3}
+  m_Name: Skill_Phe
+  m_EditorClassIdentifier: Assembly-CSharp::BuffSkill
+  skillName: Orbital Shield
   description: 
-  icon: {fileID: 0}
   cooldown: 0
-  damage: 15
-  speed: 8
-  lifetime: 2
-  scale: 1
-  color: {r: 1, g: 1, b: 1, a: 1}
-  knockback: 0
-  isHoming: 1
-  projectileCount: 3
-  spreadAngle: 120
-  delayBetweenShots: 0
+  icon: {fileID: 0}
+  buffType: 2
+  amount: 1
+  duration: 3

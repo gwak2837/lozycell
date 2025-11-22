@@ -11,6 +11,10 @@ public class PlayerStats : MonoBehaviour
     public float baseMoveSpeed = 5f;
     private float speedMultiplier = 1f;
 
+    [Header("Combat")]
+    public float baseDamageMultiplier = 1f;
+    private float damageMultiplier = 1f;
+
     [Header("Status")]
     public bool isShielded = false;
     public bool isInvulnerable = false;
@@ -21,11 +25,17 @@ public class PlayerStats : MonoBehaviour
     private void Awake()
     {
         currentHealth = maxHealth;
+        damageMultiplier = baseDamageMultiplier;
     }
 
     public float GetCurrentMoveSpeed()
     {
         return baseMoveSpeed * speedMultiplier;
+    }
+    
+    public float GetDamageMultiplier()
+    {
+        return damageMultiplier;
     }
 
     public void SetSpeedMultiplier(float multiplier, float duration = 0f)
@@ -40,6 +50,20 @@ public class PlayerStats : MonoBehaviour
     private void ResetSpeed()
     {
         speedMultiplier = 1f;
+    }
+
+    public void SetDamageMultiplier(float multiplier, float duration = 0f)
+    {
+        damageMultiplier = multiplier;
+        if (duration > 0)
+        {
+            Invoke(nameof(ResetDamage), duration);
+        }
+    }
+
+    private void ResetDamage()
+    {
+        damageMultiplier = baseDamageMultiplier;
     }
 
     public void EnableInvulnerability(float duration)
@@ -73,14 +97,6 @@ public class PlayerStats : MonoBehaviour
 
         if (isShielded)
         {
-            // Shield absorbs damage (maybe one hit or all damage for duration?
-            // PRD says "ignores next damage" for Glycine usually, but "Speed + Shield (Gly - GGG)"
-            // says "ignores next damage" in plan. Let's stick to that or duration.)
-            // The plan says "ignores next damage". The code above does duration.
-            // Let's make it duration based for "Shield" usually implies duration or hit count.
-            // Plan: "Speed + Shield ... ignores next damage".
-            // I will implement "consume shield on hit" logic.
-
             isShielded = false; // Consume shield
             return;
         }

@@ -137,20 +137,9 @@ public class ProjectSetupTool : EditorWindow
         if (psc != null)
         {
             // No longer holding prefabs directly in controller, handled by singletons or concrete skills
-            // But we might want to refresh references if needed.
-            // ProjectileSystem.Instance.projectilePrefab = ... (if we want to assign here, but ProjectileSystem is singleton in scene)
+            // ProjectileSystem removed.
 
-            // Let's find ProjectileSystem and assign
-            ProjectileSystem ps = Object.FindFirstObjectByType<ProjectileSystem>();
-            if (ps == null)
-            {
-                GameObject psObj = new GameObject("ProjectileSystem");
-                ps = psObj.AddComponent<ProjectileSystem>();
-            }
-            ps.projectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(projPath);
-            EditorUtility.SetDirty(ps);
-
-            Debug.Log("Auto-assigned prefabs to active ProjectileSystem.");
+            Debug.Log("Auto-assigned prefabs: Skipped (ProjectileSystem removed).");
         }
     }
 

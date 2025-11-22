@@ -1,123 +1,83 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Skills/Chain Skill")]
 public class ChainSkill : SkillStrategy
 {
-    public enum ChainType
-    {
-        Lightning,
-        LaserLink,
-    }
-
-    [Header("Chain Settings")]
-    public ChainType chainType;
-    public int chainCount = 5;
-    public float damage = 25f;
-    public float range = 10f;
-
-    [Header("Laser Link Settings")]
-    public float linkDuration = 2f;
-    public float tickRate = 0.2f;
+    public int maxTargets = 4;
+    public float jumpRange = 5f;
+    public float damage = 10f;
+    public GameObject linkPrefab; // Visual Line
+    public float linkDuration = 0.5f;
 
     public override void Activate(PlayerSkillController controller)
     {
-        Vector3 startPos = controller.transform.position;
+        Vector3 currentPos = controller.transform.position;
+        List<EnemyController> hitEnemies = new List<EnemyController>();
 
-        // Get enemies logic - could move to Utility if reused often
-        List<EnemyController> enemies = new List<EnemyController>(FindObjectsByType<EnemyController>(FindObjectsSortMode.None));
-        enemies.Sort(
-            (a, b) =>
-                Vector3
-                    .Distance(startPos, a.transform.position)
-                    .CompareTo(Vector3.Distance(startPos, b.transform.position))
-        );
+        // Find first target
+        EnemyController currentTarget = SkillUtility.FindNearestEnemy(currentPos, jumpRange);
 
-        if (chainType == ChainType.Lightning)
+        if (currentTarget == null)
+            return;
+
+        // Start Chain
+        for (int i = 0; i < maxTargets; i++)
         {
-            int count = Mathf.Min(chainCount, enemies.Count);
-            for (int i = 0; i < count; i++)
-            {
-                enemies[i].TakeDamage(damage);
+            if (currentTarget == null)
+                break;
+            if (hitEnemies.Contains(currentTarget))
+                break;
 
-                if (i > 0)
-                    SkillEffects.Instance.CreateLightningLine(
-                        enemies[i - 1].transform.position,
-                        enemies[i].transform.position
-                    );
-                else
-                    SkillEffects.Instance.CreateLightningLine(startPos, enemies[i].transform.position);
-            }
-        }
-        else if (chainType == ChainType.LaserLink)
-        {
-            if (enemies.Count >= 2)
+            // Apply Damage
+            currentTarget.TakeDamage(damage);
+            hitEnemies.Add(currentTarget);
+
+            // Visual Link
+            if (linkPrefab != null)
             {
-                controller.StartCoroutine(LaserLinkCoroutine(enemies[0], enemies[1]));
+                SpawnLink(currentPos, currentTarget.transform.position);
             }
-            else if (enemies.Count == 1)
-            {
-                controller.StartCoroutine(LaserLinkPlayerCoroutine(controller, enemies[0]));
-            }
+
+            // Next Step
+            currentPos = currentTarget.transform.position;
+            currentTarget = FindNextTarget(currentPos, hitEnemies);
         }
     }
 
-    private IEnumerator LaserLinkCoroutine(EnemyController e1, EnemyController e2)
+    private EnemyController FindNextTarget(Vector3 pos, List<EnemyController> exclude)
     {
-        float elapsed = 0;
-        float lastTick = 0;
+        var enemies = SkillUtility.FindEnemiesInRadius(pos, jumpRange);
+        EnemyController nearest = null;
+        float minDist = float.MaxValue;
 
-        GameObject laserLine = SkillEffects.Instance.CreateLaserLine(e1.transform.position, e2.transform.position);
-        LineRenderer lr = laserLine.GetComponent<LineRenderer>();
-
-        while (elapsed < linkDuration && e1 != null && e2 != null)
+        foreach (var enemy in enemies)
         {
-            elapsed += Time.deltaTime;
+            if (exclude.Contains(enemy))
+                continue;
 
-            lr.SetPosition(0, e1.transform.position);
-            lr.SetPosition(1, e2.transform.position);
-
-            if (elapsed - lastTick > tickRate)
+            float d = Vector3.Distance(pos, enemy.transform.position);
+            if (d < minDist)
             {
-                lastTick = elapsed;
-                e1.TakeDamage(damage);
-                e2.TakeDamage(damage);
+                minDist = d;
+                nearest = enemy;
             }
-
-            yield return null;
         }
-
-        Destroy(laserLine);
+        return nearest;
     }
 
-    private IEnumerator LaserLinkPlayerCoroutine(PlayerSkillController controller, EnemyController enemy)
+    private void SpawnLink(Vector3 start, Vector3 end)
     {
-        float elapsed = 0;
-        float lastTick = 0;
-
-        GameObject laserLine = SkillEffects.Instance.CreateLaserLine(
-            controller.transform.position,
-            enemy.transform.position
-        );
-        LineRenderer lr = laserLine.GetComponent<LineRenderer>();
-
-        while (elapsed < linkDuration && enemy != null && controller != null)
+        GameObject link = Instantiate(linkPrefab, start, Quaternion.identity);
+        LineRenderer lr = link.GetComponent<LineRenderer>();
+        if (lr != null)
         {
-            elapsed += Time.deltaTime;
-
-            lr.SetPosition(0, controller.transform.position);
-            lr.SetPosition(1, enemy.transform.position);
-
-            if (elapsed - lastTick > tickRate)
-            {
-                lastTick = elapsed;
-                enemy.TakeDamage(damage);
-            }
-
-            yield return null;
+            lr.positionCount = 2;
+            lr.SetPosition(0, start);
+            lr.SetPosition(1, end);
         }
-
-        Destroy(laserLine);
+        // If no LineRenderer, maybe it stretches?
+        // Assuming LineRenderer for now.
+        Destroy(link, linkDuration);
     }
 }

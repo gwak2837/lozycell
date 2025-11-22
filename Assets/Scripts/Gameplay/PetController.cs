@@ -3,13 +3,15 @@ using UnityEngine;
 
 public class PetController : MonoBehaviour
 {
-    private PlayerController player;
+    [Header("Settings")]
+    public GameObject projectilePrefab;
+    public float shootInterval = 1f;
+    public float damage = 10f;
+    
+    private Transform player;
     private float duration;
-    private float shootInterval = 1f;
-    private float damage = 10f;
 
-    // Manager removed, using Singleton
-    public void Initialize(PlayerController owner, float dur)
+    public void Initialize(Transform owner, float dur)
     {
         player = owner;
         duration = dur;
@@ -25,21 +27,50 @@ public class PetController : MonoBehaviour
         {
             elapsed += Time.deltaTime;
 
-            // Follow player
-            Vector3 targetPos = player.transform.position + new Vector3(1.5f, 0, 0);
-            transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * 5f);
+            // Follow player (orbit or lag)
+            // Simple follow with offset
+            Vector3 targetPos = player.position + new Vector3(1.5f, 1.5f, 0);
+            transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * 2f);
 
             // Shoot
-            if (elapsed - lastShot > shootInterval)
+            if (Time.time - lastShot > shootInterval)
             {
-                lastShot = elapsed;
-                Vector3 enemyDir = SkillUtility.GetClosestEnemyDir(transform.position, Vector3.right);
-                ProjectileSystem.Instance.Spawn(transform.position, enemyDir, damage, 12f, 2f, Color.green, 0.3f);
+                lastShot = Time.time;
+                Shoot();
             }
 
             yield return null;
         }
 
         Destroy(gameObject);
+    }
+
+    private void Shoot()
+    {
+        if (projectilePrefab == null) return;
+
+        EnemyController enemy = SkillUtility.FindNearestEnemy(transform.position, 15f);
+        Vector3 dir = Vector3.right;
+        Transform target = null;
+
+        if (enemy != null)
+        {
+            dir = (enemy.transform.position - transform.position).normalized;
+            target = enemy.transform;
+        }
+        else
+        {
+            // Random or Player direction
+            dir = (player.position - transform.position).normalized; 
+            // Actually if no enemy, shoot direction of player movement? Or random.
+            // Let's shoot Right by default.
+        }
+
+        GameObject proj = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+        ProjectileController pc = proj.GetComponent<ProjectileController>();
+        if (pc != null)
+        {
+            pc.Initialize(dir, damage, 12f, 2f, 0f, target, false, transform);
+        }
     }
 }

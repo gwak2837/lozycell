@@ -8,6 +8,9 @@ public class CompositeSkill : SkillStrategy
 
     public override void Activate(PlayerSkillController controller)
     {
+        if (subSkills == null)
+            return;
+
         foreach (var skill in subSkills)
         {
             if (skill != null)

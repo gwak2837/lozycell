@@ -9,14 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b32cdeca01d340cead270218b168a22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BuffSkill
-  skillName: Overcharge
+  m_Script: {fileID: 11500000, guid: c98e4cb04541c4049a2b7439587841d7, type: 3}
+  m_Name: Skill_His
+  m_EditorClassIdentifier: Assembly-CSharp::GlobalEffectSkill
+  skillName: Anaphylaxis
   description: 
-  icon: {fileID: 0}
   cooldown: 0
-  buffType: 2
-  duration: 5
-  value: 2
-  isPercentage: 0
+  icon: {fileID: 0}
+  effectType: 0
+  value: 50
+  duration: 0

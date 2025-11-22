@@ -15,59 +15,63 @@ public class SkillAssetGenerator : Editor
             Directory.CreateDirectory(path);
         }
 
-        // 1. Group A: Projectile Skills
-        CreateProjectileSkill(path, "Gly", "Minigun", 10f, 15f, 0.05f, 10, 15f);
-        CreateProjectileSkill(path, "Ala", "Standard Shot", 20f, 12f, 0f, 1, 0f);
-        CreateProjectileSkill(path, "Val", "Muscle Up", 40f, 8f, 0f, 1, 0f, 10f);
-        CreateProjectileSkill(path, "Phe", "Homing Missiles", 15f, 8f, 0f, 3, 120f, 0f, true); // Homing
-        CreateProjectileSkill(path, "Pro", "Boomerang", 15f, 10f, 0f, 1, 0f); // Simple version of Boomerang
+        // Load Prefabs
+        GameObject projectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+            "Assets/Prefabs/Skills/ProjectileBase.prefab"
+        );
+        GameObject areaPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+            "Assets/Prefabs/Skills/ToxicCloudBase.prefab"
+        );
+        // Placeholders for others if they don't exist, or null
+        GameObject petPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Skills/PetBase.prefab");
+        GameObject linkPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Skills/LinkBase.prefab");
 
-        // 2. Group B: Area Skills
-        CreateAreaSkill(path, "Ser", "Slow Field", AreaSkill.AreaType.Slow, 0.5f, 4f, Color.cyan);
-        CreateAreaSkill(path, "Glu", "Explosion", AreaSkill.AreaType.InstantDamage, 50f, 0f, Color.red);
-        CreateAreaSkill(path, "Gln", "Tidal", AreaSkill.AreaType.Push, 3f, 0f, Color.blue);
-        CreateAreaSkill(path, "Asp", "Poison Pool", AreaSkill.AreaType.SpawnObject, 15f, 5f, Color.green); // Needs prefab assignment later if strictly following logic
+        // 1. Projectile Skills
+        CreateProjectileSkill(path, "Ala", "Multishot", 10f, 10f, 5, 30f, false, 0f, false, projectilePrefab);
+        CreateProjectileSkill(path, "Val", "Power Shot", 30f, 15f, 1, 0f, false, 5f, false, projectilePrefab); // Knockback
+        CreateProjectileSkill(path, "Tyr", "Homing Missiles", 15f, 8f, 3, 45f, true, 0f, false, projectilePrefab);
+        CreateProjectileSkill(path, "Pro", "Boomerang", 15f, 10f, 1, 0f, false, 0f, true, projectilePrefab);
 
-        // 3. Group C: Chain Skills
-        CreateChainSkill(path, "Lys", "Chain Lightning", ChainSkill.ChainType.Lightning, 25f, 5);
-        CreateChainSkill(path, "Cys", "Laser Link", ChainSkill.ChainType.LaserLink, 10f, 2);
+        // 2. Area Skills
+        CreateAreaSkill(path, "Asp", "Acid Pool", 5f, 5f, 2f, true, areaPrefab);
+        CreateAreaSkill(path, "Asn", "Grass Knot", 0f, 5f, 3f, true, areaPrefab);
+        CreateAreaSkill(path, "Trp", "Gravity Well", 0f, 5f, 4f, true, areaPrefab);
+        CreateAreaSkill(path, "Arg", "Tesla Coil", 10f, 5f, 3f, true, areaPrefab);
+        CreateAreaSkill(path, "Met", "Methyl Trail", 10f, 5f, 1f, true, areaPrefab);
 
-        // 4. Group D: Direct Target
-        CreateDirectSkill(path, "Arg", "Thunder Smash", DirectTargetSkill.EffectType.Stun, 50f, 1f);
-        CreateDirectSkill(path, "Thr", "Freeze", DirectTargetSkill.EffectType.Freeze, 0f, 3f);
-        CreateDirectSkill(path, "Tyr", "Critical Hit", DirectTargetSkill.EffectType.Critical, 100f, 0f);
+        // 3. Buff Skills
+        CreateBuffSkill(path, "Glu", "Synaptic Boost", BuffType.SpeedUp, 1.5f, 10f);
+        CreateBuffSkill(path, "Leu", "Muscle Up", BuffType.AttackUp, 1.5f, 10f);
+        CreateBuffSkill(path, "Phe", "Orbital Shield", BuffType.Shield, 1f, 3f);
+        CreateBuffSkill(path, "Gln", "Heal", BuffType.Heal, 33f, 0f);
 
-        // Missing Skills
-        CreateProjectileSkill(path, "Trp", "Meteor", 60f, 10f, 0.1f, 3, 20f, 5f); // High damage burst
-        CreateProjectileSkill(path, "Leu", "Muscle Up", 40f, 8f, 0f, 1, 0f, 10f);
-        CreateProjectileSkill(path, "Ile", "Muscle Up", 40f, 8f, 0f, 1, 0f, 10f);
-        CreateProjectileSkill(path, "Asn", "Wave", 15f, 10f, 0f, 5, 60f, 2f); // Fan shot
+        // 4. Global Skills
+        CreateGlobalSkill(path, "His", "Anaphylaxis", GlobalEffectType.Damage, 50f, 0f);
+        CreateGlobalSkill(path, "Ser", "Phospho Mark", GlobalEffectType.DefenseZero, 0f, 10f);
+        CreateGlobalSkill(path, "Thr", "Alcohol Burn", GlobalEffectType.DoT, 10f, 5f);
+        CreateGlobalSkill(path, "Gly", "Synapse Shutdown", GlobalEffectType.Slow, 0.5f, 10f);
+        CreateGlobalSkill(path, "Stop", "Unlimited Void", GlobalEffectType.Stun, 0f, 5f);
 
-        // 5. Group E: Buffs
-        CreateBuffSkill(path, "His", "Overcharge", BuffSkill.BuffType.Speed, 2f, 5f);
+        // 5. Chain Skills
+        CreateChainSkill(path, "Lys", "Chain Lightning", 20f, 4, linkPrefab);
+        CreateChainSkill(path, "Cys", "S-S Death Bond", 15f, 2, linkPrefab);
 
-        // 6. Special: Met & Stop
-        CreateMetSkill(path);
-        CreateStopSkill(path);
+        // 6. Summon Skills
+        CreateSummonSkill(path, "Ile", "Mirror Image", 5f, petPrefab);
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log("Skills Generated in Assets/Resources/Skills.");
+        Debug.Log("Skills Generated and Prefabs Assigned (where available) in Assets/Resources/Skills.");
 
-        // Auto-assign to PlayerSkillController in scene
         AssignSkillsToManager(path);
     }
 
     static void AssignSkillsToManager(string path)
     {
-        // Find PlayerSkillController instead
         PlayerSkillController controller = Object.FindFirstObjectByType<PlayerSkillController>();
         if (controller == null)
-        {
-            Debug.LogWarning("PlayerSkillController not found in the current scene. Skills created but not assigned.");
             return;
-        }
 
         Undo.RecordObject(controller, "Auto Assign Skills");
 
@@ -84,8 +88,6 @@ public class SkillAssetGenerator : Editor
                 string fileName = Path.GetFileNameWithoutExtension(assetPath);
                 string code = fileName.Replace("Skill_", "");
 
-                if (!assetPath.Contains(".asset"))
-                    continue;
                 if (!fileName.StartsWith("Skill_"))
                     continue;
 
@@ -94,8 +96,6 @@ public class SkillAssetGenerator : Editor
                 );
             }
         }
-
-        Debug.Log($"Automatically assigned {controller.skillEntries.Count} skills to PlayerSkillController.");
         EditorUtility.SetDirty(controller);
     }
 
@@ -105,24 +105,25 @@ public class SkillAssetGenerator : Editor
         string name,
         float dmg,
         float spd,
-        float delay,
         int count,
         float spread,
+        bool homing = false,
         float knockback = 0f,
-        bool homing = false
+        bool boomerang = false,
+        GameObject prefab = null
     )
     {
         ProjectileSkill skill = ScriptableObject.CreateInstance<ProjectileSkill>();
+        skill.name = $"Skill_{code}";
         skill.skillName = name;
         skill.damage = dmg;
         skill.speed = spd;
-        skill.delayBetweenShots = delay;
         skill.projectileCount = count;
         skill.spreadAngle = spread;
-        skill.knockback = knockback;
         skill.isHoming = homing;
-        skill.color = Color.white;
-
+        skill.knockback = knockback;
+        skill.isBoomerang = boomerang;
+        skill.projectilePrefab = prefab;
         SaveAsset(skill, path, code);
     }
 
@@ -130,136 +131,96 @@ public class SkillAssetGenerator : Editor
         string path,
         string code,
         string name,
-        AreaSkill.AreaType type,
         float val,
         float dur,
-        Color color
+        float rad,
+        bool onPlayer,
+        GameObject prefab = null
     )
     {
         AreaSkill skill = ScriptableObject.CreateInstance<AreaSkill>();
+        skill.name = $"Skill_{code}";
         skill.skillName = name;
-        skill.type = type;
+        skill.effectValue = val;
+        skill.duration = dur;
+        skill.radius = rad;
+        skill.spawnOnPlayer = onPlayer;
+        skill.areaPrefab = prefab;
+        SaveAsset(skill, path, code);
+    }
+
+    static void CreateBuffSkill(string path, string code, string name, BuffType type, float val, float dur)
+    {
+        BuffSkill skill = ScriptableObject.CreateInstance<BuffSkill>();
+        skill.name = $"Skill_{code}";
+        skill.skillName = name;
+        skill.buffType = type;
+        skill.amount = val;
+        skill.duration = dur;
+        SaveAsset(skill, path, code);
+    }
+
+    static void CreateGlobalSkill(string path, string code, string name, GlobalEffectType type, float val, float dur)
+    {
+        GlobalEffectSkill skill = ScriptableObject.CreateInstance<GlobalEffectSkill>();
+        skill.name = $"Skill_{code}";
+        skill.skillName = name;
+        skill.effectType = type;
         skill.value = val;
         skill.duration = dur;
-        skill.visualColor = color;
-
         SaveAsset(skill, path, code);
     }
 
-    static void CreateChainSkill(string path, string code, string name, ChainSkill.ChainType type, float dmg, int count)
-    {
-        ChainSkill skill = ScriptableObject.CreateInstance<ChainSkill>();
-        skill.skillName = name;
-        skill.chainType = type;
-        skill.damage = dmg;
-        skill.chainCount = count;
-
-        SaveAsset(skill, path, code);
-    }
-
-    static void CreateDirectSkill(
+    static void CreateChainSkill(
         string path,
         string code,
         string name,
-        DirectTargetSkill.EffectType type,
         float dmg,
-        float dur
+        int targets,
+        GameObject prefab = null
     )
     {
-        DirectTargetSkill skill = ScriptableObject.CreateInstance<DirectTargetSkill>();
+        ChainSkill skill = ScriptableObject.CreateInstance<ChainSkill>();
+        skill.name = $"Skill_{code}";
         skill.skillName = name;
-        skill.effectType = type;
         skill.damage = dmg;
-        skill.duration = dur;
-
+        skill.maxTargets = targets;
+        skill.linkPrefab = prefab;
         SaveAsset(skill, path, code);
     }
 
-    static void CreateBuffSkill(string path, string code, string name, BuffSkill.BuffType type, float val, float dur)
+    static void CreateSummonSkill(string path, string code, string name, float dur, GameObject prefab = null)
     {
-        BuffSkill skill = ScriptableObject.CreateInstance<BuffSkill>();
+        SummonSkill skill = ScriptableObject.CreateInstance<SummonSkill>();
+        skill.name = $"Skill_{code}";
         skill.skillName = name;
-        skill.buffType = type;
-        skill.value = val;
         skill.duration = dur;
-
+        skill.petPrefab = prefab;
         SaveAsset(skill, path, code);
-    }
-
-    static void CreateMetSkill(string path)
-    {
-        // Met needs Shield + Pet
-        BuffSkill shield = ScriptableObject.CreateInstance<BuffSkill>();
-        shield.skillName = "Met Shield";
-        shield.buffType = BuffSkill.BuffType.Shield;
-        shield.duration = 5f;
-
-        SummonSkill pet = ScriptableObject.CreateInstance<SummonSkill>();
-        pet.skillName = "Met Pet";
-        pet.duration = 10f;
-
-        CompositeSkill met = ScriptableObject.CreateInstance<CompositeSkill>();
-        met.skillName = "Met (Start)";
-        met.subSkills = new List<SkillStrategy> { shield, pet };
-
-        string assetPath = $"{path}/Skill_Met.asset";
-        AssetDatabase.CreateAsset(met, assetPath);
-
-        // Add sub-assets properly
-        shield.name = "Met_Shield";
-        pet.name = "Met_Pet";
-        AssetDatabase.AddObjectToAsset(shield, assetPath);
-        AssetDatabase.AddObjectToAsset(pet, assetPath);
-    }
-
-    static void CreateStopSkill(string path)
-    {
-        // Stop needs Heal + Invul + Area Damage
-        BuffSkill heal = ScriptableObject.CreateInstance<BuffSkill>();
-        heal.skillName = "Renewal Heal";
-        heal.buffType = BuffSkill.BuffType.Heal;
-        heal.value = 30f;
-        heal.isPercentage = true;
-
-        BuffSkill invul = ScriptableObject.CreateInstance<BuffSkill>();
-        invul.skillName = "Renewal Invul";
-        invul.buffType = BuffSkill.BuffType.Invulnerability;
-        invul.duration = 1.5f;
-
-        AreaSkill damage = ScriptableObject.CreateInstance<AreaSkill>();
-        damage.skillName = "Renewal Blast";
-        damage.type = AreaSkill.AreaType.InstantDamage;
-        damage.value = 30f;
-        damage.radius = 5f;
-        damage.visualColor = Color.green;
-
-        CompositeSkill stop = ScriptableObject.CreateInstance<CompositeSkill>();
-        stop.skillName = "Stop (Renewal)";
-        stop.subSkills = new List<SkillStrategy> { heal, invul, damage };
-
-        string assetPath = $"{path}/Skill_Stop.asset";
-        AssetDatabase.CreateAsset(stop, assetPath);
-
-        heal.name = "Stop_Heal";
-        invul.name = "Stop_Invul";
-        damage.name = "Stop_Damage";
-        AssetDatabase.AddObjectToAsset(heal, assetPath);
-        AssetDatabase.AddObjectToAsset(invul, assetPath);
-        AssetDatabase.AddObjectToAsset(damage, assetPath);
     }
 
     static void SaveAsset(ScriptableObject so, string path, string code)
     {
         string fullPath = $"{path}/Skill_{code}.asset";
-        // Check if exists
         var existing = AssetDatabase.LoadAssetAtPath<ScriptableObject>(fullPath);
+
         if (existing == null)
         {
             AssetDatabase.CreateAsset(so, fullPath);
         }
         else
         {
-            EditorUtility.CopySerialized(so, existing);
+            if (existing.GetType() != so.GetType())
+            {
+                AssetDatabase.DeleteAsset(fullPath);
+                AssetDatabase.CreateAsset(so, fullPath);
+            }
+            else
+            {
+                EditorUtility.CopySerialized(so, existing);
+                existing.name = so.name;
+                EditorUtility.SetDirty(existing);
+            }
         }
     }
 }

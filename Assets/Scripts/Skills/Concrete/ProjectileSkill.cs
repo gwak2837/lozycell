@@ -1,106 +1,69 @@
-using System.Collections;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Skills/Projectile Skill")]
 public class ProjectileSkill : SkillStrategy
 {
     [Header("Projectile Settings")]
-    public float damage = 10f;
-    public float speed = 15f;
-    public float lifetime = 2f;
-    public float scale = 1f;
-    public Color color = Color.white;
-    public float knockback = 0f;
-    public bool isHoming = false;
-
-    [Header("Pattern Settings")]
+    public GameObject projectilePrefab;
     public int projectileCount = 1;
-    public float spreadAngle = 0f;
-    public float delayBetweenShots = 0f;
+    public float damage = 10f;
+    public float speed = 10f;
+    public float lifetime = 2f;
+    public float spreadAngle = 15f;
+
+    [Header("Behaviors")]
+    public bool isHoming = false;
+    public bool isBoomerang = false;
+    public float knockback = 0f;
 
     public override void Activate(PlayerSkillController controller)
     {
-        if (delayBetweenShots > 0)
+        if (projectilePrefab == null)
+            return;
+
+        Vector3 spawnPos = controller.transform.position;
+
+        // Basic direction: Forward (or towards nearest enemy?)
+        // Arcade style usually targets nearest or faces movement.
+        // Let's try finding nearest enemy first, else face forward/random.
+        // Actually, Plan implies auto-targeting or facing.
+        // Ala (Multishot) -> usually forward/random.
+        // Tyr (Homing) -> seeks.
+
+        // Determine base direction
+        Vector3 baseDir = Vector3.up;
+        EnemyController nearest = SkillUtility.FindNearestEnemy(spawnPos, 20f);
+
+        if (nearest != null)
         {
-            controller.StartCoroutine(FireRoutine(controller));
+            baseDir = (nearest.transform.position - spawnPos).normalized;
         }
         else
         {
-            FireOnce(controller);
+            // Use input direction or random?
+            // Let's use random if no enemy, or just UP.
+            baseDir = Random.insideUnitCircle.normalized;
+            if (baseDir == Vector3.zero)
+                baseDir = Vector3.up;
         }
-    }
 
-    private void FireOnce(PlayerSkillController controller)
-    {
-        Vector3 startPos = controller.transform.position;
-        Vector3 targetDir = SkillUtility.GetClosestEnemyDir(startPos, controller.transform.up);
-        Transform targetTransform = isHoming ? SkillUtility.GetClosestEnemy(startPos)?.transform : null;
+        float startAngle = -spreadAngle * (projectileCount - 1) / 2f;
 
-        if (projectileCount == 1)
-        {
-            ProjectileSystem.Instance.Spawn(
-                startPos,
-                targetDir,
-                damage,
-                speed,
-                lifetime,
-                color,
-                scale,
-                knockback,
-                targetTransform
-            );
-        }
-        else
-        {
-            float startAngle = -spreadAngle / 2f;
-            float angleStep = spreadAngle / (projectileCount - 1);
-
-            for (int i = 0; i < projectileCount; i++)
-            {
-                float currentAngle = startAngle + (angleStep * i);
-                Vector3 dir = Quaternion.Euler(0, 0, currentAngle) * targetDir;
-                ProjectileSystem.Instance.Spawn(
-                    startPos,
-                    dir,
-                    damage,
-                    speed,
-                    lifetime,
-                    color,
-                    scale,
-                    knockback,
-                    targetTransform
-                );
-            }
-        }
-    }
-
-    private IEnumerator FireRoutine(PlayerSkillController controller)
-    {
         for (int i = 0; i < projectileCount; i++)
         {
-            Vector3 startPos = controller.transform.position;
-            Vector3 targetDir = SkillUtility.GetClosestEnemyDir(startPos, controller.transform.up);
+            float angleOffset = startAngle + (spreadAngle * i);
+            Quaternion rotation = Quaternion.AngleAxis(angleOffset, Vector3.forward);
+            Vector3 finalDir = rotation * baseDir;
 
-            if (spreadAngle > 0)
+            GameObject proj = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
+            ProjectileController pc = proj.GetComponent<ProjectileController>();
+
+            Transform target = (isHoming && nearest != null) ? nearest.transform : null;
+
+            if (pc != null)
             {
-                float randomAngle = Random.Range(-spreadAngle, spreadAngle);
-                targetDir = Quaternion.Euler(0, 0, randomAngle) * targetDir;
+                pc.Initialize(finalDir, damage, speed, lifetime, knockback, target, isBoomerang, controller.transform);
             }
-
-            Transform targetTransform = isHoming ? SkillUtility.GetClosestEnemy(startPos)?.transform : null;
-            ProjectileSystem.Instance.Spawn(
-                startPos,
-                targetDir,
-                damage,
-                speed,
-                lifetime,
-                color,
-                scale,
-                knockback,
-                targetTransform
-            );
-
-            yield return new WaitForSeconds(delayBetweenShots);
         }
     }
 }
