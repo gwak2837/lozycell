@@ -21,3 +21,5 @@ MonoBehaviour:
   effectValue: 0
   radius: 3
   spawnOnPlayer: 1
+  attachToPlayer: 0
+  visualColor: {r: 0, g: 0.5, b: 0.5, a: 1}

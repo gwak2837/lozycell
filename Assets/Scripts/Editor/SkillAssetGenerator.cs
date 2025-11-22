@@ -33,11 +33,16 @@ public class SkillAssetGenerator : Editor
         CreateProjectileSkill(path, "Pro", "Boomerang", 15f, 10f, 1, 0f, false, 0f, true, projectilePrefab);
 
         // 2. Area Skills
-        CreateAreaSkill(path, "Asp", "Acid Pool", 5f, 5f, 2f, true, areaPrefab);
-        CreateAreaSkill(path, "Asn", "Grass Knot", 0f, 5f, 3f, true, areaPrefab);
-        CreateAreaSkill(path, "Trp", "Gravity Well", 0f, 5f, 4f, true, areaPrefab);
-        CreateAreaSkill(path, "Arg", "Tesla Coil", 10f, 5f, 3f, true, areaPrefab);
-        CreateAreaSkill(path, "Met", "Methyl Trail", 10f, 5f, 1f, true, areaPrefab);
+        // Asp - Acid Pool (Green)
+        CreateAreaSkill(path, "Asp", "Acid Pool", 5f, 5f, 2f, true, false, Color.green, areaPrefab);
+        // Asn - Grass Knot (Blue/Green) - Slow Zone
+        CreateAreaSkill(path, "Asn", "Grass Knot", 0f, 5f, 3f, true, false, new Color(0f, 0.5f, 0.5f), areaPrefab);
+        // Trp - Gravity Well (Purple)
+        CreateAreaSkill(path, "Trp", "Gravity Well", 0f, 5f, 4f, true, false, new Color(0.5f, 0f, 0.5f), areaPrefab);
+        // Arg - Tesla Coil (Yellow) - Follows Player
+        CreateAreaSkill(path, "Arg", "Tesla Coil", 10f, 5f, 3f, true, true, Color.yellow, areaPrefab);
+        // Met - Methyl Trail (Green)
+        CreateAreaSkill(path, "Met", "Methyl Trail", 10f, 5f, 1f, true, false, Color.green, areaPrefab);
 
         // 3. Buff Skills
         CreateBuffSkill(path, "Glu", "Synaptic Boost", BuffType.SpeedUp, 1.5f, 10f);
@@ -135,6 +140,8 @@ public class SkillAssetGenerator : Editor
         float dur,
         float rad,
         bool onPlayer,
+        bool attach,
+        Color color,
         GameObject prefab = null
     )
     {
@@ -145,6 +152,8 @@ public class SkillAssetGenerator : Editor
         skill.duration = dur;
         skill.radius = rad;
         skill.spawnOnPlayer = onPlayer;
+        skill.attachToPlayer = attach;
+        skill.visualColor = color;
         skill.areaPrefab = prefab;
         SaveAsset(skill, path, code);
     }

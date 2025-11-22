@@ -8,6 +8,8 @@ public class AreaSkill : SkillStrategy
     public float effectValue = 5f; // Damage or Slow factor
     public float radius = 1f;
     public bool spawnOnPlayer = true;
+    public bool attachToPlayer = false; // New field
+    public Color visualColor = Color.white; // New field
 
     public override void Activate(PlayerSkillController controller)
     {
@@ -20,16 +22,19 @@ public class AreaSkill : SkillStrategy
 
         GameObject area = Instantiate(areaPrefab, spawnPos, Quaternion.identity);
 
+        if (attachToPlayer && spawnOnPlayer)
+        {
+            area.transform.SetParent(controller.transform);
+        }
+
         // Try to initialize known components
         var toxic = area.GetComponent<ToxicCloud>();
         if (toxic != null)
         {
             toxic.Initialize(effectValue, duration, radius);
+            toxic.SetColor(visualColor); // Use new method
         }
 
-        // If it's a gravity or slow zone, we might need other components.
-        // For now, assume the prefab is self-contained or we extend this later.
-        // Simple destruction if no specific init logic handles it
         if (toxic == null)
         {
             Destroy(area, duration);

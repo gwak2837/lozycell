@@ -18,6 +18,19 @@ public class ToxicCloud : MonoBehaviour
         Destroy(gameObject, duration);
     }
 
+    public void SetColor(Color color)
+    {
+        var sr = GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            // Keep some transparency if originally intended, or override.
+            // Usually effects have alpha. Let's assume color passed has alpha or we multiply.
+            // If passed color is opaque (like Color.yellow), we might want to add alpha.
+            // But let's just set it for now.
+            sr.color = new Color(color.r, color.g, color.b, 0.5f);
+        }
+    }
+
     private void Start()
     {
         // Ensure it has a trigger collider if not present
