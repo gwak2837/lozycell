@@ -95,11 +95,15 @@ public static class CodonTable
         { "Leu", new AminoAcidData("Leucine", "MUSCLE UP!", new Color(0.8f, 0.5f, 0.2f)) }, // Orange
         { "Ile", new AminoAcidData("Isoleucine", "IMPACT!", new Color(0.8f, 0.5f, 0.2f)) }, // Orange
         { "Pro", new AminoAcidData("Proline", "BOOMERANG!", Color.gray) },
+        { "Phe", new AminoAcidData("Phenylalanine", "HOMING MISSILES!", new Color(1f, 0f, 1f)) }, // Magenta
+        { "Trp", new AminoAcidData("Tryptophan", "METEOR STRIKE!", new Color(0.6f, 0f, 0.8f)) }, // Deep Purple
         // Group B: Polar (Water/Blue/Cyan)
         { "Ser", new AminoAcidData("Serine", "SLOW FIELD!", Color.cyan) },
         { "Thr", new AminoAcidData("Threonine", "FREEZE!", Color.cyan) },
         { "Asn", new AminoAcidData("Asparagine", "WAVE!", new Color(0.2f, 0.6f, 1f)) }, // Light Blue
         { "Gln", new AminoAcidData("Glutamine", "TIDAL!", new Color(0.2f, 0.6f, 1f)) }, // Light Blue
+        { "Tyr", new AminoAcidData("Tyrosine", "CRITICAL!", new Color(0.8f, 0f, 0.8f)) },
+        { "Cys", new AminoAcidData("Cysteine", "LASER LINK!", new Color(0.8f, 0.8f, 0f)) },
         // Group C: Basic (Lightning/Yellow)
         { "Lys", new AminoAcidData("Lysine", "LIGHTNING!", Color.yellow) },
         { "Arg", new AminoAcidData("Arginine", "THUNDER SMASH!", Color.yellow) },
@@ -107,11 +111,6 @@ public static class CodonTable
         // Group D: Acidic (Fire/Acid/Red-Green)
         { "Asp", new AminoAcidData("Aspartic Acid", "POISON POOL!", new Color(0.3f, 1f, 0.3f)) }, // Green Acid
         { "Glu", new AminoAcidData("Glutamic Acid", "EXPLOSIVE!", new Color(1f, 0.3f, 0.3f)) }, // Red Fire
-        // Group E: Special (Purple/Magenta)
-        { "Phe", new AminoAcidData("Phenylalanine", "HOMING MISSILES!", new Color(1f, 0f, 1f)) }, // Magenta
-        { "Tyr", new AminoAcidData("Tyrosine", "CRITICAL!", new Color(0.8f, 0f, 0.8f)) },
-        { "Trp", new AminoAcidData("Tryptophan", "METEOR STRIKE!", new Color(0.6f, 0f, 0.8f)) }, // Deep Purple
-        { "Cys", new AminoAcidData("Cysteine", "LASER LINK!", new Color(0.8f, 0.8f, 0f)) },
         // Start/Stop
         { "Met", new AminoAcidData("Methionine", "START - SHIELD!", Color.green) },
         { "Stop", new AminoAcidData("STOP CODON", "SELF DESTRUCT!", Color.red) },

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class ArcadeManager : MonoBehaviour
 {
     [Header("Settings")]
-    public int targetAminoAcids = 100;
+    public int targetAminoAcids = 10;
     public GameObject aminoAcidPrefab;
     public Transform spawnArea;
     public float spawnRadius = 10f;
@@ -16,7 +16,7 @@ public class ArcadeManager : MonoBehaviour
 
     [Header("UI")]
     public TextMeshProUGUI progressText;
-    public TextMeshProUGUI comboPopupText; // New: Flashy text
+    public TextMeshProUGUI comboPopupText;
     public GameObject winPanel;
     public GameObject losePanel;
 
@@ -24,7 +24,7 @@ public class ArcadeManager : MonoBehaviour
     public event CodonUpdateHandler OnCodonUpdated;
 
     [Header("Managers")]
-    public PlayerSkillController skillController; // Changed from SkillManager
+    public PlayerSkillController skillController;
     public EnemySpawner enemySpawner;
     public CodonRingController codonRing;
 
