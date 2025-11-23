@@ -2,13 +2,12 @@ using UnityEngine;
 
 public class ProjectileController : MonoBehaviour
 {
-    [Header("Settings")]
-    public float speed = 10f;
-    public float damage = 5f;
-    public float lifetime = 2f;
-    public float knockbackForce = 0f;
-    public bool isHoming = false;
-    public bool isBoomerang = false;
+    private float speed;
+    private float damage;
+    private float lifetime;
+    private float knockbackForce;
+    private bool isHoming;
+    private bool isBoomerang;
 
     private Transform target;
     private Transform owner; // For boomerang return

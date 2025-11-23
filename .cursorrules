@@ -1,0 +1,17 @@
+# LozyCell Coding Rules
+
+## Configuration & Game Logic
+
+- **No Inspector Configuration for Logic**: Do NOT use `[SerializeField]` or `public` fields for primitive types (int, float, bool, string) that define game logic (e.g., speeds, damage, health, durations).
+- **Centralized Config**: All game logic constants and tunable values must be defined in `Assets/Scripts/Configs/GameConfig.cs` (or similar static Config classes).
+- **Initialization**: Initialize logic fields in `Awake()` or `Start()` using values from `GameConfig`.
+
+## Asset & Component References
+
+- **Inspector for References**: Use `[SerializeField] private` for referencing `GameObject`, `Transform`, `Component`, `Sprite`, `Material`, and Prefabs.
+- **Avoid Resources.Load**: Prefer assigning assets in the Inspector over using `Resources.Load` for static assets to ensure type safety and performance.
+- **UI Wiring**: Always use `[SerializeField] private` to wire UI components (Buttons, Text) in the Inspector. Avoid `GameObject.Find` or `transform.Find`.
+
+## General C#
+
+- **Encapsulation**: Prefer `private` fields. Use properties for public access if needed.

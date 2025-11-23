@@ -3,19 +3,20 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    [Header("Stats")]
-    public float moveSpeed = 1.5f;
-    public float damage = 1f;
-    public float maxHealth = 20f;
-    public float defense = 0f; // New stat
-    public float damageInterval = 1.0f;
-    public float stopDistance = 0.1f;
+    private float moveSpeed;
+    private float damage;
+    private float maxHealth;
+    private float defense;
+    private float damageInterval;
+    private float stopDistance;
 
     private void OnDrawGizmos()
     {
         // Draw stop distance - Always visible for debugging
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, stopDistance);
+        // Use config value for Gizmos if called before Awake (Editor time)
+        float dist = Application.isPlaying ? stopDistance : GameConfig.Enemy.StopDistance;
+        Gizmos.DrawWireSphere(transform.position, dist);
     }
 
     private float currentHealth;
@@ -33,6 +34,14 @@ public class EnemyController : MonoBehaviour
 
     private void Awake()
     {
+        // Initialize from Config
+        moveSpeed = GameConfig.Enemy.DefaultMoveSpeed;
+        damage = GameConfig.Enemy.DefaultDamage;
+        maxHealth = GameConfig.Enemy.DefaultMaxHealth;
+        defense = GameConfig.Enemy.DefaultDefense;
+        damageInterval = GameConfig.Enemy.DamageInterval;
+        stopDistance = GameConfig.Enemy.StopDistance;
+
         currentHealth = maxHealth;
         originalSpeed = moveSpeed;
     }
@@ -129,7 +138,7 @@ public class EnemyController : MonoBehaviour
             {
                 playerStats.TakeDamage(damage);
             }
-            yield return new WaitForSeconds(1.0f); // Explicitly 1 second interval
+            yield return new WaitForSeconds(damageInterval);
         }
     }
 

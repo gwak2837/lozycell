@@ -347,7 +347,7 @@ public class ArcadeManager : MonoBehaviour
             string healthInfo = "";
             if (playerStats != null)
             {
-                healthInfo = $"HP: {playerStats.currentHealth}/{playerStats.maxHealth}";
+                healthInfo = $"HP: {playerStats.currentHealth}/{playerStats.MaxHealth}";
             }
 
             progressText.text = $"Amino Acids: {currentSessionAminoAcids} / {targetAminoAcids}\n{healthInfo}";

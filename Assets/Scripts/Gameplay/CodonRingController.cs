@@ -3,16 +3,6 @@ using UnityEngine;
 
 public class CodonRingController : MonoBehaviour
 {
-    [Header("Settings")]
-    [SerializeField]
-    private float radius = 1.5f;
-
-    [SerializeField]
-    private float rotationSpeed = 50f;
-
-    [SerializeField]
-    private int slotCount = 3;
-
     [Header("References")]
     [SerializeField]
     private GameObject slotPrefab;
@@ -47,14 +37,15 @@ public class CodonRingController : MonoBehaviour
 
     private void InitializeSlots()
     {
-        float angleStep = 360f / slotCount;
+        float angleStep = 360f / GameConfig.CodonRing.SlotCount;
 
-        for (int i = 0; i < slotCount; i++)
+        for (int i = 0; i < GameConfig.CodonRing.SlotCount; i++)
         {
             var slotObj = Instantiate(slotPrefab, _center);
 
             float angle = i * angleStep * Mathf.Deg2Rad;
-            slotObj.transform.localPosition = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * radius;
+            slotObj.transform.localPosition =
+                new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * GameConfig.CodonRing.Radius;
 
             _slots.Add(new SlotView(slotObj));
         }
@@ -64,7 +55,7 @@ public class CodonRingController : MonoBehaviour
 
     private void RotateSlots()
     {
-        float step = rotationSpeed * Time.deltaTime;
+        float step = GameConfig.CodonRing.RotationSpeed * Time.deltaTime;
         foreach (var slot in _slots)
         {
             slot.transform.RotateAround(_center.position, Vector3.forward, step);

@@ -3,16 +3,14 @@ using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
-    [Header("Health")]
-    public float maxHealth = 100f;
+    public float MaxHealth => maxHealth;
+    private float maxHealth;
     public float currentHealth;
 
-    [Header("Movement")]
-    public float baseMoveSpeed = 5f;
+    private float baseMoveSpeed;
     private float speedMultiplier = 1f;
 
-    [Header("Combat")]
-    public float baseDamageMultiplier = 1f;
+    private float baseDamageMultiplier;
     private float damageMultiplier = 1f;
 
     [Header("Status")]
@@ -24,6 +22,10 @@ public class PlayerStats : MonoBehaviour
 
     private void Awake()
     {
+        maxHealth = GameConfig.Player.MaxHealth;
+        baseMoveSpeed = GameConfig.Player.MoveSpeed;
+        baseDamageMultiplier = GameConfig.Player.BaseDamageMultiplier;
+
         currentHealth = maxHealth;
         damageMultiplier = baseDamageMultiplier;
     }

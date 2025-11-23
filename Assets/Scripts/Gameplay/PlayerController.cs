@@ -5,13 +5,6 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerStats))]
 public class PlayerController : MonoBehaviour
 {
-    [Header("Settings")]
-    public float moveSpeed = 5f;
-
-    // Managed purely by code. Inspector value is ignored.
-    [System.NonSerialized]
-    public float hitBoxSize = 0.5f;
-
     private Rigidbody2D rb;
     private Vector2 moveInput;
     private PlayerStats stats;
@@ -51,9 +44,9 @@ public class PlayerController : MonoBehaviour
         if (box != null)
         {
             // Apply square size based on hitBoxSize
-            if (box.size.x != hitBoxSize || box.size.y != hitBoxSize)
+            if (box.size.x != GameConfig.Player.HitBoxSize || box.size.y != GameConfig.Player.HitBoxSize)
             {
-                box.size = new Vector2(hitBoxSize, hitBoxSize);
+                box.size = new Vector2(GameConfig.Player.HitBoxSize, GameConfig.Player.HitBoxSize);
             }
         }
     }
@@ -81,7 +74,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        float currentSpeed = stats ? stats.GetCurrentMoveSpeed() : moveSpeed;
+        float currentSpeed = stats ? stats.GetCurrentMoveSpeed() : GameConfig.Player.MoveSpeed;
         rb.linearVelocity = moveInput * currentSpeed;
     }
 

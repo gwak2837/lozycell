@@ -5,23 +5,20 @@ public class SkillDatabase : MonoBehaviour
 {
     public static SkillDatabase Instance { get; private set; }
 
-    // Prefabs loaded from Resources
+    // Prefabs assigned via Inspector
+    [SerializeField]
     private GameObject projectilePrefab;
+
+    [SerializeField]
     private GameObject areaPrefab;
+
+    [SerializeField]
     private GameObject petPrefab;
+
+    [SerializeField]
     private GameObject linkPrefab;
 
     private Dictionary<string, SkillStrategy> skills = new Dictionary<string, SkillStrategy>();
-
-    // [RuntimeInitializeOnLoadMethod] allows this to run without being in the scene manually
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    private static void Initialize()
-    {
-        // Create a hidden GameObject to host the Database
-        GameObject go = new GameObject("SkillDatabase");
-        Instance = go.AddComponent<SkillDatabase>();
-        Object.DontDestroyOnLoad(go); // Persist across scenes
-    }
 
     private void Awake()
     {
@@ -36,25 +33,8 @@ public class SkillDatabase : MonoBehaviour
             return;
         }
 
-        LoadResources();
         InitializeSkills();
         Debug.Log($"SkillDatabase Initialized via Code. Loaded {skills.Count} skills.");
-    }
-
-    private void LoadResources()
-    {
-        // Load prefabs from Assets/Resources/Prefabs/Skills/
-        // Note: Do NOT include file extensions (.prefab) in the path
-        projectilePrefab = Resources.Load<GameObject>("Prefabs/Skills/ProjectileBase");
-        areaPrefab = Resources.Load<GameObject>("Prefabs/Skills/ToxicCloudBase");
-        petPrefab = Resources.Load<GameObject>("Prefabs/Skills/PetBase");
-        linkPrefab = Resources.Load<GameObject>("Prefabs/Skills/LinkBase");
-
-        if (projectilePrefab == null)
-            Debug.LogError("Failed to load ProjectileBase from Resources!");
-        if (areaPrefab == null)
-            Debug.LogError("Failed to load ToxicCloudBase from Resources!");
-        // Pet and Link might be optional depending on skills, but good to warn
     }
 
     public SkillStrategy GetSkill(string code)
@@ -69,42 +49,157 @@ public class SkillDatabase : MonoBehaviour
     private void InitializeSkills()
     {
         // 1. Projectile Skills
-        CreateProjectileSkill("Ala", "Multishot", 10f, 10f, 5, 30f, false, 0f, false);
-        CreateProjectileSkill("Val", "Power Shot", 30f, 15f, 1, 0f, false, 5f, false);
-        CreateProjectileSkill("Tyr", "Homing Missiles", 15f, 8f, 3, 45f, true, 0f, false);
-        CreateProjectileSkill("Pro", "Boomerang", 15f, 10f, 1, 0f, false, 0f, true);
+        CreateProjectileSkill(
+            "Ala",
+            "Multishot",
+            GameConfig.Skills.Ala.Damage,
+            GameConfig.Skills.Ala.Speed,
+            GameConfig.Skills.Ala.Count,
+            GameConfig.Skills.Ala.Spread,
+            false,
+            0f,
+            false
+        );
+        CreateProjectileSkill(
+            "Val",
+            "Power Shot",
+            GameConfig.Skills.Val.Damage,
+            GameConfig.Skills.Val.Speed,
+            1,
+            0f,
+            false,
+            GameConfig.Skills.Val.Knockback,
+            false
+        );
+        CreateProjectileSkill(
+            "Tyr",
+            "Homing Missiles",
+            GameConfig.Skills.Tyr.Damage,
+            GameConfig.Skills.Tyr.Speed,
+            GameConfig.Skills.Tyr.Count,
+            GameConfig.Skills.Tyr.Spread,
+            true,
+            0f,
+            false
+        );
+        CreateProjectileSkill(
+            "Pro",
+            "Boomerang",
+            GameConfig.Skills.Pro.Damage,
+            GameConfig.Skills.Pro.Speed,
+            1,
+            0f,
+            false,
+            0f,
+            true
+        );
 
         // 2. Area Skills
         // Asp - Acid Pool (Green)
-        CreateAreaSkill("Asp", "Acid Pool", 5f, 5f, 2f, true, false, new Color(0.2f, 0.8f, 0.2f));
+        CreateAreaSkill(
+            "Asp",
+            "Acid Pool",
+            GameConfig.Skills.Asp.EffectValue,
+            GameConfig.Skills.Asp.Duration,
+            GameConfig.Skills.Asp.Radius,
+            true,
+            false,
+            new Color(0.2f, 0.8f, 0.2f)
+        );
         // Asn - Grass Knot (Blue/Green) - Slow Zone
-        CreateAreaSkill("Asn", "Grass Knot", 0f, 5f, 3f, false, false, new Color(0f, 0.5f, 0.5f));
+        CreateAreaSkill(
+            "Asn",
+            "Grass Knot",
+            GameConfig.Skills.Asn.EffectValue,
+            GameConfig.Skills.Asn.Duration,
+            GameConfig.Skills.Asn.Radius,
+            false,
+            false,
+            new Color(0f, 0.5f, 0.5f)
+        );
         // Trp - Gravity Well (Purple)
-        CreateAreaSkill("Trp", "Gravity Well", 0f, 5f, 4f, true, false, new Color(0.5f, 0f, 0.5f));
+        CreateAreaSkill(
+            "Trp",
+            "Gravity Well",
+            GameConfig.Skills.Trp.EffectValue,
+            GameConfig.Skills.Trp.Duration,
+            GameConfig.Skills.Trp.Radius,
+            true,
+            false,
+            new Color(0.5f, 0f, 0.5f)
+        );
         // Arg - Tesla Coil (Yellow) - Follows Player
-        CreateAreaSkill("Arg", "Tesla Coil", 10f, 5f, 3f, true, true, Color.yellow);
+        CreateAreaSkill(
+            "Arg",
+            "Tesla Coil",
+            GameConfig.Skills.Arg.EffectValue,
+            GameConfig.Skills.Arg.Duration,
+            GameConfig.Skills.Arg.Radius,
+            true,
+            true,
+            Color.yellow
+        );
         // Met - Methyl Trail (Green)
-        CreateAreaSkill("Met", "Methyl Trail", 10f, 5f, 1f, true, false, Color.green);
+        CreateAreaSkill(
+            "Met",
+            "Methyl Trail",
+            GameConfig.Skills.Met.EffectValue,
+            GameConfig.Skills.Met.Duration,
+            GameConfig.Skills.Met.Radius,
+            true,
+            false,
+            Color.green
+        );
 
         // 3. Buff Skills
-        CreateBuffSkill("Glu", "Synaptic Boost", BuffType.SpeedUp, 1.5f, 10f);
-        CreateBuffSkill("Leu", "Muscle Up", BuffType.AttackUp, 1.5f, 10f);
-        CreateBuffSkill("Phe", "Orbital Shield", BuffType.Shield, 1f, 3f);
-        CreateBuffSkill("Gln", "Heal", BuffType.Heal, 33f, 0f);
+        CreateBuffSkill(
+            "Glu",
+            "Synaptic Boost",
+            BuffType.SpeedUp,
+            GameConfig.Skills.Glu.Amount,
+            GameConfig.Skills.Glu.Duration
+        );
+        CreateBuffSkill(
+            "Leu",
+            "Muscle Up",
+            BuffType.AttackUp,
+            GameConfig.Skills.Leu.Amount,
+            GameConfig.Skills.Leu.Duration
+        );
+        CreateBuffSkill(
+            "Phe",
+            "Orbital Shield",
+            BuffType.Shield,
+            GameConfig.Skills.Phe.Amount,
+            GameConfig.Skills.Phe.Duration
+        );
+        CreateBuffSkill("Gln", "Heal", BuffType.Heal, GameConfig.Skills.Gln.Amount, 0f);
 
         // 4. Global Skills
-        CreateGlobalSkill("His", "Anaphylaxis", GlobalEffectType.Damage, 50f, 0f);
-        CreateGlobalSkill("Ser", "Phospho Mark", GlobalEffectType.DefenseZero, 0f, 10f);
-        CreateGlobalSkill("Thr", "Alcohol Burn", GlobalEffectType.DoT, 10f, 5f);
-        CreateGlobalSkill("Gly", "Synapse Shutdown", GlobalEffectType.Slow, 0.5f, 10f);
-        CreateGlobalSkill("Stop", "Unlimited Void", GlobalEffectType.Stun, 0f, 5f);
+        CreateGlobalSkill("His", "Anaphylaxis", GlobalEffectType.Damage, GameConfig.Skills.His.Value, 0f);
+        CreateGlobalSkill("Ser", "Phospho Mark", GlobalEffectType.DefenseZero, 0f, GameConfig.Skills.Ser.Duration);
+        CreateGlobalSkill(
+            "Thr",
+            "Alcohol Burn",
+            GlobalEffectType.DoT,
+            GameConfig.Skills.Thr.Value,
+            GameConfig.Skills.Thr.Duration
+        );
+        CreateGlobalSkill(
+            "Gly",
+            "Synapse Shutdown",
+            GlobalEffectType.Slow,
+            GameConfig.Skills.Gly.Value,
+            GameConfig.Skills.Gly.Duration
+        );
+        CreateGlobalSkill("Stop", "Unlimited Void", GlobalEffectType.Stun, 0f, GameConfig.Skills.Stop.Duration);
 
         // 5. Chain Skills
-        CreateChainSkill("Lys", "Chain Lightning", 20f, 4);
-        CreateChainSkill("Cys", "S-S Death Bond", 15f, 2);
+        CreateChainSkill("Lys", "Chain Lightning", GameConfig.Skills.Lys.Damage, GameConfig.Skills.Lys.MaxTargets);
+        CreateChainSkill("Cys", "S-S Death Bond", GameConfig.Skills.Cys.Damage, GameConfig.Skills.Cys.MaxTargets);
 
         // 6. Summon Skills
-        CreateSummonSkill("Ile", "Mirror Image", 5f);
+        CreateSummonSkill("Ile", "Mirror Image", GameConfig.Skills.Ile.Duration);
     }
 
     // --- Helper Methods ---
