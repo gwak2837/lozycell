@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Skills/Chain Skill")]
 public class ChainSkill : SkillStrategy
 {
     public int maxTargets = 4;
@@ -68,7 +67,7 @@ public class ChainSkill : SkillStrategy
 
     private void SpawnLink(Vector3 start, Vector3 end, Color color)
     {
-        GameObject link = Instantiate(linkPrefab, start, Quaternion.identity);
+        GameObject link = Object.Instantiate(linkPrefab, start, Quaternion.identity);
         LineRenderer lr = link.GetComponent<LineRenderer>();
         if (lr != null)
         {
@@ -86,6 +85,6 @@ public class ChainSkill : SkillStrategy
         }
         // If no LineRenderer, maybe it stretches?
         // Assuming LineRenderer for now.
-        Destroy(link, linkDuration);
+        Object.Destroy(link, linkDuration);
     }
 }

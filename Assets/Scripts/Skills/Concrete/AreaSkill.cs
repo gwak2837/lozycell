@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Skills/Area Skill")]
 public class AreaSkill : SkillStrategy
 {
     public GameObject areaPrefab;
@@ -20,7 +19,7 @@ public class AreaSkill : SkillStrategy
             ? controller.transform.position
             : controller.transform.position + (Vector3)Random.insideUnitCircle * 3f;
 
-        GameObject area = Instantiate(areaPrefab, spawnPos, Quaternion.identity);
+        GameObject area = Object.Instantiate(areaPrefab, spawnPos, Quaternion.identity);
 
         if (attachToPlayer && spawnOnPlayer)
         {
@@ -40,7 +39,7 @@ public class AreaSkill : SkillStrategy
 
         if (toxic == null)
         {
-            Destroy(area, duration);
+            Object.Destroy(area, duration);
         }
     }
 }

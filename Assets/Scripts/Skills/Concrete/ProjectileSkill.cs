@@ -1,9 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Skills/Projectile Skill")]
 public class ProjectileSkill : SkillStrategy
 {
-    [Header("Projectile Settings")]
     public GameObject projectilePrefab;
     public int projectileCount = 1;
     public float damage = 10f;
@@ -11,7 +9,6 @@ public class ProjectileSkill : SkillStrategy
     public float lifetime = 2f;
     public float spreadAngle = 15f;
 
-    [Header("Behaviors")]
     public bool isHoming = false;
     public bool isBoomerang = false;
     public float knockback = 0f;
@@ -55,7 +52,7 @@ public class ProjectileSkill : SkillStrategy
             Quaternion rotation = Quaternion.AngleAxis(angleOffset, Vector3.forward);
             Vector3 finalDir = rotation * baseDir;
 
-            GameObject proj = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
+            GameObject proj = Object.Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
             ProjectileController pc = proj.GetComponent<ProjectileController>();
 
             Transform target = (isHoming && nearest != null) ? nearest.transform : null;

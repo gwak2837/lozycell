@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Skills/Summon Skill")]
 public class SummonSkill : SkillStrategy
 {
     public GameObject petPrefab;
@@ -11,7 +10,7 @@ public class SummonSkill : SkillStrategy
         if (petPrefab == null)
             return;
 
-        GameObject pet = Instantiate(petPrefab, controller.transform.position, Quaternion.identity);
+        GameObject pet = Object.Instantiate(petPrefab, controller.transform.position, Quaternion.identity);
         PetController pc = pet.GetComponent<PetController>();
 
         if (pc != null)
@@ -24,7 +23,7 @@ public class SummonSkill : SkillStrategy
         }
         else
         {
-            Destroy(pet, duration);
+            Object.Destroy(pet, duration);
         }
 
         controller.SetActivePet(pet);

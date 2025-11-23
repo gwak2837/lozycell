@@ -9,7 +9,6 @@ public enum BuffType
     Invulnerability,
 }
 
-[CreateAssetMenu(menuName = "Skills/Buff Skill")]
 public class BuffSkill : SkillStrategy
 {
     public BuffType buffType;

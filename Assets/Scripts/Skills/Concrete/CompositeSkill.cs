@@ -1,22 +1,19 @@
-using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Skills/Composite Skill")]
+// Composite is optional but let's keep it POCO
 public class CompositeSkill : SkillStrategy
 {
-    public List<SkillStrategy> subSkills;
+    // Not heavily used but update if exists
+    public SkillStrategy[] subSkills;
 
     public override void Activate(PlayerSkillController controller, Color skillColor = default)
     {
         if (subSkills == null)
             return;
-
-        foreach (var skill in subSkills)
+        foreach (var s in subSkills)
         {
-            if (skill != null)
-            {
-                skill.Activate(controller, skillColor);
-            }
+            if (s != null)
+                s.Activate(controller, skillColor);
         }
     }
 }

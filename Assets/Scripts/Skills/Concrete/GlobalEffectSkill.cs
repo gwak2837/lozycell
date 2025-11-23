@@ -10,7 +10,6 @@ public enum GlobalEffectType
     DoT,
 }
 
-[CreateAssetMenu(menuName = "Skills/Global Skill")]
 public class GlobalEffectSkill : SkillStrategy
 {
     public GlobalEffectType effectType;
