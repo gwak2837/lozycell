@@ -17,7 +17,7 @@ jobs:
     steps:
       # 1. 코드 가져오기
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           lfs: true
 
@@ -38,6 +38,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: WebGL
+          unityVersion: 6000.0.23f1
           # 빌드 결과물이 저장될 경로 (기본값: build/WebGL)
 
       # 4. Itch.io 업로드 (Butler)
