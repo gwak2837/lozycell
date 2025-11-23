@@ -185,7 +185,7 @@ public class ProjectSetupTool : EditorWindow
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
         BoxCollider2D col = player.AddComponent<BoxCollider2D>();
-        col.size = new Vector2(1, 1);
+        col.size = new Vector2(0.05f, 0.05f);
 
         player.AddComponent<PlayerController>();
 

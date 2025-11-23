@@ -5,7 +5,13 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerStats))]
 public class PlayerController : MonoBehaviour
 {
+    [Header("Settings")]
     public float moveSpeed = 5f;
+
+    // Managed purely by code. Inspector value is ignored.
+    [System.NonSerialized]
+    public float hitBoxSize = 0.5f;
+
     private Rigidbody2D rb;
     private Vector2 moveInput;
     private PlayerStats stats;
@@ -14,13 +20,41 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         stats = GetComponent<PlayerStats>();
+        UpdateColliderSize();
     }
 
     private void Start()
     {
+        // Ensure size is applied on start
+        UpdateColliderSize();
+
         if (GameManager.Instance != null)
         {
             Debug.Log($"Player initialized with Attack Power: {GameManager.Instance.TCellAttackPower}");
+        }
+    }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        // In Editor mode, we can't rely on UpdateColliderSize here because hitBoxSize is NonSerialized
+        // and might not be set correctly during editing.
+        // But since we want "Code Only" control, we rely on Awake/Start at runtime.
+        // If we want to visualize in Editor Edit Mode, we would need [ExecuteAlways] or similar,
+        // but keeping it simple for now: changes apply on Play.
+    }
+#endif
+
+    private void UpdateColliderSize()
+    {
+        BoxCollider2D box = GetComponent<BoxCollider2D>();
+        if (box != null)
+        {
+            // Apply square size based on hitBoxSize
+            if (box.size.x != hitBoxSize || box.size.y != hitBoxSize)
+            {
+                box.size = new Vector2(hitBoxSize, hitBoxSize);
+            }
         }
     }
 
@@ -59,6 +93,29 @@ public class PlayerController : MonoBehaviour
             if (baseObj)
             {
                 baseObj.Collect();
+            }
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+        {
+            Gizmos.color = Color.blue;
+            if (col is CircleCollider2D circle)
+            {
+                Gizmos.DrawWireSphere(
+                    transform.position,
+                    circle.radius * Mathf.Max(transform.lossyScale.x, transform.lossyScale.y)
+                );
+            }
+            else if (col is BoxCollider2D box)
+            {
+                Gizmos.DrawWireCube(
+                    transform.position,
+                    new Vector3(box.size.x * transform.lossyScale.x, box.size.y * transform.lossyScale.y, 1)
+                );
             }
         }
     }
