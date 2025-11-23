@@ -166,4 +166,31 @@ public static class GameConfig
             public const float Duration = 5f;
         }
     }
+
+    public static class Spawner
+    {
+        // Item Spawner
+        public const float ItemSpawnRadius = 10f;
+        public const float ItemSpawnInterval = 0.5f;
+
+        // Enemy Spawner
+        public const float EnemySpawnRadius = 12f;
+        public const float EnemySpawnInterval = 2f;
+    }
+
+    public static class Pet
+    {
+        public const float ShootInterval = 1f;
+        public const float Damage = 10f;
+    }
+
+    public static class Camera
+    {
+        public const float SmoothTime = 0.125f;
+    }
+
+    public static class Arcade
+    {
+        public const int TargetAminoAcids = 10;
+    }
 }

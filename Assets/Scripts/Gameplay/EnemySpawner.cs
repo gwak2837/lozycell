@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject enemyPrefab;
-    public float spawnInterval = 2f;
-    public float spawnRadius = 12f; // Slightly outside camera usually
+    [SerializeField]
+    private GameObject enemyPrefab;
+
+    private float spawnInterval;
+    private float spawnRadius;
 
     private Transform playerTransform;
     private float timer;
@@ -12,6 +14,9 @@ public class EnemySpawner : MonoBehaviour
 
     private void Start()
     {
+        spawnInterval = GameConfig.Spawner.EnemySpawnInterval;
+        spawnRadius = GameConfig.Spawner.EnemySpawnRadius;
+
         // Find player
         var player = FindFirstObjectByType<PlayerController>();
         if (player != null)

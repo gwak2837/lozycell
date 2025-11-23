@@ -70,7 +70,7 @@ public static class CodonTable
         { "GGG", "Gly" },
     };
 
-    public static string GetAminoAcid(BaseType b1, BaseType b2, BaseType b3)
+    public static string GetAminoAcid(NucleobaseType b1, NucleobaseType b2, NucleobaseType b3)
     {
         string key = $"{b1}{b2}{b3}";
         return codonMap[key];

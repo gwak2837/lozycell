@@ -4,9 +4,11 @@ using UnityEngine;
 public class PetController : MonoBehaviour
 {
     [Header("Settings")]
-    public GameObject projectilePrefab;
-    public float shootInterval = 1f;
-    public float damage = 10f;
+    [SerializeField]
+    private GameObject projectilePrefab;
+
+    private float shootInterval;
+    private float damage;
 
     private Transform player;
     private float duration;
@@ -16,6 +18,10 @@ public class PetController : MonoBehaviour
     {
         player = owner;
         duration = dur;
+
+        shootInterval = GameConfig.Pet.ShootInterval;
+        damage = GameConfig.Pet.Damage;
+
         StartCoroutine(BehaviorRoutine());
     }
 

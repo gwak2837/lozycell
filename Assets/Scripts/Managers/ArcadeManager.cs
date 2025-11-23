@@ -8,11 +8,7 @@ using UnityEngine.UI;
 public class ArcadeManager : MonoBehaviour
 {
     [Header("Settings")]
-    public int targetAminoAcids = 10;
-    public GameObject aminoAcidPrefab;
-    public Transform spawnArea;
-    public float spawnRadius = 10f;
-    public float spawnInterval = 0.5f;
+    private int targetAminoAcids;
 
     [Header("UI")]
     public TMP_FontAsset uiFont;
@@ -21,16 +17,16 @@ public class ArcadeManager : MonoBehaviour
     public GameObject winPanel;
     public GameObject losePanel;
 
-    public delegate void CodonUpdateHandler(List<BaseType> currentCodon);
+    public delegate void CodonUpdateHandler(List<NucleobaseType> currentCodon);
     public event CodonUpdateHandler OnCodonUpdated;
 
     [Header("Managers")]
     public PlayerSkillController skillController;
     public EnemySpawner enemySpawner;
+    public ItemSpawner itemSpawner; // Reference to the new ItemSpawner
     public CodonRingController codonRing;
 
     private int currentSessionAminoAcids = 0;
-    private float spawnTimer;
     private bool isGameActive = true;
     private bool isProcessingSequence = false;
 
@@ -38,10 +34,7 @@ public class ArcadeManager : MonoBehaviour
     private PlayerStats playerStats;
 
     // Track current sequence of bases (max 3)
-    private List<BaseType> currentCodon = new List<BaseType>();
-
-    // Object Pooling
-    private Queue<GeneticBase> pool = new Queue<GeneticBase>();
+    private List<NucleobaseType> currentCodon = new List<NucleobaseType>();
 
     public static ArcadeManager Instance { get; private set; }
 
@@ -51,22 +44,18 @@ public class ArcadeManager : MonoBehaviour
             Instance = this;
         else if (Instance != this)
             Destroy(gameObject);
+
+        targetAminoAcids = GameConfig.Arcade.TargetAminoAcids;
     }
 
-    public List<BaseType> GetCurrentCodon()
+    public List<NucleobaseType> GetCurrentCodon()
     {
-        return new List<BaseType>(currentCodon);
+        return new List<NucleobaseType>(currentCodon);
     }
 
     public Transform GetPlayerTransform()
     {
         return playerTransform;
-    }
-
-    public void ReturnToPool(GeneticBase item)
-    {
-        item.gameObject.SetActive(false);
-        pool.Enqueue(item);
     }
 
     private void Start()
@@ -76,6 +65,15 @@ public class ArcadeManager : MonoBehaviour
 
         if (!enemySpawner)
             enemySpawner = FindFirstObjectByType<EnemySpawner>();
+
+        if (!itemSpawner)
+            itemSpawner = FindFirstObjectByType<ItemSpawner>();
+
+        // Subscribe to ItemSpawner events
+        if (itemSpawner != null)
+        {
+            itemSpawner.OnBaseCollected += CollectBase;
+        }
 
         UpdateUI();
         UpdateCodonRing();
@@ -125,63 +123,16 @@ public class ArcadeManager : MonoBehaviour
                 playerTransform = player.transform;
             }
         }
-
-        spawnTimer += Time.deltaTime;
-        if (spawnTimer >= spawnInterval)
-        {
-            SpawnGeneticBase();
-            spawnTimer = 0f;
-        }
     }
 
-    private void SpawnGeneticBase()
-    {
-        if (aminoAcidPrefab == null)
-            return;
-
-        Vector3 center = Vector3.zero;
-        if (playerTransform != null)
-        {
-            center = playerTransform.position;
-        }
-        else if (spawnArea != null)
-        {
-            center = spawnArea.position;
-        }
-
-        Vector2 randomPos = Random.insideUnitCircle * spawnRadius;
-        Vector3 spawnPos = center + new Vector3(randomPos.x, randomPos.y, 0);
-
-        GeneticBase geneticBase = null;
-        if (pool.Count > 0)
-        {
-            geneticBase = pool.Dequeue();
-            geneticBase.transform.position = spawnPos;
-            geneticBase.transform.rotation = Quaternion.identity;
-            geneticBase.gameObject.SetActive(true);
-        }
-        else
-        {
-            GameObject obj = Instantiate(aminoAcidPrefab, spawnPos, Quaternion.identity);
-            geneticBase = obj.GetComponent<GeneticBase>();
-        }
-
-        if (geneticBase != null)
-        {
-            // Assign random Base Type
-            BaseType randomType = (BaseType)Random.Range(0, 4);
-            geneticBase.Initialize(randomType, this);
-        }
-    }
-
-    public void CollectBase(BaseType type)
+    public void CollectBase(NucleobaseType type)
     {
         if (!isGameActive || isProcessingSequence)
             return;
 
         currentCodon.Add(type);
         UpdateCodonRing();
-        OnCodonUpdated?.Invoke(new List<BaseType>(currentCodon));
+        OnCodonUpdated?.Invoke(new List<NucleobaseType>(currentCodon));
 
         if (currentCodon.Count >= 3)
         {
@@ -224,7 +175,7 @@ public class ArcadeManager : MonoBehaviour
 
         currentCodon.Clear();
         UpdateCodonRing();
-        OnCodonUpdated?.Invoke(new List<BaseType>(currentCodon));
+        OnCodonUpdated?.Invoke(new List<NucleobaseType>(currentCodon));
 
         if (currentSessionAminoAcids >= targetAminoAcids)
         {
@@ -266,7 +217,7 @@ public class ArcadeManager : MonoBehaviour
         textComp.gameObject.SetActive(true);
         textComp.transform.localScale = Vector3.zero;
 
-        float duration = 0.3f;
+        float duration = AppConfig.UI.Popup.AnimateDuration;
         float time = 0;
 
         while (time < duration)
@@ -280,10 +231,10 @@ public class ArcadeManager : MonoBehaviour
 
         textComp.transform.localScale = Vector3.one;
 
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(AppConfig.UI.Popup.DisplayDuration);
 
         time = 0;
-        duration = 0.5f;
+        duration = AppConfig.UI.Popup.FadeOutDuration;
         Vector3 startPos = textComp.transform.localPosition;
         Color startColor = textComp.color;
 
@@ -293,7 +244,7 @@ public class ArcadeManager : MonoBehaviour
             float t = time / duration;
 
             textComp.color = new Color(startColor.r, startColor.g, startColor.b, 1f - t);
-            textComp.transform.localPosition = startPos + Vector3.up * (100f * t);
+            textComp.transform.localPosition = startPos + Vector3.up * (AppConfig.UI.Popup.FloatDistance * t);
             yield return null;
         }
 
@@ -311,27 +262,9 @@ public class ArcadeManager : MonoBehaviour
 
     public void SpawnDrop(Vector3 position)
     {
-        if (aminoAcidPrefab == null)
-            return;
-
-        GeneticBase geneticBase = null;
-        if (pool.Count > 0)
+        if (itemSpawner != null)
         {
-            geneticBase = pool.Dequeue();
-            geneticBase.transform.position = position;
-            geneticBase.transform.rotation = Quaternion.identity;
-            geneticBase.gameObject.SetActive(true);
-        }
-        else
-        {
-            GameObject obj = Instantiate(aminoAcidPrefab, position, Quaternion.identity);
-            geneticBase = obj.GetComponent<GeneticBase>();
-        }
-
-        if (geneticBase != null)
-        {
-            BaseType randomType = (BaseType)Random.Range(0, 4);
-            geneticBase.Initialize(randomType, this);
+            itemSpawner.SpawnDrop(position);
         }
     }
 

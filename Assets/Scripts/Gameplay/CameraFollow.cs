@@ -2,11 +2,20 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    public Transform target;
-    public Vector3 offset = new Vector3(0, 0, -10);
-    public float smoothTime = 0.125f;
+    [SerializeField]
+    private Transform target;
+
+    [SerializeField]
+    private Vector3 offset = new Vector3(0, 0, -10);
+
+    private float smoothTime;
 
     private Vector3 velocity = Vector3.zero;
+
+    private void Start()
+    {
+        smoothTime = AppConfig.Camera.SmoothTime;
+    }
 
     private void LateUpdate()
     {

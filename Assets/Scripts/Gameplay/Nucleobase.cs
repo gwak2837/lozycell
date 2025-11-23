@@ -1,7 +1,8 @@
+using System;
 using TMPro;
 using UnityEngine;
 
-public enum BaseType
+public enum NucleobaseType
 {
     U,
     C,
@@ -9,11 +10,14 @@ public enum BaseType
     G,
 }
 
-public class GeneticBase : MonoBehaviour
+public class Nucleobase : MonoBehaviour
 {
-    public BaseType baseType;
+    public NucleobaseType baseType;
     private SpriteRenderer spriteRenderer;
-    private ArcadeManager manager;
+
+    // Events
+    public event Action<NucleobaseType> OnCollected;
+    public event Action<Nucleobase> OnDespawn;
 
     // Optional: Text label to show the letter
     public TextMeshPro textLabel;
@@ -34,9 +38,6 @@ public class GeneticBase : MonoBehaviour
 
     private void Update()
     {
-        if (manager == null)
-            return;
-
         checkTimer += Time.deltaTime;
         if (checkTimer >= checkInterval)
         {
@@ -49,8 +50,10 @@ public class GeneticBase : MonoBehaviour
     {
         if (playerTransform == null)
         {
-            if (manager != null)
-                playerTransform = manager.GetPlayerTransform();
+            var player = FindFirstObjectByType<PlayerController>();
+            if (player != null)
+                playerTransform = player.transform;
+
             if (playerTransform == null)
                 return;
         }
@@ -58,20 +61,19 @@ public class GeneticBase : MonoBehaviour
         float distSq = (transform.position - playerTransform.position).sqrMagnitude;
         if (distSq > despawnDistanceSq)
         {
-            manager.ReturnToPool(this);
+            OnDespawn?.Invoke(this);
         }
     }
 
-    public void Initialize(BaseType type, ArcadeManager managerRef)
+    public void Initialize(NucleobaseType type)
     {
         baseType = type;
-        manager = managerRef;
         UpdateVisuals();
     }
 
     private void UpdateVisuals()
     {
-        Color color = BaseColorConfig.GetColor(baseType);
+        Color color = NucleobaseColorConfig.GetColor(baseType);
         string letter = baseType.ToString();
 
         if (spriteRenderer != null)
@@ -85,16 +87,17 @@ public class GeneticBase : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // Check if collided with Player
+        if (other.CompareTag("Player") || other.GetComponent<PlayerController>())
+        {
+            Collect();
+        }
+    }
+
     public void Collect()
     {
-        if (manager != null)
-        {
-            manager.CollectBase(baseType);
-            manager.ReturnToPool(this);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        OnCollected?.Invoke(baseType);
     }
 }

@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class ToxicCloud : MonoBehaviour
 {
-    public float damagePerSecond = 5f;
-    public float duration = 5f;
-    public float radius = 3f;
+    private float damagePerSecond;
+    private float duration;
+    private float radius;
 
     public void Initialize(float damage, float durationTime, float areaRadius)
     {

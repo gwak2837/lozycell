@@ -18,12 +18,12 @@ public class RibosomeUI : MonoBehaviour
     public Color emptyColor = new Color(0.2f, 0.2f, 0.2f, 0.5f);
 
     [Header("Dopamine Settings")]
-    public float punchScaleNormal = 1.2f;
-    public float punchScaleCombo = 1.5f; // 3번째 완성 시 더 커짐
-    public float shakeIntensity = 10f; // 흔들림 강도
+    private float punchScaleNormal;
 
     private void Start()
     {
+        punchScaleNormal = AppConfig.UI.Ribosome.PunchScaleNormal;
+
         if (ArcadeManager.Instance != null)
         {
             ArcadeManager.Instance.OnCodonUpdated += UpdateVisuals;
@@ -32,7 +32,7 @@ public class RibosomeUI : MonoBehaviour
         }
         else
         {
-            UpdateVisuals(new List<BaseType>());
+            UpdateVisuals(new List<NucleobaseType>());
         }
     }
 
@@ -144,7 +144,7 @@ public class RibosomeUI : MonoBehaviour
     // Track running jackpot to stop it if state changes
     private Coroutine jackpotRoutine;
 
-    private void UpdateVisuals(List<BaseType> currentCodon)
+    private void UpdateVisuals(List<NucleobaseType> currentCodon)
     {
         // Stop any existing jackpot effect to prevent color overrides
         if (jackpotRoutine != null)
@@ -165,13 +165,13 @@ public class RibosomeUI : MonoBehaviour
         }
 
         if (currentCodon == null)
-            currentCodon = new List<BaseType>();
+            currentCodon = new List<NucleobaseType>();
 
         for (int i = 0; i < slotImages.Length; i++)
         {
             if (i < currentCodon.Count)
             {
-                BaseType type = currentCodon[i];
+                NucleobaseType type = currentCodon[i];
                 Color c = GetColorForBase(type);
 
                 slotImages[i].color = c;
@@ -186,7 +186,7 @@ public class RibosomeUI : MonoBehaviour
                     slotTexts[i].text = type.ToString();
                     // Fix contrast: If Yellow(G), use Black text. Else White.
                     // Assuming G is the bright yellow one.
-                    if (type == BaseType.G)
+                    if (type == NucleobaseType.G)
                         slotTexts[i].color = Color.black;
                     else
                         slotTexts[i].color = Color.white;
@@ -268,5 +268,5 @@ public class RibosomeUI : MonoBehaviour
         }
     }
 
-    private Color GetColorForBase(BaseType type) => BaseColorConfig.GetColor(type);
+    private Color GetColorForBase(NucleobaseType type) => NucleobaseColorConfig.GetColor(type);
 }

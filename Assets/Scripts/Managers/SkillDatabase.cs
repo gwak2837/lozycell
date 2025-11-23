@@ -5,7 +5,6 @@ public class SkillDatabase : MonoBehaviour
 {
     public static SkillDatabase Instance { get; private set; }
 
-    // Prefabs assigned via Inspector
     [SerializeField]
     private GameObject projectilePrefab;
 

@@ -50,7 +50,7 @@ public class CodonRingController : MonoBehaviour
             _slots.Add(new SlotView(slotObj));
         }
 
-        UpdateVisuals(new List<BaseType>());
+        UpdateVisuals(new List<NucleobaseType>());
     }
 
     private void RotateSlots()
@@ -63,7 +63,7 @@ public class CodonRingController : MonoBehaviour
         }
     }
 
-    public void UpdateVisuals(List<BaseType> collectedBases)
+    public void UpdateVisuals(List<NucleobaseType> collectedBases)
     {
         for (int i = 0; i < _slots.Count; i++)
         {
@@ -72,7 +72,7 @@ public class CodonRingController : MonoBehaviour
 
             if (isFilled)
             {
-                BaseType type = collectedBases[i];
+                NucleobaseType type = collectedBases[i];
                 slot.renderer.color = GetBaseColor(type);
             }
             else
@@ -82,5 +82,5 @@ public class CodonRingController : MonoBehaviour
         }
     }
 
-    private Color GetBaseColor(BaseType type) => BaseColorConfig.GetColor(type);
+    private Color GetBaseColor(NucleobaseType type) => NucleobaseColorConfig.GetColor(type);
 }

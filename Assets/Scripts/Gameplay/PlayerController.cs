@@ -13,6 +13,13 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         stats = GetComponent<PlayerStats>();
+
+        // Jitter 방지: 물리 업데이트와 렌더링 프레임 간의 불일치 해소
+        if (rb != null)
+        {
+            rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        }
+
         UpdateColliderSize();
     }
 
@@ -80,9 +87,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("AminoAcid") || other.GetComponent<GeneticBase>())
+        if (other.CompareTag("Nucleobase") || other.GetComponent<Nucleobase>())
         {
-            GeneticBase baseObj = other.GetComponent<GeneticBase>();
+            Nucleobase baseObj = other.GetComponent<Nucleobase>();
             if (baseObj)
             {
                 baseObj.Collect();
