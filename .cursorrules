@@ -15,3 +15,4 @@
 ## General C#
 
 - **Encapsulation**: Prefer `private` fields. Use properties for public access if needed.
+- **Fail Fast**: Do not add defensive null checks for serialized fields or required components. Assume they are assigned. Let the engine throw exceptions if missing, to catch configuration errors early.

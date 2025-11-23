@@ -191,6 +191,6 @@ public static class GameConfig
 
     public static class Arcade
     {
-        public const int TargetAminoAcids = 10;
+        public const int TargetAminoAcids = 50;
     }
 }
