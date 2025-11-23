@@ -15,6 +15,7 @@ public class ArcadeManager : MonoBehaviour
     public float spawnInterval = 0.5f;
 
     [Header("UI")]
+    public TMP_FontAsset uiFont;
     public TextMeshProUGUI progressText;
     public TextMeshProUGUI comboPopupText;
     public GameObject winPanel;
@@ -92,7 +93,7 @@ public class ArcadeManager : MonoBehaviour
             canvas = obj.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         }
-        RibosomeUI.CreateDefaultUI(canvas.transform);
+        RibosomeUI.CreateDefaultUI(canvas.transform, uiFont);
     }
 
     private void InitializePlayer()

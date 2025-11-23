@@ -45,7 +45,7 @@ public class RibosomeUI : MonoBehaviour
     }
 
     // Factory method to create UI at runtime
-    public static RibosomeUI CreateDefaultUI(Transform parentCanvas)
+    public static RibosomeUI CreateDefaultUI(Transform parentCanvas, TMP_FontAsset font = null)
     {
         // Create Panel
         GameObject panelObj = new GameObject("RibosomePanel");
@@ -72,14 +72,8 @@ public class RibosomeUI : MonoBehaviour
         // Component
         RibosomeUI ui = panelObj.AddComponent<RibosomeUI>();
 
-        // Try to load a default font asset for the factory-created instance
-        TMP_FontAsset defaultFont = Resources.Load<TMP_FontAsset>("Fonts/AppleSDGothicNeo SDF");
-        if (defaultFont == null)
-            defaultFont = Resources.Load<TMP_FontAsset>("Fonts/NanumGothic SDF");
-        if (defaultFont == null)
-            defaultFont = Resources.Load<TMP_FontAsset>("Fonts/Pretendard-Medium SDF");
-        if (defaultFont != null)
-            ui.customFontAsset = defaultFont;
+        if (font != null)
+            ui.customFontAsset = font;
 
         ui.slotImages = new Image[3];
         ui.slotBorders = new Image[3];
