@@ -193,4 +193,11 @@ public static class GameConfig
     {
         public const int TargetAminoAcids = 50;
     }
+
+    public static class PeptideChain
+    {
+        public const float FollowSpeed = 10f;
+        public const float NodeSpacing = 0.6f;
+        public const float HeadOffset = 1.2f;
+    }
 }

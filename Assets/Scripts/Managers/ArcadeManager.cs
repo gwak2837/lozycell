@@ -26,6 +26,9 @@ public class ArcadeManager : MonoBehaviour
     public ItemSpawner itemSpawner; // Reference to the new ItemSpawner
     public CodonRingController codonRing;
 
+    [SerializeField]
+    private PeptideChainController peptideChainController;
+
     private int currentSessionAminoAcids = 0;
     private bool isGameActive = true;
     private bool isProcessingSequence = false;
@@ -35,6 +38,10 @@ public class ArcadeManager : MonoBehaviour
 
     // Track current sequence of bases (max 3)
     private List<NucleobaseType> currentCodon = new List<NucleobaseType>();
+
+    // [Protein Synthesis]
+    private List<AminoAcidData> peptideChain = new List<AminoAcidData>();
+    private bool isSynthesizing = false;
 
     public static ArcadeManager Instance { get; private set; }
 
@@ -108,6 +115,9 @@ public class ArcadeManager : MonoBehaviour
 
         if (!codonRing)
             codonRing = player.GetComponentInChildren<CodonRingController>();
+
+        if (!peptideChainController)
+            peptideChainController = FindFirstObjectByType<PeptideChainController>();
     }
 
     private void Update()
@@ -171,6 +181,9 @@ public class ArcadeManager : MonoBehaviour
             Debug.LogError("SkillController is NULL! Cannot activate skill.");
         }
 
+        // [Protein Synthesis Logic]
+        HandleProteinSynthesis(data);
+
         currentSessionAminoAcids++;
 
         currentCodon.Clear();
@@ -184,6 +197,100 @@ public class ArcadeManager : MonoBehaviour
 
         UpdateUI();
         isProcessingSequence = false;
+    }
+
+    private void HandleProteinSynthesis(AminoAcidData data)
+    {
+        if (data.ShortName == "Met") // Start Codon
+        {
+            if (!isSynthesizing)
+            {
+                StartSynthesis(data);
+            }
+            else
+            {
+                // Met can also be an internal amino acid
+                AddToChain(data);
+            }
+        }
+        else if (data.ShortName == "Stop") // Stop Codon
+        {
+            if (isSynthesizing)
+            {
+                FinishSynthesis();
+            }
+            // If not synthesizing, "Stop" just does its skill (Unlimited Void)
+        }
+        else // Regular Amino Acid
+        {
+            if (isSynthesizing)
+            {
+                AddToChain(data);
+            }
+        }
+    }
+
+    private void StartSynthesis(AminoAcidData startCodon)
+    {
+        isSynthesizing = true;
+        peptideChain.Clear();
+        peptideChain.Add(startCodon);
+
+        Debug.Log("<color=cyan>[Ribosome]</color> Synthesis Started! (Start Codon)");
+
+        if (peptideChainController != null)
+        {
+            peptideChainController.StartSynthesis(playerTransform);
+        }
+    }
+
+    private void AddToChain(AminoAcidData data)
+    {
+        peptideChain.Add(data);
+        Debug.Log($"<color=cyan>[Ribosome]</color> Chain Elongation: {peptideChain.Count} AAs. Added {data.ShortName}");
+
+        if (peptideChainController != null)
+        {
+            peptideChainController.AddAminoAcid(data);
+        }
+    }
+
+    private void FinishSynthesis()
+    {
+        isSynthesizing = false;
+
+        ProteinData result = ProteinDatabase.CheckRecipe(peptideChain);
+
+        if (result != null)
+        {
+            Debug.Log(
+                $"<color=yellow>[Protein Synthesized]</color> <b>{result.ProteinName}</b> ({result.Tier}) - {result.Description}"
+            );
+            // TODO: Grant Reward (Item/Stat)
+            ShowProteinPopup(result);
+        }
+        else
+        {
+            Debug.Log("<color=grey>[Ribosome]</color> Synthesis Failed or Unknown Protein.");
+        }
+
+        peptideChain.Clear();
+
+        if (peptideChainController != null)
+        {
+            peptideChainController.FinishSynthesis();
+        }
+    }
+
+    private void ShowProteinPopup(ProteinData protein)
+    {
+        // Reuse or extend the combo popup for now
+        if (comboPopupText != null)
+        {
+            comboPopupText.text = $"<size=120%>{protein.ProteinName}</size>\n{protein.Description}";
+            comboPopupText.color = protein.Color;
+            StartCoroutine(AnimatePopup(comboPopupText));
+        }
     }
 
     private void ShowComboVisuals(AminoAcidData data)
