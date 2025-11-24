@@ -198,4 +198,21 @@ public static class GameConfig
         public const float NodeSpacing = 0.6f;
         public const float HeadOffset = 1.2f;
     }
+
+    public static class Settings
+    {
+        public const string ShowVirtualControlsKey = "ShowVirtualControls";
+    }
+
+    public static class UI
+    {
+        public static class FloatingText
+        {
+            public const float Duration = 0.8f;
+            public const float MoveSpeed = 1f;
+            public const float RandomOffset = 0.3f;
+            public const float NormalFontSize = 4f;
+            public const float CriticalFontSize = 6f;
+        }
+    }
 }

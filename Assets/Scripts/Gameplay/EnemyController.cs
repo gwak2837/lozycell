@@ -160,6 +160,12 @@ public class EnemyController : MonoBehaviour
         // Visual Flash
         StartCoroutine(FlashColor(Color.red, 0.1f));
 
+        // Show Floating Text
+        if (FloatingTextManager.Instance != null)
+        {
+            FloatingTextManager.Instance.Show(effectiveDamage, transform.position, isVulnerable);
+        }
+
         if (currentHealth <= 0)
         {
             Die();

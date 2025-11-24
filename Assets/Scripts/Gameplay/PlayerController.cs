@@ -3,16 +3,29 @@ using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PlayerStats))]
+[RequireComponent(typeof(PlayerInput))]
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Vector2 moveInput;
     private PlayerStats stats;
 
+    private InputAction moveAction;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         stats = GetComponent<PlayerStats>();
+
+        var playerInput = GetComponent<PlayerInput>();
+        if (playerInput != null)
+        {
+            moveAction = playerInput.actions["Move"];
+        }
+        else
+        {
+            Debug.LogError("PlayerInput component is missing on Player!");
+        }
 
         // Jitter 방지: 물리 업데이트와 렌더링 프레임 간의 불일치 해소
         if (rb != null)
@@ -60,22 +73,9 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // New Input System Only
-        if (Keyboard.current != null)
+        if (moveAction != null)
         {
-            float moveX = 0f;
-            float moveY = 0f;
-
-            if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed)
-                moveY = 1f;
-            if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed)
-                moveY = -1f;
-            if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
-                moveX = -1f;
-            if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
-                moveX = 1f;
-
-            moveInput = new Vector2(moveX, moveY).normalized;
+            moveInput = moveAction.ReadValue<Vector2>();
         }
     }
 

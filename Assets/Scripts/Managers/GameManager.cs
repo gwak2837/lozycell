@@ -14,6 +14,24 @@ public class GameManager : MonoBehaviour
 
     public int TCellAttackPower => BaseAttack + (MitochondriaLevel * AttackPerLevel);
 
+    public event System.Action<bool> OnVirtualControlsSettingChanged;
+
+    public bool ShowVirtualControls
+    {
+        get
+        {
+            // Default to 1 (true) if mobile, 0 (false) otherwise
+            int defaultValue = Application.isMobilePlatform ? 1 : 0;
+            return PlayerPrefs.GetInt(GameConfig.Settings.ShowVirtualControlsKey, defaultValue) == 1;
+        }
+        set
+        {
+            PlayerPrefs.SetInt(GameConfig.Settings.ShowVirtualControlsKey, value ? 1 : 0);
+            PlayerPrefs.Save();
+            OnVirtualControlsSettingChanged?.Invoke(value);
+        }
+    }
+
     private void Awake()
     {
         if (Instance == null)
