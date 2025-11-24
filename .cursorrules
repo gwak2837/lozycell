@@ -12,6 +12,11 @@
 - **Avoid Resources.Load**: Prefer assigning assets in the Inspector over using `Resources.Load` for static assets to ensure type safety and performance.
 - **UI Wiring**: Always use `[SerializeField] private` to wire UI components (Buttons, Text) in the Inspector. Avoid `GameObject.Find` or `transform.Find`.
 
+## UI Development
+
+- **Design Time Creation**: Do NOT create UI elements (Canvas, Panels, Text, etc.) via code at runtime (`new GameObject`, `AddComponent`). Create them in the Editor (Scene/Prefab) and assign references.
+- **Editor Tools**: For repetitive UI setup, creating Custom Editor Tools (`MenuItem`) is preferred over runtime generation logic.
+
 ## General C#
 
 - **Encapsulation**: Prefer `private` fields. Use properties for public access if needed.

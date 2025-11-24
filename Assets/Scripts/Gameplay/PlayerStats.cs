@@ -9,6 +9,7 @@ public class PlayerStats : MonoBehaviour
 
     private float baseMoveSpeed;
     private float speedMultiplier = 1f;
+    private float weightMultiplier = 1f;
 
     private float baseDamageMultiplier;
     private float damageMultiplier = 1f;
@@ -32,7 +33,12 @@ public class PlayerStats : MonoBehaviour
 
     public float GetCurrentMoveSpeed()
     {
-        return baseMoveSpeed * speedMultiplier;
+        return baseMoveSpeed * speedMultiplier * weightMultiplier;
+    }
+
+    public void SetWeightMultiplier(float multiplier)
+    {
+        weightMultiplier = multiplier;
     }
 
     public float GetDamageMultiplier()
@@ -121,7 +127,7 @@ public class PlayerStats : MonoBehaviour
     private void Die()
     {
         Debug.Log("Player Died");
-        OnDeath?.Invoke();
         gameObject.SetActive(false);
+        OnDeath?.Invoke();
     }
 }

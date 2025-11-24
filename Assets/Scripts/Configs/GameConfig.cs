@@ -8,6 +8,8 @@ public static class GameConfig
         public const float MaxHealth = 100f;
         public const float BaseDamageMultiplier = 1f;
         public const float HitBoxSize = 0.5f;
+        public const float SpeedPenaltyPerAminoAcid = 0.05f;
+        public const float MinSpeedMultiplier = 0.5f;
     }
 
     public static class Enemy
@@ -162,9 +164,10 @@ public static class GameConfig
 
     public static class Spawner
     {
-        // Item Spawner
-        public const float ItemSpawnRadius = 10f;
-        public const float ItemSpawnInterval = 0.5f;
+        // Nucleobase Spawner
+        public const float NucleobaseSpawnRadius = 10f;
+        public const float NucleobaseMinSpawnRadius = 3f;
+        public const float NucleobaseSpawnInterval = 0.5f;
 
         // Enemy Spawner
         public const float EnemySpawnRadius = 12f;

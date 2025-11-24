@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class ItemSpawner : MonoBehaviour
+public class NucleobaseSpawner : MonoBehaviour
 {
     [SerializeField]
-    private GameObject itemPrefab;
+    private GameObject nucleobasePrefab;
 
     private float spawnRadius;
+    private float minSpawnRadius;
     private float spawnInterval;
 
     // Events
@@ -21,8 +22,9 @@ public class ItemSpawner : MonoBehaviour
 
     private void Start()
     {
-        spawnRadius = GameConfig.Spawner.ItemSpawnRadius;
-        spawnInterval = GameConfig.Spawner.ItemSpawnInterval;
+        spawnRadius = GameConfig.Spawner.NucleobaseSpawnRadius;
+        minSpawnRadius = GameConfig.Spawner.NucleobaseMinSpawnRadius;
+        spawnInterval = GameConfig.Spawner.NucleobaseSpawnInterval;
 
         var player = FindFirstObjectByType<PlayerController>();
         if (player != null)
@@ -49,19 +51,21 @@ public class ItemSpawner : MonoBehaviour
         timer += Time.deltaTime;
         if (timer >= spawnInterval)
         {
-            SpawnItem();
+            SpawnNucleobase();
             timer = 0f;
         }
     }
 
-    private void SpawnItem()
+    private void SpawnNucleobase()
     {
-        if (itemPrefab == null || playerTransform == null)
+        if (nucleobasePrefab == null || playerTransform == null)
             return;
 
         Vector3 center = playerTransform.position;
-        Vector2 randomPos = Random.insideUnitCircle * spawnRadius;
-        Vector3 spawnPos = center + new Vector3(randomPos.x, randomPos.y, 0);
+        float angle = Random.Range(0f, Mathf.PI * 2f);
+        Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+        float distance = Random.Range(minSpawnRadius, spawnRadius);
+        Vector3 spawnPos = center + new Vector3(direction.x * distance, direction.y * distance, 0);
 
         Nucleobase item = GetFromPool();
         if (item != null)
@@ -69,7 +73,6 @@ public class ItemSpawner : MonoBehaviour
             item.transform.position = spawnPos;
             item.transform.rotation = Quaternion.identity;
 
-            // Initialize
             NucleobaseType randomType = (NucleobaseType)Random.Range(0, 4);
             item.Initialize(randomType);
         }
@@ -89,11 +92,11 @@ public class ItemSpawner : MonoBehaviour
 
         if (item == null)
         {
-            GameObject obj = Instantiate(itemPrefab);
+            GameObject obj = Instantiate(nucleobasePrefab);
             item = obj.GetComponent<Nucleobase>();
             if (item == null)
             {
-                Debug.LogError("Nucleobase component is missing on the ItemPrefab! Please check the prefab.");
+                Debug.LogError("Nucleobase component is missing on the NucleobasePrefab! Please check the prefab.");
                 // Try to add it if missing
                 item = obj.AddComponent<Nucleobase>();
             }
@@ -152,7 +155,7 @@ public class ItemSpawner : MonoBehaviour
 
     public void SpawnDrop(Vector3 position)
     {
-        if (itemPrefab == null)
+        if (nucleobasePrefab == null)
             return;
 
         Nucleobase item = GetFromPool();

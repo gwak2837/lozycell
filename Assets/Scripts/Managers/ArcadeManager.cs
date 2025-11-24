@@ -13,18 +13,31 @@ public class ArcadeManager : MonoBehaviour
     [Header("UI")]
     [SerializeField]
     private RibosomeUI ribosomeUIPrefab;
-    public TextMeshProUGUI progressText;
-    public TextMeshProUGUI comboPopupText;
-    public GameObject winPanel;
-    public GameObject losePanel;
+
+    [SerializeField]
+    private TextMeshProUGUI progressText;
+
+    [SerializeField]
+    private TextMeshProUGUI comboPopupText;
+
+    [SerializeField]
+    private GameObject winPanel;
+
+    [SerializeField]
+    private GameObject losePanel;
 
     public delegate void CodonUpdateHandler(List<NucleobaseType> currentCodon);
     public event CodonUpdateHandler OnCodonUpdated;
 
     [Header("Managers")]
-    public PlayerSkillController skillController;
-    public EnemySpawner enemySpawner;
-    public ItemSpawner itemSpawner; // Reference to the new ItemSpawner
+    [SerializeField]
+    private PlayerSkillController skillController;
+
+    [SerializeField]
+    private EnemySpawner enemySpawner;
+
+    [SerializeField]
+    private NucleobaseSpawner nucleobaseSpawner;
 
     [SerializeField]
     private PeptideChainController peptideChainController;
@@ -73,11 +86,10 @@ public class ArcadeManager : MonoBehaviour
         if (!enemySpawner)
             enemySpawner = FindFirstObjectByType<EnemySpawner>();
 
-        if (!itemSpawner)
-            itemSpawner = FindFirstObjectByType<ItemSpawner>();
+        if (!nucleobaseSpawner)
+            nucleobaseSpawner = FindFirstObjectByType<NucleobaseSpawner>();
 
-        // Subscribe to ItemSpawner events - Fail Fast
-        itemSpawner.OnBaseCollected += CollectBase;
+        nucleobaseSpawner.OnBaseCollected += CollectBase;
 
         UpdateUI();
     }
@@ -206,6 +218,10 @@ public class ArcadeManager : MonoBehaviour
                 FinishSynthesis();
             }
             // If not synthesizing, "Stop" just does its skill (Unlimited Void)
+            else
+            {
+                UpdatePlayerWeight(); // Ensure weight is updated (reset) if needed
+            }
         }
         else // Regular Amino Acid
         {
@@ -216,11 +232,25 @@ public class ArcadeManager : MonoBehaviour
         }
     }
 
+    private void UpdatePlayerWeight()
+    {
+        if (playerStats == null)
+            return;
+
+        int count = peptideChain.Count;
+        // Formula: 1.0 - (count * penalty)
+        float penalty = count * GameConfig.Player.SpeedPenaltyPerAminoAcid;
+        float multiplier = Mathf.Clamp(1f - penalty, GameConfig.Player.MinSpeedMultiplier, 1f);
+
+        playerStats.SetWeightMultiplier(multiplier);
+    }
+
     private void StartSynthesis(AminoAcidData startCodon)
     {
         isSynthesizing = true;
         peptideChain.Clear();
         peptideChain.Add(startCodon);
+        UpdatePlayerWeight();
 
         Debug.Log("<color=cyan>[Ribosome]</color> Synthesis Started! (Start Codon)");
 
@@ -230,6 +260,7 @@ public class ArcadeManager : MonoBehaviour
     private void AddToChain(AminoAcidData data)
     {
         peptideChain.Add(data);
+        UpdatePlayerWeight();
         Debug.Log($"<color=cyan>[Ribosome]</color> Chain Elongation: {peptideChain.Count} AAs. Added {data.ShortName}");
 
         peptideChainController.AddAminoAcid(data);
@@ -238,6 +269,9 @@ public class ArcadeManager : MonoBehaviour
     private void FinishSynthesis()
     {
         isSynthesizing = false;
+
+        // Calculate result BEFORE clearing, but clear chain visually first or after?
+        // Logic: Check recipe -> Show popup -> Clear chain logic -> Reset Weight
 
         ProteinData result = ProteinDatabase.CheckRecipe(peptideChain);
 
@@ -255,6 +289,7 @@ public class ArcadeManager : MonoBehaviour
         }
 
         peptideChain.Clear();
+        UpdatePlayerWeight(); // Reset weight
 
         peptideChainController.FinishSynthesis();
     }
@@ -318,7 +353,7 @@ public class ArcadeManager : MonoBehaviour
 
     public void SpawnDrop(Vector3 position)
     {
-        itemSpawner.SpawnDrop(position);
+        nucleobaseSpawner.SpawnDrop(position);
     }
 
     public void CollectAminoAcid()
