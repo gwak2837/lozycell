@@ -1,10 +1,11 @@
-using UnityEngine;
-using TMPro;
 using System.Collections;
+using TMPro;
+using UnityEngine;
 
 public class FloatingText : MonoBehaviour
 {
-    [SerializeField] private TextMeshPro textMesh;
+    [SerializeField]
+    private TextMeshPro textMesh;
 
     private float duration;
     private float moveSpeed;
@@ -19,7 +20,8 @@ public class FloatingText : MonoBehaviour
 
     public void Setup(float damage, bool isCritical)
     {
-        if (textMesh == null) return;
+        if (textMesh == null)
+            return;
 
         // Text Content
         textMesh.text = Mathf.RoundToInt(damage).ToString();
@@ -39,7 +41,7 @@ public class FloatingText : MonoBehaviour
         }
 
         startColor = textMesh.color;
-        
+
         // Offset slightly to avoid overlapping exact same spot
         transform.position += (Vector3)Random.insideUnitCircle * GameConfig.UI.FloatingText.RandomOffset;
 
@@ -70,4 +72,3 @@ public class FloatingText : MonoBehaviour
         gameObject.SetActive(false);
     }
 }
-

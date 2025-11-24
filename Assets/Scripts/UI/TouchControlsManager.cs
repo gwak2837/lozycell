@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class TouchControlsManager : MonoBehaviour
 {
-    [SerializeField] private GameObject touchControlsRoot;
+    [SerializeField]
+    private GameObject touchControlsRoot;
 
     private void Start()
     {
@@ -10,7 +11,7 @@ public class TouchControlsManager : MonoBehaviour
         {
             // 초기 상태 설정
             UpdateVisibility(GameManager.Instance.ShowVirtualControls);
-            
+
             // 설정 변경 이벤트 구독
             GameManager.Instance.OnVirtualControlsSettingChanged += UpdateVisibility;
         }
