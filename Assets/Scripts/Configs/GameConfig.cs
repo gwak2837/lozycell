@@ -17,9 +17,10 @@ public static class GameConfig
         public const float DefaultMoveSpeed = 1.5f;
         public const float DefaultDamage = 1f;
         public const float DefaultMaxHealth = 20f;
-        public const float DefaultDefense = 0f;
+        public const float DefaultDefense = 2f;
         public const float DamageInterval = 1.0f;
         public const float StopDistance = 0.1f;
+        public const float NucleobaseDropChance = 0.3f;
     }
 
     public static class Skills
@@ -166,8 +167,9 @@ public static class GameConfig
     {
         // Nucleobase Spawner
         public const float NucleobaseSpawnRadius = 10f;
-        public const float NucleobaseMinSpawnRadius = 3f;
-        public const float NucleobaseSpawnInterval = 0.5f;
+        public const float NucleobaseMinSpawnRadius = 4f;
+        public const float NucleobaseSpawnInterval = 1f;
+        public const int MaxNucleobaseCount = 50;
 
         // Enemy Spawner
         public const float EnemySpawnRadius = 12f;

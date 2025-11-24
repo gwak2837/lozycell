@@ -80,13 +80,7 @@ public class RibosomeUI : MonoBehaviour
 
                 slotImages[i].color = c;
                 slotTexts[i].text = type.ToString();
-
-                // Fix contrast: If Yellow(G), use Black text. Else White.
-                // Assuming G is the bright yellow one.
-                if (type == NucleobaseType.G)
-                    slotTexts[i].color = Color.black;
-                else
-                    slotTexts[i].color = Color.white;
+                slotTexts[i].color = NucleobaseColorConfig.GetTextColor(type);
 
                 if (i == currentCodon.Count - 1)
                 {

@@ -18,4 +18,9 @@ public static class NucleobaseColorConfig
             _ => Color.white,
         };
     }
+
+    public static Color GetTextColor(NucleobaseType type)
+    {
+        return type == NucleobaseType.G ? Color.black : Color.white;
+    }
 }

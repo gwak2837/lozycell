@@ -302,10 +302,7 @@ public class EnemyController : MonoBehaviour
 
     private void Die()
     {
-        if (ArcadeManager.Instance != null)
-        {
-            ArcadeManager.Instance.SpawnDrop(transform.position);
-        }
+        ArcadeManager.Instance.HandleEnemyDeath(transform.position);
         Destroy(gameObject);
     }
 }

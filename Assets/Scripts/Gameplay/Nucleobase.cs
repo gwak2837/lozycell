@@ -73,25 +73,13 @@ public class Nucleobase : MonoBehaviour
 
     private void UpdateVisuals()
     {
-        Color color = NucleobaseColorConfig.GetColor(baseType);
-        string letter = baseType.ToString();
-
-        // Fail Fast
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.color = color;
-        }
-
-        // TextLabel is optional
-        if (textLabel != null)
-        {
-            textLabel.text = letter;
-        }
+        spriteRenderer.color = NucleobaseColorConfig.GetColor(baseType);
+        textLabel.text = baseType.ToString();
+        textLabel.color = NucleobaseColorConfig.GetTextColor(baseType);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Check if collided with Player
         if (other.CompareTag("Player") || other.GetComponent<PlayerController>())
         {
             Collect();

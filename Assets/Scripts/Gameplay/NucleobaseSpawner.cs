@@ -17,11 +17,19 @@ public class NucleobaseSpawner : MonoBehaviour
 
     private float timer;
     private Transform playerTransform;
+    private List<Nucleobase> activeNucleobases = new List<Nucleobase>();
     private Queue<Nucleobase> pool = new Queue<Nucleobase>();
     private bool isSpawning = true;
 
     private void Start()
     {
+        if (nucleobasePrefab == null)
+        {
+            Debug.LogError("NucleobaseSpawner: NucleobasePrefab is NOT assigned!");
+            enabled = false;
+            return;
+        }
+
         spawnRadius = GameConfig.Spawner.NucleobaseSpawnRadius;
         minSpawnRadius = GameConfig.Spawner.NucleobaseMinSpawnRadius;
         spawnInterval = GameConfig.Spawner.NucleobaseSpawnInterval;
@@ -51,14 +59,45 @@ public class NucleobaseSpawner : MonoBehaviour
         timer += Time.deltaTime;
         if (timer >= spawnInterval)
         {
+            ManagePopulation();
             SpawnNucleobase();
             timer = 0f;
         }
     }
 
+    private void ManagePopulation()
+    {
+        if (activeNucleobases.Count < GameConfig.Spawner.MaxNucleobaseCount)
+            return;
+
+        if (playerTransform == null)
+            return;
+
+        Nucleobase furthest = null;
+        float maxDistSq = -1f;
+        Vector3 playerPos = playerTransform.position;
+
+        // Find the furthest nucleobase
+        foreach (var item in activeNucleobases)
+        {
+            float distSq = (item.transform.position - playerPos).sqrMagnitude;
+            if (distSq > maxDistSq)
+            {
+                maxDistSq = distSq;
+                furthest = item;
+            }
+        }
+
+        // Remove furthest from field (return to pool)
+        if (furthest != null)
+        {
+            ReturnToPool(furthest);
+        }
+    }
+
     private void SpawnNucleobase()
     {
-        if (nucleobasePrefab == null || playerTransform == null)
+        if (playerTransform == null)
             return;
 
         Vector3 center = playerTransform.position;
@@ -103,6 +142,12 @@ public class NucleobaseSpawner : MonoBehaviour
         }
 
         ConfigureItemEvents(item);
+
+        if (!activeNucleobases.Contains(item))
+        {
+            activeNucleobases.Add(item);
+        }
+
         return item;
     }
 
@@ -139,6 +184,11 @@ public class NucleobaseSpawner : MonoBehaviour
         if (item == null)
             return;
 
+        if (activeNucleobases.Contains(item))
+        {
+            activeNucleobases.Remove(item);
+        }
+
         // Unsubscribe OnCollected
         if (collectedHandlers.TryGetValue(item, out var handler))
         {
@@ -155,8 +205,7 @@ public class NucleobaseSpawner : MonoBehaviour
 
     public void SpawnDrop(Vector3 position)
     {
-        if (nucleobasePrefab == null)
-            return;
+        ManagePopulation();
 
         Nucleobase item = GetFromPool();
         if (item != null)

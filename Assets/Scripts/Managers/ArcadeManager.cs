@@ -351,6 +351,17 @@ public class ArcadeManager : MonoBehaviour
         textComp.transform.localPosition = Vector3.zero;
     }
 
+    public void HandleEnemyDeath(Vector3 position)
+    {
+        // 1. Nucleobase Drop Check
+        if (UnityEngine.Random.value <= GameConfig.Enemy.NucleobaseDropChance)
+        {
+            nucleobaseSpawner.SpawnDrop(position);
+        }
+
+        // Future item drops can be added here
+    }
+
     public void SpawnDrop(Vector3 position)
     {
         nucleobaseSpawner.SpawnDrop(position);
