@@ -4,8 +4,11 @@ using UnityEngine;
 public class PeptideChainController : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private GameObject ribosomePrefab;
-    [SerializeField] private GameObject aminoAcidPrefab;
+    [SerializeField]
+    private GameObject ribosomePrefab;
+
+    [SerializeField]
+    private GameObject aminoAcidPrefab;
 
     // Runtime State
     private GameObject ribosome;
@@ -30,33 +33,25 @@ public class PeptideChainController : MonoBehaviour
         target = followTarget;
         ClearChain();
 
-        // Create Ribosome (Head)
-        if (ribosomePrefab != null)
-        {
-            ribosome = Instantiate(ribosomePrefab, transform);
-            // Initial position behind player
-            ribosome.transform.position = target.position - target.up * headOffset; 
-            chainNodes.Add(ribosome.transform);
-        }
-        else
-        {
-            Debug.LogError("PeptideChainController: Ribosome Prefab is missing!");
-        }
+        // Create Ribosome (Head) - Fail Fast: Assume prefab is assigned
+        ribosome = Instantiate(ribosomePrefab, transform);
+
+        // Initial position behind player
+        ribosome.transform.position = target.position - target.up * headOffset;
+        chainNodes.Add(ribosome.transform);
     }
 
     public void AddAminoAcid(AminoAcidData data)
     {
-        if (aminoAcidPrefab == null || chainNodes.Count == 0) return;
+        // Fail Fast: Assume prefab is assigned
+        if (chainNodes.Count == 0)
+            return;
 
         Transform lastNode = chainNodes[chainNodes.Count - 1];
         GameObject newNode = Instantiate(aminoAcidPrefab, transform);
-        
-        // Set Color
-        var renderer = newNode.GetComponentInChildren<SpriteRenderer>();
-        if (renderer != null)
-        {
-            renderer.color = data.Color;
-        }
+
+        // Set Color - Fail Fast: Assume prefab has renderer
+        newNode.GetComponentInChildren<SpriteRenderer>().color = data.Color;
 
         // Initial Position (start at last node)
         newNode.transform.position = lastNode.position;
@@ -74,7 +69,8 @@ public class PeptideChainController : MonoBehaviour
     {
         foreach (var node in chainNodes)
         {
-            if (node != null) Destroy(node.gameObject);
+            if (node != null)
+                Destroy(node.gameObject);
         }
         chainNodes.Clear();
         ribosome = null;
@@ -82,11 +78,12 @@ public class PeptideChainController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (chainNodes.Count == 0 || target == null) return;
+        if (chainNodes.Count == 0 || target == null)
+            return;
 
         // 1. Move Head (Ribosome) to follow Player
         Transform head = chainNodes[0];
-        
+
         // Calculate desired position behind the player (or just trailing)
         // Simple logic: SmoothDamp towards target position
         // To make it feel like a "tail", we can just follow the player's position directly but with a delay/distance
@@ -94,11 +91,11 @@ public class PeptideChainController : MonoBehaviour
         // Let's use a distance constraint approach for smooth trailing.
 
         Vector3 targetPos = target.position;
-        
+
         // If we want it to always be behind, we need the player's velocity or facing direction.
-        // For simplicity in this 2D top-down view, just moving towards the player is fine, 
+        // For simplicity in this 2D top-down view, just moving towards the player is fine,
         // gravity/physics isn't the main focus.
-        
+
         // Move Head
         float distance = Vector3.Distance(head.position, targetPos);
         if (distance > headOffset)
@@ -121,9 +118,12 @@ public class PeptideChainController : MonoBehaviour
                 Vector3 dir = (prev.position - current.position).normalized;
                 // Move towards previous node until distance is nodeSpacing
                 // Lerp or MoveTowards
-                current.position = Vector3.MoveTowards(current.position, prev.position - dir * nodeSpacing, followSpeed * Time.deltaTime);
+                current.position = Vector3.MoveTowards(
+                    current.position,
+                    prev.position - dir * nodeSpacing,
+                    followSpeed * Time.deltaTime
+                );
             }
         }
     }
 }
-

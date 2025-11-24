@@ -31,7 +31,7 @@ public class Nucleobase : MonoBehaviour
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        // Try to find a text component in children if not assigned
+
         if (textLabel == null)
             textLabel = GetComponentInChildren<TextMeshPro>();
     }
@@ -76,11 +76,13 @@ public class Nucleobase : MonoBehaviour
         Color color = NucleobaseColorConfig.GetColor(baseType);
         string letter = baseType.ToString();
 
+        // Fail Fast
         if (spriteRenderer != null)
         {
             spriteRenderer.color = color;
         }
 
+        // TextLabel is optional
         if (textLabel != null)
         {
             textLabel.text = letter;

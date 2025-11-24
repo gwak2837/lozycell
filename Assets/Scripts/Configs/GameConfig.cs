@@ -20,13 +20,6 @@ public static class GameConfig
         public const float StopDistance = 0.1f;
     }
 
-    public static class CodonRing
-    {
-        public const float Radius = 1.5f;
-        public const float RotationSpeed = 50f;
-        public const int SlotCount = 3;
-    }
-
     public static class Skills
     {
         // Projectile Skills

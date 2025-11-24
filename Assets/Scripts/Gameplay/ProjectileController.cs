@@ -20,13 +20,10 @@ public class ProjectileController : MonoBehaviour
 
     public void SetColor(Color color)
     {
-        var sr = GetComponent<SpriteRenderer>();
-        if (sr != null)
-        {
-            sr.color = color;
-        }
-        
-        // If there's a TrailRenderer, tint it too
+        // Fail Fast: Require SpriteRenderer
+        GetComponent<SpriteRenderer>().color = color;
+
+        // If there's a TrailRenderer, tint it too (Optional but common)
         var tr = GetComponent<TrailRenderer>();
         if (tr != null)
         {

@@ -4,10 +4,10 @@ using UnityEngine;
 
 public enum ProteinTier
 {
-    Common, // Short / Generic
-    Rare, // Specific Small Proteins
-    Epic, // Large Structural Proteins
-    Legendary, // Complex Quaternary Structures
+    Common,
+    Rare,
+    Epic,
+    Legendary,
 }
 
 public class ProteinData

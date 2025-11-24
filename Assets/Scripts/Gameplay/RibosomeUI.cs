@@ -7,15 +7,15 @@ using UnityEngine.UI;
 public class RibosomeUI : MonoBehaviour
 {
     [Header("Slot UI Components")]
-    public Image[] slotImages; // 3 Slots
-    public Image[] slotBorders; // 3 Borders
-    public TextMeshProUGUI[] slotTexts; // Optional: Text on slots
+    [SerializeField]
+    private Image[] slotImages;
 
-    [Header("Font Settings")]
-    public TMP_FontAsset customFontAsset; // Assign Korean-supporting font here
+    [SerializeField]
+    private TextMeshProUGUI[] slotTexts;
 
     [Header("Colors")]
-    public Color emptyColor = new Color(0.2f, 0.2f, 0.2f, 0.5f);
+    [SerializeField]
+    private Color emptyColor = new Color(0.2f, 0.2f, 0.2f, 0.5f);
 
     [Header("Dopamine Settings")]
     private float punchScaleNormal;
@@ -44,103 +44,6 @@ public class RibosomeUI : MonoBehaviour
         }
     }
 
-    // Factory method to create UI at runtime
-    public static RibosomeUI CreateDefaultUI(Transform parentCanvas, TMP_FontAsset font = null)
-    {
-        // Create Panel
-        GameObject panelObj = new GameObject("RibosomePanel");
-        panelObj.transform.SetParent(parentCanvas, false);
-        RectTransform panelRect = panelObj.AddComponent<RectTransform>();
-        panelRect.anchorMin = new Vector2(0.5f, 0f);
-        panelRect.anchorMax = new Vector2(0.5f, 0f);
-        panelRect.pivot = new Vector2(0.5f, 0f);
-        panelRect.anchoredPosition = new Vector2(0, 50);
-        panelRect.sizeDelta = new Vector2(350, 120);
-
-        // Background
-        Image panelImg = panelObj.AddComponent<Image>();
-        panelImg.color = new Color(0, 0, 0, 0.7f);
-
-        // Layout
-        HorizontalLayoutGroup layout = panelObj.AddComponent<HorizontalLayoutGroup>();
-        layout.childAlignment = TextAnchor.MiddleCenter;
-        layout.spacing = 15;
-        layout.padding = new RectOffset(10, 10, 10, 10);
-        layout.childControlHeight = false;
-        layout.childControlWidth = false;
-
-        // Component
-        RibosomeUI ui = panelObj.AddComponent<RibosomeUI>();
-
-        if (font != null)
-            ui.customFontAsset = font;
-
-        ui.slotImages = new Image[3];
-        ui.slotBorders = new Image[3];
-        ui.slotTexts = new TextMeshProUGUI[3];
-
-        // Create Slots
-        for (int i = 0; i < 3; i++)
-        {
-            GameObject slotObj = new GameObject($"Slot_{i}");
-            slotObj.transform.SetParent(panelObj.transform, false);
-
-            // 1. Border (Background slightly larger)
-            GameObject borderObj = new GameObject("Border");
-            borderObj.transform.SetParent(slotObj.transform, false);
-            RectTransform borderRt = borderObj.AddComponent<RectTransform>();
-            borderRt.anchorMin = new Vector2(0.5f, 0.5f);
-            borderRt.anchorMax = new Vector2(0.5f, 0.5f);
-            borderRt.anchoredPosition = Vector2.zero;
-            borderRt.sizeDelta = new Vector2(100, 100); // Slightly larger than 90x90 slot
-
-            Image borderImg = borderObj.AddComponent<Image>();
-            borderImg.color = new Color(1f, 1f, 1f, 0f); // Transparent by default
-            ui.slotBorders[i] = borderImg;
-
-            // 2. Slot Image (Foreground)
-            GameObject imgObj = new GameObject("Image");
-            imgObj.transform.SetParent(slotObj.transform, false);
-            RectTransform imgRt = imgObj.AddComponent<RectTransform>();
-            imgRt.sizeDelta = new Vector2(90, 90);
-
-            Image img = imgObj.AddComponent<Image>();
-            img.color = new Color(0.2f, 0.2f, 0.2f, 0.5f);
-            ui.slotImages[i] = img;
-
-            RectTransform rt = slotObj.AddComponent<RectTransform>(); // Slot Container
-            rt.sizeDelta = new Vector2(100, 100); // Match border size for spacing
-
-            // Text (Child of Image so it's on top)
-            GameObject textObj = new GameObject("Text");
-            textObj.transform.SetParent(imgObj.transform, false);
-            RectTransform textRt = textObj.AddComponent<RectTransform>();
-            textRt.anchoredPosition = Vector2.zero;
-            textRt.sizeDelta = new Vector2(90, 90);
-
-            TextMeshProUGUI tmp = textObj.AddComponent<TextMeshProUGUI>();
-            tmp.text = "";
-            tmp.fontSize = 45;
-            tmp.alignment = TextAlignmentOptions.Center;
-            tmp.fontStyle = FontStyles.Bold;
-            tmp.color = Color.white;
-
-            // Add Outline for visibility
-            tmp.outlineWidth = 0.2f;
-            tmp.outlineColor = Color.black;
-
-            // Apply Custom Font if available
-            if (ui.customFontAsset != null)
-            {
-                tmp.font = ui.customFontAsset;
-            }
-
-            ui.slotTexts[i] = tmp;
-        }
-
-        return ui;
-    }
-
     // Track running jackpot to stop it if state changes
     private Coroutine jackpotRoutine;
 
@@ -159,8 +62,9 @@ public class RibosomeUI : MonoBehaviour
                     slotImages[i].color = emptyColor;
 
                 // Reset border
-                if (slotBorders != null && i < slotBorders.Length && slotBorders[i] != null)
-                    slotBorders[i].color = new Color(1f, 1f, 1f, 0f);
+                var outline = slotImages[i].GetComponent<Outline>();
+                outline.effectColor = new Color(1f, 1f, 1f, 0f);
+                outline.enabled = false;
             }
         }
 
@@ -175,22 +79,14 @@ public class RibosomeUI : MonoBehaviour
                 Color c = GetColorForBase(type);
 
                 slotImages[i].color = c;
-                if (slotTexts.Length > i && slotTexts[i] != null)
-                {
-                    // Apply font if set (runtime update support)
-                    if (customFontAsset != null && slotTexts[i].font != customFontAsset)
-                    {
-                        slotTexts[i].font = customFontAsset;
-                    }
+                slotTexts[i].text = type.ToString();
 
-                    slotTexts[i].text = type.ToString();
-                    // Fix contrast: If Yellow(G), use Black text. Else White.
-                    // Assuming G is the bright yellow one.
-                    if (type == NucleobaseType.G)
-                        slotTexts[i].color = Color.black;
-                    else
-                        slotTexts[i].color = Color.white;
-                }
+                // Fix contrast: If Yellow(G), use Black text. Else White.
+                // Assuming G is the bright yellow one.
+                if (type == NucleobaseType.G)
+                    slotTexts[i].color = Color.black;
+                else
+                    slotTexts[i].color = Color.white;
 
                 if (i == currentCodon.Count - 1)
                 {
@@ -214,10 +110,7 @@ public class RibosomeUI : MonoBehaviour
             else
             {
                 slotImages[i].color = emptyColor;
-                if (slotTexts.Length > i && slotTexts[i] != null)
-                {
-                    slotTexts[i].text = "";
-                }
+                slotTexts[i].text = "";
             }
         }
     }
@@ -241,28 +134,26 @@ public class RibosomeUI : MonoBehaviour
 
     private IEnumerator JackpotEffect(Color skillColor)
     {
-        // "Casino Win" Style: Border Flashing with Skill Color
         int flashes = 5;
         float interval = 0.1f;
 
         for (int i = 0; i < flashes; i++)
         {
             // Borders ON (Skill Color)
-            foreach (var border in slotBorders)
+            foreach (var img in slotImages)
             {
-                if (border != null)
-                {
-                    // Use skill color with full opacity
-                    border.color = new Color(skillColor.r, skillColor.g, skillColor.b, 1f);
-                }
+                var outline = img.GetComponent<Outline>();
+                outline.enabled = true;
+                outline.effectColor = new Color(skillColor.r, skillColor.g, skillColor.b, 1f);
             }
             yield return new WaitForSeconds(interval);
 
             // Borders OFF (Transparent)
-            foreach (var border in slotBorders)
+            foreach (var img in slotImages)
             {
-                if (border != null)
-                    border.color = new Color(1f, 1f, 1f, 0f);
+                var outline = img.GetComponent<Outline>();
+                outline.effectColor = new Color(1f, 1f, 1f, 0f);
+                outline.enabled = false;
             }
             yield return new WaitForSeconds(interval);
         }

@@ -11,7 +11,8 @@ public class ArcadeManager : MonoBehaviour
     private int targetAminoAcids;
 
     [Header("UI")]
-    public TMP_FontAsset uiFont;
+    [SerializeField]
+    private RibosomeUI ribosomeUIPrefab;
     public TextMeshProUGUI progressText;
     public TextMeshProUGUI comboPopupText;
     public GameObject winPanel;
@@ -24,7 +25,6 @@ public class ArcadeManager : MonoBehaviour
     public PlayerSkillController skillController;
     public EnemySpawner enemySpawner;
     public ItemSpawner itemSpawner; // Reference to the new ItemSpawner
-    public CodonRingController codonRing;
 
     [SerializeField]
     private PeptideChainController peptideChainController;
@@ -76,14 +76,10 @@ public class ArcadeManager : MonoBehaviour
         if (!itemSpawner)
             itemSpawner = FindFirstObjectByType<ItemSpawner>();
 
-        // Subscribe to ItemSpawner events
-        if (itemSpawner != null)
-        {
-            itemSpawner.OnBaseCollected += CollectBase;
-        }
+        // Subscribe to ItemSpawner events - Fail Fast
+        itemSpawner.OnBaseCollected += CollectBase;
 
         UpdateUI();
-        UpdateCodonRing();
     }
 
     private void EnsureRibosomeUI()
@@ -98,7 +94,9 @@ public class ArcadeManager : MonoBehaviour
             canvas = obj.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         }
-        RibosomeUI.CreateDefaultUI(canvas.transform, uiFont);
+
+        // Fail Fast: Assume prefab is assigned
+        Instantiate(ribosomeUIPrefab, canvas.transform, false);
     }
 
     private void InitializePlayer()
@@ -112,9 +110,6 @@ public class ArcadeManager : MonoBehaviour
 
         if (!skillController)
             skillController = player.GetComponent<PlayerSkillController>();
-
-        if (!codonRing)
-            codonRing = player.GetComponentInChildren<CodonRingController>();
 
         if (!peptideChainController)
             peptideChainController = FindFirstObjectByType<PeptideChainController>();
@@ -141,7 +136,6 @@ public class ArcadeManager : MonoBehaviour
             return;
 
         currentCodon.Add(type);
-        UpdateCodonRing();
         OnCodonUpdated?.Invoke(new List<NucleobaseType>(currentCodon));
 
         if (currentCodon.Count >= 3)
@@ -170,16 +164,9 @@ public class ArcadeManager : MonoBehaviour
 
         ShowComboVisuals(data);
 
-        // Trigger Skill
-        if (skillController != null)
-        {
-            Debug.Log($"ArcadeManager invoking skill: {data.ShortName}");
-            skillController.ActivateSkill(data.ShortName);
-        }
-        else
-        {
-            Debug.LogError("SkillController is NULL! Cannot activate skill.");
-        }
+        // Trigger Skill - Fail Fast
+        Debug.Log($"ArcadeManager invoking skill: {data.ShortName}");
+        skillController.ActivateSkill(data.ShortName);
 
         // [Protein Synthesis Logic]
         HandleProteinSynthesis(data);
@@ -187,7 +174,6 @@ public class ArcadeManager : MonoBehaviour
         currentSessionAminoAcids++;
 
         currentCodon.Clear();
-        UpdateCodonRing();
         OnCodonUpdated?.Invoke(new List<NucleobaseType>(currentCodon));
 
         if (currentSessionAminoAcids >= targetAminoAcids)
@@ -238,10 +224,7 @@ public class ArcadeManager : MonoBehaviour
 
         Debug.Log("<color=cyan>[Ribosome]</color> Synthesis Started! (Start Codon)");
 
-        if (peptideChainController != null)
-        {
-            peptideChainController.StartSynthesis(playerTransform);
-        }
+        peptideChainController.StartSynthesis(playerTransform);
     }
 
     private void AddToChain(AminoAcidData data)
@@ -249,10 +232,7 @@ public class ArcadeManager : MonoBehaviour
         peptideChain.Add(data);
         Debug.Log($"<color=cyan>[Ribosome]</color> Chain Elongation: {peptideChain.Count} AAs. Added {data.ShortName}");
 
-        if (peptideChainController != null)
-        {
-            peptideChainController.AddAminoAcid(data);
-        }
+        peptideChainController.AddAminoAcid(data);
     }
 
     private void FinishSynthesis()
@@ -276,47 +256,24 @@ public class ArcadeManager : MonoBehaviour
 
         peptideChain.Clear();
 
-        if (peptideChainController != null)
-        {
-            peptideChainController.FinishSynthesis();
-        }
+        peptideChainController.FinishSynthesis();
     }
 
     private void ShowProteinPopup(ProteinData protein)
     {
         // Reuse or extend the combo popup for now
-        if (comboPopupText != null)
-        {
-            comboPopupText.text = $"<size=120%>{protein.ProteinName}</size>\n{protein.Description}";
-            comboPopupText.color = protein.Color;
-            StartCoroutine(AnimatePopup(comboPopupText));
-        }
+        // Fail Fast: Assume comboPopupText is assigned
+        comboPopupText.text = $"<size=120%>{protein.ProteinName}</size>\n{protein.Description}";
+        comboPopupText.color = protein.Color;
+        StartCoroutine(AnimatePopup(comboPopupText));
     }
 
     private void ShowComboVisuals(AminoAcidData data)
     {
-        if (comboPopupText == null)
-        {
-            if (progressText != null && progressText.transform.parent != null)
-            {
-                GameObject go = new GameObject("ComboPopupText");
-                go.transform.SetParent(progressText.transform.parent, false);
-                comboPopupText = go.AddComponent<TextMeshProUGUI>();
-                comboPopupText.alignment = TextAlignmentOptions.Center;
-                comboPopupText.fontSize = 50;
-                comboPopupText.fontStyle = FontStyles.Bold;
-                RectTransform rt = go.GetComponent<RectTransform>();
-                rt.anchoredPosition = Vector2.zero;
-                rt.sizeDelta = new Vector2(800, 200);
-            }
-        }
-
-        if (comboPopupText != null)
-        {
-            comboPopupText.text = $"{data.FullName}\n<size=80%>{data.SkillDescription}</size>";
-            comboPopupText.color = data.Color;
-            StartCoroutine(AnimatePopup(comboPopupText));
-        }
+        // Fail Fast
+        comboPopupText.text = $"{data.FullName}\n<size=80%>{data.SkillDescription}</size>";
+        comboPopupText.color = data.Color;
+        StartCoroutine(AnimatePopup(comboPopupText));
     }
 
     private IEnumerator AnimatePopup(TextMeshProUGUI textComp)
@@ -359,20 +316,9 @@ public class ArcadeManager : MonoBehaviour
         textComp.transform.localPosition = Vector3.zero;
     }
 
-    private void UpdateCodonRing()
-    {
-        if (codonRing != null)
-        {
-            codonRing.UpdateVisuals(currentCodon);
-        }
-    }
-
     public void SpawnDrop(Vector3 position)
     {
-        if (itemSpawner != null)
-        {
-            itemSpawner.SpawnDrop(position);
-        }
+        itemSpawner.SpawnDrop(position);
     }
 
     public void CollectAminoAcid()
@@ -383,16 +329,14 @@ public class ArcadeManager : MonoBehaviour
 
     private void UpdateUI()
     {
-        if (progressText != null)
+        // Fail Fast: progressText is required
+        string healthInfo = "";
+        if (playerStats != null)
         {
-            string healthInfo = "";
-            if (playerStats != null)
-            {
-                healthInfo = $"HP: {playerStats.currentHealth}/{playerStats.MaxHealth}";
-            }
-
-            progressText.text = $"Amino Acids: {currentSessionAminoAcids} / {targetAminoAcids}\n{healthInfo}";
+            healthInfo = $"HP: {playerStats.currentHealth}/{playerStats.MaxHealth}";
         }
+
+        progressText.text = $"Amino Acids: {currentSessionAminoAcids} / {targetAminoAcids}\n{healthInfo}";
     }
 
     private void HandleHealthChanged(float ratio)
@@ -409,8 +353,7 @@ public class ArcadeManager : MonoBehaviour
     {
         isGameActive = false;
 
-        if (enemySpawner != null)
-            enemySpawner.StopSpawning();
+        enemySpawner.StopSpawning();
 
         if (win)
         {
@@ -419,14 +362,12 @@ public class ArcadeManager : MonoBehaviour
             {
                 GameManager.Instance.AddAminoAcids(currentSessionAminoAcids);
             }
-            if (winPanel != null)
-                winPanel.SetActive(true);
+            winPanel.SetActive(true);
         }
         else
         {
             Debug.Log("Game Over!");
-            if (losePanel != null)
-                losePanel.SetActive(true);
+            losePanel.SetActive(true);
         }
 
         Invoke(nameof(ReturnToBase), 3f);
