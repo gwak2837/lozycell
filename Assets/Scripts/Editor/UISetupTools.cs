@@ -18,64 +18,60 @@ public class UISetupTools : MonoBehaviour
             Debug.Log("Created new Canvas.");
         }
 
-        // 2. Create Lose Panel if not exists
-        if (GameObject.Find("LosePanel") == null)
-        {
-            CreatePanel(canvas.transform, "LosePanel", "GAME OVER", new Color(0.5f, 0, 0, 0.8f));
-            Debug.Log("Created LosePanel.");
-        }
-        else
-        {
-            Debug.Log("LosePanel already exists.");
-        }
+        // 2. Create or Update Lose Panel (Black transparent bg, Red text)
+        UpdateOrCreatePanel(canvas.transform, "LosePanel", "GAME OVER", new Color(0, 0, 0, 0.85f), Color.red);
 
-        // 3. Create Win Panel if not exists
-        if (GameObject.Find("WinPanel") == null)
-        {
-            CreatePanel(canvas.transform, "WinPanel", "MISSION COMPLETE", new Color(0, 0.5f, 0, 0.8f));
-            Debug.Log("Created WinPanel.");
-        }
-        else
-        {
-            Debug.Log("WinPanel already exists.");
-        }
+        // 3. Create or Update Win Panel (Black transparent bg, Green text)
+        UpdateOrCreatePanel(canvas.transform, "WinPanel", "MISSION COMPLETE", new Color(0, 0, 0, 0.85f), Color.green);
 
         Debug.Log("UI Setup Complete. Please assign the panels to ArcadeManager in the Inspector.");
     }
 
-    private static void CreatePanel(Transform parent, string name, string message, Color bgColor)
+    private static void UpdateOrCreatePanel(Transform parent, string name, string message, Color bgColor, Color textColor)
     {
-        // Panel
-        GameObject panelObj = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        panelObj.transform.SetParent(parent, false);
+        GameObject panelObj = GameObject.Find(name);
         
-        RectTransform rt = panelObj.GetComponent<RectTransform>();
-        rt.anchorMin = Vector2.zero;
-        rt.anchorMax = Vector2.one;
-        rt.sizeDelta = Vector2.zero;
+        if (panelObj == null)
+        {
+            // Create Panel
+            panelObj = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            panelObj.transform.SetParent(parent, false);
+            
+            RectTransform rt = panelObj.GetComponent<RectTransform>();
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.sizeDelta = Vector2.zero;
 
+            // Create Text
+            GameObject textObj = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+            textObj.transform.SetParent(panelObj.transform, false);
+            
+            RectTransform textRt = textObj.GetComponent<RectTransform>();
+            textRt.anchorMin = Vector2.zero;
+            textRt.anchorMax = Vector2.one;
+            textRt.sizeDelta = Vector2.zero;
+
+            panelObj.SetActive(false);
+            Undo.RegisterCreatedObjectUndo(panelObj, "Create " + name);
+            Debug.Log($"Created {name}.");
+        }
+        else
+        {
+            Debug.Log($"Updated existing {name}.");
+        }
+
+        // Update Visuals
         Image img = panelObj.GetComponent<Image>();
-        img.color = bgColor;
+        if (img) img.color = bgColor;
 
-        // Text
-        GameObject textObj = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
-        textObj.transform.SetParent(panelObj.transform, false);
-
-        TextMeshProUGUI tmp = textObj.GetComponent<TextMeshProUGUI>();
-        tmp.text = message;
-        tmp.fontSize = 64;
-        tmp.alignment = TextAlignmentOptions.Center;
-        tmp.color = Color.white;
-
-        RectTransform textRt = textObj.GetComponent<RectTransform>();
-        textRt.anchorMin = Vector2.zero;
-        textRt.anchorMax = Vector2.one;
-        textRt.sizeDelta = Vector2.zero;
-
-        panelObj.SetActive(false);
-        
-        // Register Undo for Editor
-        Undo.RegisterCreatedObjectUndo(panelObj, "Create " + name);
+        TextMeshProUGUI tmp = panelObj.GetComponentInChildren<TextMeshProUGUI>();
+        if (tmp)
+        {
+            tmp.text = message;
+            tmp.fontSize = 64;
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.color = textColor;
+        }
     }
 }
 
