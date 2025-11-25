@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 217156012}
   - component: {fileID: 217156013}
+  - component: {fileID: 217156014}
   m_Layer: 0
   m_Name: TouchControls
   m_TagString: Untagged
@@ -169,6 +170,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TouchControlsManager
   touchControlsRoot: {fileID: 217156011}
+--- !u!114 &217156014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 217156011}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4da468f441fab43c893ccedcc766898b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConstantPhysicalSize
+  targetSizeCm: 3
+  fallbackDpi: 96
+  updateOnScreenStick: 1
+  movementRangeRatio: 0.4
+  targetStick: {fileID: 0}
 --- !u!1 &294940205
 GameObject:
   m_ObjectHideFlags: 0
@@ -334,6 +352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 820e5be85b7e64aeab5e6364c00d65f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArcadeManager
+  mainCanvas: {fileID: 580193853}
   ribosomeUIPrefab: {fileID: 7151708665377549397, guid: 7e4955167f1a746a78749509f7a22c3f, type: 3}
   progressText: {fileID: 2120992856}
   comboPopupText: {fileID: 294940207}

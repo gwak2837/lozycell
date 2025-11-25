@@ -12,6 +12,9 @@ public class ArcadeManager : MonoBehaviour
 
     [Header("UI")]
     [SerializeField]
+    private Canvas mainCanvas;
+
+    [SerializeField]
     private RibosomeUI ribosomeUIPrefab;
 
     [SerializeField]
@@ -99,16 +102,27 @@ public class ArcadeManager : MonoBehaviour
         if (FindFirstObjectByType<RibosomeUI>())
             return;
 
-        var canvas = FindFirstObjectByType<Canvas>();
-        if (!canvas)
+        Transform parent = null;
+        if (mainCanvas != null)
         {
-            var obj = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
-            canvas = obj.GetComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            parent = mainCanvas.transform;
+        }
+        else
+        {
+            var canvas = FindFirstObjectByType<Canvas>();
+            if (canvas)
+            {
+                parent = canvas.transform;
+            }
         }
 
-        // Fail Fast: Assume prefab is assigned
-        Instantiate(ribosomeUIPrefab, canvas.transform, false);
+        if (parent == null)
+        {
+            Debug.LogError("No Canvas found for RibosomeUI. Please assign MainCanvas in Inspector or add a Canvas to the scene.");
+            return;
+        }
+
+        Instantiate(ribosomeUIPrefab, parent, false);
     }
 
     private void InitializePlayer()
