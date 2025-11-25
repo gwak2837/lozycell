@@ -30,6 +30,6 @@ public class JoystickResizer : MonoBehaviour
         handleRect.sizeDelta = new Vector2(handleSizeDelta, handleSizeDelta);
 
         OnScreenStick stick = handleRect.GetComponent<OnScreenStick>();
-        stick.movementRange = (backgroundSizeDelta - handleSizeDelta) * 0.5f * 0.7f;
+        stick.movementRange = (backgroundSizeDelta - handleSizeDelta) * 0.5f * 0.6f;
     }
 }

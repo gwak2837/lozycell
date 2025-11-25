@@ -129,7 +129,6 @@ GameObject:
   m_Component:
   - component: {fileID: 217156012}
   - component: {fileID: 217156013}
-  - component: {fileID: 217156014}
   m_Layer: 0
   m_Name: TouchControls
   m_TagString: Untagged
@@ -170,23 +169,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TouchControlsManager
   touchControlsRoot: {fileID: 217156011}
---- !u!114 &217156014
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 217156011}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4da468f441fab43c893ccedcc766898b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ConstantPhysicalSize
-  targetSizeCm: 3
-  fallbackDpi: 96
-  updateOnScreenStick: 1
-  movementRangeRatio: 0.4
-  targetStick: {fileID: 0}
 --- !u!1 &294940205
 GameObject:
   m_ObjectHideFlags: 0
@@ -809,6 +791,7 @@ GameObject:
   - component: {fileID: 699425300}
   - component: {fileID: 699425299}
   - component: {fileID: 699425301}
+  - component: {fileID: 699425302}
   m_Layer: 0
   m_Name: JoystickBg
   m_TagString: Untagged
@@ -887,6 +870,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::JoystickResizer
   handleRect: {fileID: 1918744730}
+--- !u!114 &699425302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 699425297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d3242f56144e4a7586216c925db4272, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SafeAreaMargin
+  applyLeft: 1
+  applyRight: 0
+  applyTop: 0
+  applyBottom: 1
 --- !u!1 &851026109
 GameObject:
   m_ObjectHideFlags: 0

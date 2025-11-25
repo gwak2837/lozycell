@@ -40,6 +40,9 @@ public class FloatingTextManager : MonoBehaviour
 
     public void Show(float damage, Vector3 position, bool isCritical)
     {
+        if (damage <= 0)
+            return;
+
         FloatingText textToUse = null;
 
         // 1. Try to find inactive in existing pool
