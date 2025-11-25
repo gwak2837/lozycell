@@ -808,6 +808,7 @@ GameObject:
   - component: {fileID: 699425298}
   - component: {fileID: 699425300}
   - component: {fileID: 699425299}
+  - component: {fileID: 699425301}
   m_Layer: 0
   m_Name: JoystickBg
   m_TagString: Untagged
@@ -873,6 +874,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 699425297}
   m_CullTransparentMesh: 1
+--- !u!114 &699425301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 699425297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29df8f36d09414f1686ee1379ed126d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JoystickResizer
+  handleRect: {fileID: 1918744730}
 --- !u!1 &851026109
 GameObject:
   m_ObjectHideFlags: 0

@@ -206,6 +206,12 @@ public static class GameConfig
 
     public static class UI
     {
+        public static class Joystick
+        {
+            public const float SizeCm = 2.0f;
+            public const float HandleSizeCm = 0.8f;
+        }
+
         public static class FloatingText
         {
             public const float Duration = 0.8f;
